@@ -28,10 +28,31 @@ const navConfig = [
   //   icon: icon('ic_blog'),
   // },
   {
+    title: 'Início',
+    path: '/',
+    icon: icon('ic_user'),
+  },
+  {
     title: 'Cronograma',
     path: '/schedule',
     icon: icon('ic_calendar'),
   },
+  {
+    title: 'Equipes',
+    path: '/team',
+    icon: icon('ic_team'),
+  },
+  {
+    title: 'Orientadores',
+    path: '/advisor',
+    icon: icon('ic_teacher'),
+  },
+  {
+    title: 'Materiais de apoio',
+    path: '/study-material',
+    icon: icon('ic_books'),
+  },
+
   // {
   //   title: 'login',
   //   path: '/login',
