@@ -44,8 +44,8 @@ export default function ScheduleForm({
 
   const onSubmit = (data) => {
     if (!selectedEvent) {
-      setEvents((events) => [
-        ...events,
+      setEvents((evs) => [
+        ...evs,
         {
           id: uuidv4(),
           allDay: false,
