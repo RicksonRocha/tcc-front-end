@@ -8,6 +8,8 @@ import { Card, Grid, Button, Typography } from '@mui/material';
 
 import { RHFDate, FormProvider, RHFTextField } from 'src/components/hook-form';
 
+import AnalyticsTasks from '../overview/app-tasks';
+
 export default function ScheduleForm({
   handleToggle,
   events,
@@ -111,8 +113,22 @@ export default function ScheduleForm({
           <Grid item md={12}>
             <RHFTextField name="description" label="Descrição" />
           </Grid>
+
           <Grid item md={12}>
             <RHFDate name="date" label="Data" />
+          </Grid>
+
+          <Grid xs={12} md={12}>
+            <AnalyticsTasks
+              title="Propostas na reunião"
+              list={[
+                { id: '1', name: 'Create FireStone Logo' },
+                { id: '2', name: 'Add SCSS and JS files if required' },
+                { id: '3', name: 'Stakeholder Meeting' },
+                { id: '4', name: 'Scoping & Estimations' },
+                { id: '5', name: 'Sprint Showcase' },
+              ]}
+            />
           </Grid>
         </Grid>
         <Grid item container mt={1} spacing={2} justifyContent="flex-end">
