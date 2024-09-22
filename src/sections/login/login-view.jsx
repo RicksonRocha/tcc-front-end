@@ -27,8 +27,38 @@ export default function LoginView() {
   const [showPassword, setShowPassword] = useState(false);
 
   // Usando o react hook de formulário
-  const { register, handleSubmit, errors, onSubmit } = useLoginForm();
   const { push } = useRouter();
+
+  const schema = yup.object().shape({
+    email: yup.string().email().required('Email é obrigatório'),
+    password: yup
+      .string()
+      .min(8, 'Senha precisa ter 8 caracteres')
+      .max(32, 'Senha pode ter até 32 caracteres')
+      .required('Senha é obrigatório'),
+  });
+
+  const defaultValues = {
+    email: '',
+    password: '',
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({ resolver: yupResolver(schema), defaultValues });
+
+  const onSubmit = async (data) => {
+    const { email, password } = data;
+    try {
+      await dispatch(userLogin({ email, password }));
+      reset();
+    } catch (e) {
+      enqueueSnackbar(e, { variant: 'error' });
+    }
+  };
 
   const renderForm = (
     <form onSubmit={handleSubmit(onSubmit)}>

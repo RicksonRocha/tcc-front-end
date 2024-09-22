@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -15,11 +14,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
 
 import { bgGradient } from 'src/theme/css';
-
 import Iconify from 'src/components/iconify';
-
 import { useRegisterForm } from 'src/hooks/form/register';
 import { useRouter } from 'src/routes/hooks/use-router'; 
+import { useRegisterUserMutation } from 'src/api/user';
+
 
 // ----------------------------------------------------------------------
 
@@ -29,8 +28,21 @@ export default function RegisterView() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { push } = useRouter(); // Hook de navegação
 
-  // Usando o hook de formulário de registro
-  const { register, handleSubmit, errors, onSubmit } = useRegisterForm();
+  const { register, handleSubmit, errors, onSubmit: formSubmit } = useRegisterForm();
+  
+  const [registerUser, { isLoading }] = useRegisterUserMutation(); // Hook de registro de usuário
+  
+  const onSubmit = async (data) => {
+    try {
+      const response = await registerUser(data).unwrap();
+      console.log('Usuário registrado com sucesso:', response);
+      // Redirecionar para login ou mostrar mensagem de sucesso
+      push('/login');
+    } catch (error) {
+      console.error('Erro ao registrar usuário:', error);
+      alert('Erro ao registrar. Tente novamente.');
+    }
+  };
 
   return (
     <Box
@@ -43,13 +55,7 @@ export default function RegisterView() {
       }}
     >
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
-        <Card
-          sx={{
-            p: 5,
-            width: 1,
-            maxWidth: 420,
-          }}
-        >
+        <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
           <Typography variant="h5" align="center">
             Realize seu cadastro!
           </Typography>
@@ -88,7 +94,7 @@ export default function RegisterView() {
                 <FormControlLabel value="aluno" control={<Radio />} label="Aluno" />
                 <FormControlLabel value="professor" control={<Radio />} label="Professor" />
               </RadioGroup>
-              
+
               {errors.userType && <Typography color="error">{errors.userType?.message}</Typography>}
 
               <TextField
@@ -135,6 +141,7 @@ export default function RegisterView() {
                 type="submit"
                 variant="contained"
                 color="primary"
+                loading={isLoading} // Indicador de carregamento
               >
                 Salvar
               </LoadingButton>
@@ -151,3 +158,4 @@ export default function RegisterView() {
     </Box>
   );
 }
+
