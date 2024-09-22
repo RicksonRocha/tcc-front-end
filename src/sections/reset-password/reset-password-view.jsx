@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -56,7 +55,7 @@ export default function ResetPasswordView() {
                 label="Nova Senha"
                 type={showNewPassword ? 'text' : 'password'}
                 fullWidth
-                {...register('newPassword', { required: 'Nova senha é obrigatória!' })}
+                {...register('newPassword')}
                 error={!!errors.newPassword}
                 helperText={errors.newPassword?.message}
                 InputProps={{
@@ -74,7 +73,7 @@ export default function ResetPasswordView() {
                 label="Confirmação de Senha"
                 type={showConfirmPassword ? 'text' : 'password'}
                 fullWidth
-                {...register('confirmPassword', { required: 'Confirmação de senha é obrigatória!' })}
+                {...register('confirmPassword')}
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 InputProps={{
@@ -107,4 +106,3 @@ export default function ResetPasswordView() {
     </Box>
   );
 }
-

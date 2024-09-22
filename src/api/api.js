@@ -1,8 +1,13 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+// Configuração da API base
 export const api = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3030/' }),
+  reducerPath: 'api', // O identificador padrão da API no store
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'http://localhost:3000', // URL da API local para testes
+  }),
+  endpoints: () => ({}), 
+  // Os endpoints serão definidos em arquivos separados, como user.js e etc.
 });
 
-export const { useGetUsersQuery } = api;
+export default api;

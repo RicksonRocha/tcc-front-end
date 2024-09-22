@@ -15,10 +15,10 @@ import Link from '@mui/material/Link';
 
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
-import { useRegisterForm } from 'src/hooks/form/register';
-import { useRouter } from 'src/routes/hooks/use-router'; 
-import { useRegisterUserMutation } from 'src/api/user';
 
+import { useRegisterForm } from 'src/hooks/form/register';
+import { useRouter } from 'src/routes/hooks/use-router';
+import { useRegisterUserMutation } from 'src/api/user';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ export default function RegisterView() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { push } = useRouter(); // Hook de navegação
 
-  const { register, handleSubmit, errors, onSubmit: formSubmit } = useRegisterForm();
+  const { register, handleSubmit, errors, reset } = useRegisterForm();
   
   const [registerUser, { isLoading }] = useRegisterUserMutation(); // Hook de registro de usuário
   
@@ -36,7 +36,8 @@ export default function RegisterView() {
     try {
       const response = await registerUser(data).unwrap();
       console.log('Usuário registrado com sucesso:', response);
-      // Redirecionar para login ou mostrar mensagem de sucesso
+    
+      reset(); 
       push('/login');
     } catch (error) {
       console.error('Erro ao registrar usuário:', error);
@@ -65,7 +66,7 @@ export default function RegisterView() {
               <TextField
                 label="Nome Completo"
                 fullWidth
-                {...register('fullName', { required: 'Nome Completo é obrigatório!' })}
+                {...register('fullName')}
                 error={!!errors.fullName}
                 helperText={errors.fullName?.message}
               />
@@ -74,13 +75,7 @@ export default function RegisterView() {
                 label="E-mail"
                 fullWidth
                 type="email"
-                {...register('email', { 
-                  required: 'E-mail é obrigatório!', 
-                  pattern: { 
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, 
-                    message: 'E-mail inválido!' 
-                  } 
-                })}
+                {...register('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message}
               />
@@ -88,7 +83,7 @@ export default function RegisterView() {
               <RadioGroup
                 aria-label="user-type"
                 name="userType"
-                {...register('userType', { required: 'Tipo de usuário é obrigatório!' })}
+                {...register('userType')}
                 row
               >
                 <FormControlLabel value="aluno" control={<Radio />} label="Aluno" />
@@ -101,7 +96,7 @@ export default function RegisterView() {
                 label="Senha"
                 type={showPassword ? 'text' : 'password'}
                 fullWidth
-                {...register('password', { required: 'Senha é obrigatória!' })}
+                {...register('password')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 InputProps={{
@@ -119,7 +114,7 @@ export default function RegisterView() {
                 label="Confirmação de Senha"
                 type={showConfirmPassword ? 'text' : 'password'}
                 fullWidth
-                {...register('confirmPassword', { required: 'Confirmação de senha é obrigatória!' })}
+                {...register('confirmPassword')}
                 error={!!errors.confirmPassword}
                 helperText={errors.confirmPassword?.message}
                 InputProps={{
@@ -141,7 +136,7 @@ export default function RegisterView() {
                 type="submit"
                 variant="contained"
                 color="primary"
-                loading={isLoading} // Indicador de carregamento
+                loading={isLoading}
               >
                 Salvar
               </LoadingButton>
