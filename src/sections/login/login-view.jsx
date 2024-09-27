@@ -13,16 +13,42 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 
-import { useLoginForm } from 'src/hooks/form/login';
+
 import { useRouter } from 'src/routes/hooks/use-router';
+import { useForm } from 'react-hook-form';
+import schemaLogin from 'src/hooks/form/login';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 // ----------------------------------------------------------------------
 
 export default function LoginView() {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit, errors, onSubmit } = useLoginForm();
   const { push } = useRouter();
+
+  const defaultValues = {
+    email: '',
+    password: '',
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schemaLogin),
+    defaultValues, // Incluindo valores padrão
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      console.log('Dados do formulário:', data);
+      push('/dashboard');
+    } catch (error) {
+      console.error('Erro no login:', error);
+    }
+  };
 
   const renderForm = (
     <form onSubmit={handleSubmit(onSubmit)}>

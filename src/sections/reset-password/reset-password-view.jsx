@@ -13,8 +13,11 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 
-import { useResetPasswordForm } from 'src/hooks/form/reset-password';
 import { useRouter } from 'src/routes/hooks/use-router';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import schemaResetPassword from 'src/hooks/form/reset-password';
+
 
 // ----------------------------------------------------------------------
 
@@ -22,10 +25,36 @@ export default function ResetPasswordView() {
   const theme = useTheme();
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Usando o hook de formulário de redefinição de senha
-  const { register, handleSubmit, errors, onSubmit } = useResetPasswordForm();
   const { push } = useRouter();
+
+  const defaultValues = {
+    newPassword: '',
+    confirmPassword: '',
+  };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schemaResetPassword),
+    defaultValues, // Incluindo valores padrão
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      // Faz a requisição para redefinir a senha
+      // await resetPassword(data).unwrap();
+      // console.log('Senha redefinida com sucesso!');
+
+      reset(); // Resetar formulário após sucesso
+      push('/login');
+    } catch (error) {
+      console.error('Erro na redefinição de senha:', error);
+      alert('Erro ao redefinir a senha. Tente novamente.');
+    }
+  };
 
   return (
     <Box
@@ -94,8 +123,7 @@ export default function ResetPasswordView() {
               </LoadingButton>
             </Stack>
 
-            {/* Link para a tela de login */}
-            <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 3, cursor: 'pointer' }}>
+            <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 0, cursor: 'pointer' }}>
               <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
                 Entrar
               </Link>
