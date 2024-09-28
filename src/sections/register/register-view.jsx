@@ -15,10 +15,12 @@ import Link from '@mui/material/Link';
 
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
-import { yupResolver } from '@hookform/resolvers/yup'; 
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaRegister from 'src/hooks/form/register';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser, userLogin } from 'src/features/auth/auth-actions';
 
 // ----------------------------------------------------------------------
 
@@ -26,17 +28,22 @@ export default function RegisterView() {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const dispatch = useDispatch();
   const { push } = useRouter();
 
   // Valores padrão para o formulário
   const defaultValues = {
-    fullName: '',
+    name: '',
     email: '',
-    userType: '',
+    role: '',
     password: '',
     confirmPassword: '',
   };
+
+  const {
+    auth: { user },
+    loading,
+  } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -48,14 +55,14 @@ export default function RegisterView() {
     defaultValues,
   });
 
-  const router = useRouter();
+  console.log(errors)
 
   const onSubmit = async (data) => {
     try {
-      reset(); // Resetar formulário após sucesso
-      router.push('/login');
-    } catch (error) {
-      console.error('Erro no cadastro:', error);
+      await dispatch(registerUser({...data, role: 'ADMIN'}));
+      reset();
+    } catch (e) {
+      console.log(e)
     }
   };
 
@@ -65,9 +72,9 @@ export default function RegisterView() {
         <TextField
           label="Nome Completo"
           fullWidth
-          {...register('fullName')}
-          error={!!errors.fullName}
-          helperText={errors.fullName?.message}
+          {...register('name')}
+          error={!!errors.name}
+          helperText={errors.name?.message}
         />
 
         <TextField
@@ -80,16 +87,16 @@ export default function RegisterView() {
         />
 
         <RadioGroup
-          aria-label="user-type"
-          name="userType"
-          {...register('userType')}
+          aria-label="role"
+          name="role"
+          {...register('role')}
           row
         >
-          <FormControlLabel value="aluno" control={<Radio />} label="Aluno" />
-          <FormControlLabel value="professor" control={<Radio />} label="Professor" />
+          <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
+          <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
         </RadioGroup>
 
-        {errors.userType && <Typography color="error">{errors.userType?.message}</Typography>}
+        {errors.role && <Typography color="error">{errors.role?.message}</Typography>}
 
         <TextField
           label="Senha"

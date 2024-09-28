@@ -6,9 +6,9 @@ import { useRegisterUserMutation } from 'src/api/user'; // Importa o hook para r
 
 // Esquema de validação com Yup
 const schemaRegister = yup.object().shape({
-  fullName: yup.string().required('Nome Completo é obrigatório!'),
+  name: yup.string().required('Nome Completo é obrigatório!'),
   email: yup.string().email('E-mail inválido!').required('E-mail é obrigatório!'),
-  userType: yup.string().required('Tipo de usuário é obrigatório!'),
+  role: yup.string().required('Tipo de usuário é obrigatório!'),
   password: yup
     .string()
     .min(6, 'A senha deve ter pelo menos 6 caracteres')

@@ -10,9 +10,9 @@ const config = {
  
 export const registerUser = createAsyncThunk(
   'auth/register',
-  async ({ firstName, email, password }, { rejectWithValue }) => {
+  async ({ name, email, password, role }, { rejectWithValue }) => {
     try {
-      await axios.post(`${backendURL}/register`, { firstName, email, password }, config);
+      await axios.post(`${backendURL}/auth/register`, { name, email, password, role }, config);
     } catch (error) {
       if (error.response.data.error) {
         return rejectWithValue(error.response.data.error);
@@ -26,7 +26,7 @@ export const userLogin = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${backendURL}/login`, { email, password }, config);
+      const { data } = await axios.post(`${backendURL}/auth/login`, { email, password }, config);
       localStorage.setItem('access_token', data.access_token);
       return data;
     } catch (error) {
