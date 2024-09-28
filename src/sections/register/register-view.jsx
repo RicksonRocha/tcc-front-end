@@ -12,7 +12,6 @@ import { alpha, useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
-
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup';

@@ -9,15 +9,13 @@ import InputAdornment from '@mui/material/InputAdornment';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Link from '@mui/material/Link';
 import { alpha, useTheme } from '@mui/material/styles';
-
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
-
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaResetPassword from 'src/hooks/form/reset-password';
-
+import { useDispatch, useSelector } from 'react-redux';
 
 // ----------------------------------------------------------------------
 
@@ -26,11 +24,17 @@ export default function ResetPasswordView() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { push } = useRouter();
+  const dispatch = useDispatch();
 
   const defaultValues = {
     newPassword: '',
     confirmPassword: '',
   };
+
+  const {
+    auth: { user },
+    loading,
+  } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -44,15 +48,10 @@ export default function ResetPasswordView() {
 
   const onSubmit = async (data) => {
     try {
-      // Faz a requisição para redefinir a senha
-      // await resetPassword(data).unwrap();
-      // console.log('Senha redefinida com sucesso!');
-
-      reset(); // Resetar formulário após sucesso
-      push('/login');
-    } catch (error) {
-      console.error('Erro na redefinição de senha:', error);
-      alert('Erro ao redefinir a senha. Tente novamente.');
+      // await dispatch(resetPassword({data}));
+      reset();
+    } catch (e) {
+      console.log(e)
     }
   };
 

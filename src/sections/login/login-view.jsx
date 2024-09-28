@@ -9,15 +9,14 @@ import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { alpha, useTheme } from '@mui/material/styles';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
-
-
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaLogin from 'src/hooks/form/login';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useDispatch, useSelector } from 'react-redux';
+import { userLogin } from 'src/features/auth/auth-actions';
 
 // ----------------------------------------------------------------------
 
@@ -25,11 +24,17 @@ export default function LoginView() {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const { push } = useRouter();
+  const dispatch = useDispatch();
 
   const defaultValues = {
     email: '',
     password: '',
   };
+
+  const {
+    auth: { user },
+    loading,
+  } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -43,10 +48,10 @@ export default function LoginView() {
 
   const onSubmit = async (data) => {
     try {
-      console.log('Dados do formulário:', data);
-      push('/dashboard');
-    } catch (error) {
-      console.error('Erro no login:', error);
+      await dispatch(userLogin(data));
+      reset();
+    } catch (e) {
+      console.log(e)
     }
   };
 
@@ -83,7 +88,11 @@ export default function LoginView() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary">
+      <LoadingButton 
+        fullWidth size="large" 
+        type="submit" 
+        variant="contained" 
+        color="primary">
         Login
       </LoadingButton>
     </form>
