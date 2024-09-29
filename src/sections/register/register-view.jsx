@@ -20,7 +20,7 @@ import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaRegister from 'src/hooks/form/register';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser, userLogin } from 'src/features/auth/auth-actions';
+import { registerUser } from 'src/features/auth/auth-actions';
 
 // ----------------------------------------------------------------------
 
@@ -55,14 +55,14 @@ export default function RegisterView() {
     defaultValues,
   });
 
-  console.log(errors)
+  console.log(errors);
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(registerUser({...data, role: 'ADMIN'}));
+      await dispatch(registerUser({ ...data }));
       reset();
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   };
 
@@ -86,12 +86,7 @@ export default function RegisterView() {
           helperText={errors.email?.message}
         />
 
-        <RadioGroup
-          aria-label="role"
-          name="role"
-          {...register('role')}
-          row
-        >
+        <RadioGroup aria-label="role" name="role" {...register('role')} row>
           <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
           <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
         </RadioGroup>
@@ -136,13 +131,7 @@ export default function RegisterView() {
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 3 }}>
-        <LoadingButton
-          fullWidth
-          size="large"
-          type="submit"
-          variant="contained"
-          color="primary"
-        >
+        <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary">
           Salvar
         </LoadingButton>
       </Stack>
@@ -169,7 +158,12 @@ export default function RegisterView() {
 
         {renderForm()}
 
-        <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mt: 2, cursor: 'pointer' }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mt: 2, cursor: 'pointer' }}
+        >
           <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
             Já tem uma conta? Entrar
           </Link>
