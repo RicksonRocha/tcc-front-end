@@ -37,3 +37,33 @@ export const userLogin = createAsyncThunk(
     }
   }
 );
+
+// Endpoints base para a recuperação de senha
+export const recoveryPassword = createAsyncThunk(
+  'auth/reset-password',
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      await axios.post(`${backendURL}/auth/reset-password`, { email }, config);
+    } catch (error) {
+      if (error.response.data.error) {
+        return rejectWithValue(error.response.data.error);
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Endpoint para definir uma nova senha com token
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      await axios.post(`${backendURL}/auth/reset-password`, { token, password }, config);
+    } catch (error) {
+      if (error.response.data.error) {
+        return rejectWithValue(error.response.data.error);
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
