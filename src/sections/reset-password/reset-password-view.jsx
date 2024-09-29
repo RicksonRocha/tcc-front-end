@@ -48,7 +48,7 @@ export default function ResetPasswordView() {
 
   const onSubmit = async (data) => {
     try {
-      // await dispatch(resetPassword({data}));
+      // await dispatch(resetPassword({...data}));
       reset();
     } catch (e) {
       console.log(e)

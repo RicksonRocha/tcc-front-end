@@ -48,7 +48,7 @@ export default function LoginView() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(userLogin(data));
+      await dispatch(userLogin({...data}));
       reset();
     } catch (e) {
       console.log(e)

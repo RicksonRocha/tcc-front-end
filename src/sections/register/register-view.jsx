@@ -58,7 +58,7 @@ export default function RegisterView() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(registerUser({...data, role: 'ADMIN'}));
+      await dispatch(registerUser({...data}));
       reset();
     } catch (e) {
       console.log(e)
