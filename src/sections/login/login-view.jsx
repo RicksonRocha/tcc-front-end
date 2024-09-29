@@ -13,7 +13,7 @@ import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
-import schemaLogin from 'src/hooks/form/use-login';
+import schemaLogin from 'src/hooks/form/login';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { userLogin } from 'src/features/auth/auth-actions';

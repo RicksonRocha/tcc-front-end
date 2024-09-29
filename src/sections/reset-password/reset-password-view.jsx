@@ -14,7 +14,7 @@ import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import schemaResetPassword from 'src/hooks/form/use-reset-password';
+import schemaResetPassword from 'src/hooks/form/reset-password';
 import { useDispatch, useSelector } from 'react-redux';
 
 // ----------------------------------------------------------------------

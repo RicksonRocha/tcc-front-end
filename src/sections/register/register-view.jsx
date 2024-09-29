@@ -17,7 +17,7 @@ import Iconify from 'src/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
-import schemaRegister from 'src/hooks/form/use-register';
+import schemaRegister from 'src/hooks/form/register';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser, userLogin } from 'src/features/auth/auth-actions';
 
