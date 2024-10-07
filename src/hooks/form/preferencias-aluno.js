@@ -1,7 +1,4 @@
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useRouter } from 'src/routes/hooks/use-router';
 
 // Esquema de validação com Yup
 const schemaPreferenciasAluno = yup.object().shape({
@@ -9,26 +6,28 @@ const schemaPreferenciasAluno = yup.object().shape({
     .string()
     .required('Turno é obrigatório!'),
   linguagemProgramacao: yup
-    .string()
+    .array()
+    .min(1, 'Deve ser informado no mínimo 1 linguagem de programação')
     .max(3, 'Pode-se informar até 3 linguagens')
-    .required('Linguagem de programação é obrigatório!'),
+    .required('Linguagem de programação é obrigatória!'),
   bancoDeDados: yup
-    .string()
+    .array()
+    .min(1, 'Deve ser informado no mínimo 1 banco de dados')
     .max(2, 'Pode-se informar até 2 bancos de dados')
     .required('Banco de dados é obrigatório!'),
   nivelDeExperiencia: yup
     .string()
     .required('Nível de experiência é obrigatório!'),
   habilidadesPessoais: yup
-    .string()
+    .array()
     .min(2, 'Deve ser informado no mínimo 2 habilidades')
     .max(4, 'Pode-se informar até 4 habilidades')
-    .required('Habilidades pessoais é obrigatório!'),
+    .required('Habilidades pessoais são obrigatórias!'),
   temasDeInteresse: yup
-    .string()
+    .array()
     .min(2, 'Deve ser informado no mínimo 2 temas de interesse')
-    .max(4, 'Pode-se informar até 4 temas')
-    .required('Temas de interesse é obrigatório!'),
+    .max(4, 'Pode-se informar até 4 temas de interesse')
+    .required('Temas de interesse são obrigatórios!'),
 });
 
 export default schemaPreferenciasAluno;
