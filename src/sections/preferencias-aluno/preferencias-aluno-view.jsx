@@ -1,0 +1,242 @@
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { alpha, useTheme } from '@mui/material/styles';
+import { bgGradient } from 'src/theme/css';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useRouter } from 'src/routes/hooks/use-router';
+import { useForm } from 'react-hook-form';
+import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
+import { useDispatch, useSelector } from 'react-redux';
+import { preferenciasUserAluno } from 'src/features/auth/auth-actions';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import { turnos, linguagens_de_programacao, bancos_de_dados, nivel_experiencia, habilidades_pessoais, temas_de_interesse } from './opcoes';
+
+// ----------------------------------------------------------------------
+
+export default function PreferenciasAlunoView() {
+  const theme = useTheme();
+  const dispatch = useDispatch();
+  const { push } = useRouter();
+
+  const defaultValues = {
+    turno: '',
+    linguagemProgramacao: [],
+    bancoDeDados: [],
+    nivelDeExperiencia: '',
+    habilidadesPessoais: [],
+    temasDeInteresse: [],
+  };
+
+  const {
+    register: preferenciasAluno,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schemaPreferenciasAluno),
+    defaultValues,
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      await dispatch(preferenciasUserAluno({ ...data }));
+      reset();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const renderForm = () => (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack spacing={3} sx={{ mt: 2 }}>
+        {/* Turno (Seleção simples) */}
+        <FormControl fullWidth error={!!errors.turno}>
+          <InputLabel>Turno</InputLabel>
+          <Select
+            label="Turno"
+            {...preferenciasAluno('turno')}
+            error={!!errors.turno}
+          >
+            {turnos.map((turno) => (
+              <MenuItem key={turno} value={turno}>
+                {turno}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.turno && <Typography color="error">{errors.turno.message}</Typography>}
+        </FormControl>
+
+        {/* Linguagem de Programação (Seleção múltipla) */}
+        <FormControl fullWidth error={!!errors.linguagemProgramacao}>
+          <InputLabel>Linguagem de Programação</InputLabel>
+          <Select
+            label="Linguagem de Programação"
+            multiple
+            value={watch('linguagemProgramacao') || []}
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected.length <= 3) {
+                setValue('linguagemProgramacao', selected);
+              }
+            }}
+            renderValue={(selected) => selected.join(', ')}
+            error={!!errors.linguagemProgramacao}
+          >
+            {linguagens_de_programacao.map((linguagem) => (
+              <MenuItem key={linguagem} value={linguagem}>
+                <Checkbox checked={watch('linguagemProgramacao')?.includes(linguagem)} />
+                {linguagem}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.linguagemProgramacao && <Typography color="error">{errors.linguagemProgramacao.message}</Typography>}
+        </FormControl>
+
+        {/* Banco de Dados (Seleção múltipla) */}
+        <FormControl fullWidth error={!!errors.bancoDeDados}>
+          <InputLabel>Banco de Dados</InputLabel>
+          <Select
+            label="Banco de Dados"
+            multiple
+            value={watch('bancoDeDados') || []}
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected.length <= 2) {
+                setValue('bancoDeDados', selected);
+              }
+            }}
+            renderValue={(selected) => selected.join(', ')}
+            error={!!errors.bancoDeDados}
+          >
+            {bancos_de_dados.map((banco) => (
+              <MenuItem key={banco} value={banco}>
+                <Checkbox checked={watch('bancoDeDados')?.includes(banco)} />
+                {banco}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.bancoDeDados && <Typography color="error">{errors.bancoDeDados.message}</Typography>}
+        </FormControl>
+
+        {/* Nível de Experiência (Seleção simples) */}
+        <FormControl fullWidth error={!!errors.nivelDeExperiencia}>
+          <InputLabel>Nível de Experiência</InputLabel>
+          <Select
+            label="Nível de Experiência"
+            {...preferenciasAluno('nivelDeExperiencia')}
+            error={!!errors.nivelDeExperiencia}
+          >
+            {nivel_experiencia.map((nivel) => (
+              <MenuItem key={nivel} value={nivel}>
+                {nivel}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.nivelDeExperiencia && <Typography color="error">{errors.nivelDeExperiencia.message}</Typography>}
+        </FormControl>
+
+        {/* Habilidades Pessoais (Seleção múltipla em menu suspenso) */}
+        <FormControl fullWidth error={!!errors.habilidadesPessoais}>
+          <InputLabel>Habilidades Pessoais</InputLabel>
+          <Select
+            label="Habilidades Pessoais"
+            multiple
+            value={watch('habilidadesPessoais') || []}
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected.length <= 4) {
+                setValue('habilidadesPessoais', selected);
+              }
+            }}
+            renderValue={(selected) => selected.join(', ')}
+            error={!!errors.habilidadesPessoais}
+          >
+            {habilidades_pessoais.map((habilidade) => (
+              <MenuItem key={habilidade} value={habilidade}>
+                <Checkbox checked={watch('habilidadesPessoais')?.includes(habilidade)} />
+                {habilidade}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.habilidadesPessoais && <Typography color="error">{errors.habilidadesPessoais.message}</Typography>}
+        </FormControl>
+
+        {/* Temas de Interesse (Seleção múltipla em menu suspenso) */}
+        <FormControl fullWidth error={!!errors.temasDeInteresse}>
+          <InputLabel>Temas de Interesse</InputLabel>
+          <Select
+            label="Temas de Interesse"
+            multiple
+            value={watch('temasDeInteresse') || []}
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected.length <= 4) {
+                setValue('temasDeInteresse', selected);
+              }
+            }}
+            renderValue={(selected) => selected.join(', ')}
+            error={!!errors.temasDeInteresse}
+          >
+            {temas_de_interesse.map((tema) => (
+              <MenuItem key={tema} value={tema}>
+                <Checkbox checked={watch('temasDeInteresse')?.includes(tema)} />
+                {tema}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.temasDeInteresse && <Typography color="error">{errors.temasDeInteresse.message}</Typography>}
+        </FormControl>
+      </Stack>
+
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 3 }}>
+        <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary">
+          Salvar
+        </LoadingButton>
+      </Stack>
+    </form>
+  );
+  
+  return (
+    <Box
+      sx={{
+        ...bgGradient({
+          color: alpha(theme.palette.background.default, 0.9),
+          imgUrl: '/assets/background/overlay_4.jpg',
+        }),
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Card sx={{ p: 4, width: '100%', maxWidth: 400, overflow: 'auto' }}>
+        <Typography variant="h5" align="center" sx={{ mb: 3 }}>
+          Compartilhe conosco suas preferências!
+        </Typography>
+
+        {renderForm()}
+
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mt: 2, cursor: 'pointer' }}
+        >
+          {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
+            Já tem uma conta? Entrar
+          </Link> */}
+        </Stack>
+      </Card>
+    </Box>
+  );
+}
