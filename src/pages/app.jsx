@@ -9,7 +9,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | Minimal UI </title>
+        <title> Visão Geral </title>
       </Helmet>
 
       <AppView />

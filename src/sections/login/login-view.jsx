@@ -48,8 +48,10 @@ export default function LoginView() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(userLogin({...data}));
+      await dispatch(userLogin({ ...data }));
       reset();
+      // Redireciona para a página de Visão Geral após login
+      push('/');
     } catch (e) {
       console.log(e)
     }
@@ -88,11 +90,11 @@ export default function LoginView() {
         </Link>
       </Stack>
 
-      <LoadingButton 
-        fullWidth size="large" 
-        type="submit" 
-        variant="contained" 
-        color="primary">
+      <LoadingButton
+        fullWidth size="large"
+        type="submit"
+        variant="contained"
+        color="primary"> 
         Login
       </LoadingButton>
     </form>

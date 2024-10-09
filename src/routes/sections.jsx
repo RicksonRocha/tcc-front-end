@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
+import { userLogin } from 'src/features/auth/auth-actions';
 
 import DashboardLayout from 'src/layouts/dashboard';
 
@@ -16,6 +17,10 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 export default function Router() {
   const routes = useRoutes([
+
+    // Rota de redirecionamento para login ao acessar a raiz
+    { path: '/', element: userLogin ? <IndexPage /> : <Navigate to="/login" /> },
+
     {
       element: (
         <DashboardLayout>
@@ -25,7 +30,7 @@ export default function Router() {
         </DashboardLayout>
       ),
       children: [
-        { element: <IndexPage />, index: true },
+        { element: <IndexPage />, index: true }, // Rota para o componente Index
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
