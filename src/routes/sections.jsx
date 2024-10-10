@@ -49,6 +49,10 @@ export default function Router() {
       element: <ResetPasswordPage />,
     },
     {
+      path: 'preferencias-aluno',
+      element: <PreferenciasAlunoPage />,
+    },
+    {
       path: '404',
       element: <Page404 />,
     },
