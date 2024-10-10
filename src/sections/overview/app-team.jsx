@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardContent, Typography, Button, Box, Divider } from '@mui/material';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -14,6 +15,8 @@ export default function AppTeam({
   orientador,
   ...other
 }) {
+
+  const { push } = useRouter();
   return (
     <Card {...other}>
       <CardContent>
@@ -71,7 +74,7 @@ export default function AppTeam({
             </Typography>
 
             <Box mt={2} width="fit-content">
-              <Button variant="contained" color="primary" onClick={onButtonClick} fullWidth>
+              <Button variant="contained" color="primary" onClick={() => push('/equipes')} fullWidth>
                 {buttonText}
               </Button>
             </Box>
@@ -96,7 +99,6 @@ AppTeam.propTypes = {
 AppTeam.defaultProps = {
   message: 'Por enquanto você não está cadastrado(a) em nenhuma equipe, acesse a página abaixo para conhecer os grupos existentes!',
   buttonText: 'Equipes',
-  onButtonClick: () => alert('Redirecionando para a página de Equipes...'),
   teamName: null,
   description: '',
   members: [],

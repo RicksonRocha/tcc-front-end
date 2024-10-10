@@ -1,23 +1,22 @@
 import PropTypes from 'prop-types';
-
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-import { fCurrency } from 'src/utils/format-number';
-
 import Label from 'src/components/label';
-import { ColorPreview } from 'src/components/color-utils';
+import Button from '@mui/material/Button'; 
 
 // ----------------------------------------------------------------------
 
 export default function ShopTeamCard({ team }) {
+  // Cor do status com base no valor de team.status
+  const statusColor = team.status === 'Equipe Completa' ? 'error' : 'success';
+  const statusColorCode = team.status === 'Equipe Completa' ? '#FF4842' : '#00AB55';
+
   const renderStatus = (
     <Label
       variant="filled"
-      color={(team.status === 'sale' && 'error') || 'info'}
+      color={statusColor} 
       sx={{
         zIndex: 9,
         top: 16,
@@ -30,35 +29,36 @@ export default function ShopTeamCard({ team }) {
     </Label>
   );
 
-  const renderImg = (
+  // Área de fundo com centralização do nome
+  const renderName = (
     <Box
-      component="img"
-      alt={team.name}
-      src={team.cover}
       sx={{
         top: 0,
         width: 1,
         height: 1,
-        objectFit: 'cover',
+        backgroundColor: '#EDEFF1',
         position: 'absolute',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
-    />
+    >
+      <Typography variant="h7" sx={{ textAlign: 'center', px: 2 }}>
+        {team.name}
+      </Typography>
+    </Box>
   );
 
-  const renderPrice = (
-    <Typography variant="subtitle1">
-      <Typography
-        component="span"
-        variant="body1"
-        sx={{
-          color: 'text.disabled',
-          textDecoration: 'line-through',
-        }}
-      >
-        {team.priceSale && fCurrency(team.priceSale)}
-      </Typography>
-      &nbsp;
-      {fCurrency(team.price)}
+  // Quantidade de integrantes com cor baseada no status
+  const renderQtdeIntegrantes = (
+    <Typography
+      variant="subtitle2"
+      sx={{ textAlign: 'center', mt: 2, fontWeight: 'bold' }}
+    >
+      {`Qtde Integrantes: `}
+      <Box component="span" sx={{ color: statusColorCode }}>
+        {team.members}
+      </Box>
     </Typography>
   );
 
@@ -66,19 +66,26 @@ export default function ShopTeamCard({ team }) {
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
         {team.status && renderStatus}
-
-        {renderImg}
+        {renderName}
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-        <Link color="inherit" underline="hover" variant="subtitle2" noWrap>
-          {team.name}
-        </Link>
 
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={team.colors} />
-          {renderPrice}
-        </Stack>
+        {renderQtdeIntegrantes}
+  
+        <Button
+          variant="contained"
+          disabled={team.status === 'Equipe Completa'} // Desabilitado para equipes completas
+          sx={{
+            backgroundColor: '#EDEFF1', 
+            color: '#212B36', 
+            '&:hover': {
+              backgroundColor: '#DDE0E2', 
+            },
+          }}
+        >
+          Solicitar entrada
+        </Button>
       </Stack>
     </Card>
   );

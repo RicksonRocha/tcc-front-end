@@ -1,1 +1,1 @@
-export { default as ProductsView } from './teams-view';
+export { default as TeamsView } from './teams-view';

@@ -60,6 +60,7 @@ export default function RegisterView() {
     try {
       await dispatch(registerUser({ ...data }));
       reset();
+      push('/login');
     } catch (e) {
       console.log(e);
     }

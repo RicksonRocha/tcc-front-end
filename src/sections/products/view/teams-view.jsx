@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import { teams } from 'src/_mock/teams';
 
 import TeamCard from '../team-card';
-import TeamSort from '../team-sort';
 import TeamFilters from '../team-filters';
 
 // ----------------------------------------------------------------------
@@ -27,7 +26,7 @@ export default function TeamsView() {
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Equipes
+        Equipes e Alunos
       </Typography>
 
       <Stack
@@ -43,8 +42,6 @@ export default function TeamsView() {
             onOpenFilter={handleOpenFilter}
             onCloseFilter={handleCloseFilter}
           />
-
-          <TeamSort />
         </Stack>
       </Stack>
 

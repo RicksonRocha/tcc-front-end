@@ -14,7 +14,7 @@ export default function AppView() {
 
   // Simulação de dados do aluno logado
   const teamData = {
-    teamName: 'Software xpto',
+    teamName: 'Sistema xpto',
     description: 'Um sistema para facilitar a organização e acompanhamento de TCCs.',
     members: ['João Silva', 'Ana Pereira', 'Carlos Santos'],
     orientador: 'Prof. Dr. Maria Oliveira',
@@ -42,7 +42,7 @@ export default function AppView() {
               ][index],
               type: `order${index + 1}`,
             }))}
-            sx={{ width: '100%' }} // Para ocupar 100% da largura
+            sx={{ width: '100%' }} 
           />
         </Grid>
 
