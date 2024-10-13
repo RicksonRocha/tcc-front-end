@@ -13,7 +13,7 @@ export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
 export const TeamsPage = lazy(() => import('src/pages/teams'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
-
+export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferencias-professor'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -52,6 +52,10 @@ export default function Router() {
     {
       path: 'preferencias-aluno',
       element: <PreferenciasAlunoPage />,
+    },
+    {
+      path: 'preferencias-professor',
+      element: <PreferenciasProfessorPage />,
     },
     {
       path: '404',
