@@ -17,7 +17,15 @@ import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { turnos, linguagens_de_programacao, habilidades_pessoais, temas_de_interesse, disciplinas_lecionadas } from './opcoes';
+import { 
+  turnos, 
+  linguagens_de_programacao, 
+  habilidades_pessoais, 
+  temas_de_interesse, 
+  disciplinas_lecionadas, 
+  disponibilidades, 
+  modalidades_trabalho 
+} from './opcoes';
 
 // ----------------------------------------------------------------------
 
@@ -27,12 +35,14 @@ export default function PreferenciasProfessorView() {
   const { push } = useRouter();
 
   const defaultValues = {
-    turno: [], // Ajuste para array
+    turno: [], // Array para múltipla seleção
     linguagemProgramacao: [],
     disciplinasLecionadas: [],
     habilidadesPessoais: [],
     temasDeInteresse: [],
     disponivelOrientacao: '',
+    disponibilidade: '',
+    modalidadeTrabalho: '', // Corrigido para singular
   };
 
   const {
@@ -51,6 +61,8 @@ export default function PreferenciasProfessorView() {
     try {
       await dispatch(preferenciasUserProfessor({ ...data }));
       reset();
+      // Opcional: redirecionar após o submit
+      // push('/alguma-rota');
     } catch (e) {
       console.log(e);
     }
@@ -58,19 +70,19 @@ export default function PreferenciasProfessorView() {
 
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3} sx={{ mt: 2 }}>
-        {/* Turno (Menu suspenso com múltipla seleção) */}
-        <FormControl fullWidth error={!!errors.turno}>
+      <Stack spacing={2} sx={{ mt: 1 }}>
+        {/* Turno (Seleção múltipla) */}
+        <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 40 }}>
           <InputLabel>Turno</InputLabel>
           <Select
             label="Turno"
             multiple
-            value={watch('turno') || []} // Verifica o valor de 'turno'
+            value={watch('turno') || []}
             onChange={(e) => {
               const selected = e.target.value;
-              setValue('turno', selected); // Atualiza o valor de 'turno'
+              setValue('turno', selected);
             }}
-            renderValue={(selected) => selected.join(', ')} // Mostra os valores selecionados no campo
+            renderValue={(selected) => selected.join(', ')}
             error={!!errors.turno}
           >
             {turnos.map((turno) => (
@@ -80,11 +92,15 @@ export default function PreferenciasProfessorView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.turno && <Typography color="error">{errors.turno.message}</Typography>}
+          {errors.turno && (
+            <Typography variant="caption" color="error">
+              {errors.turno.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Disponível para Orientação (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.disponivelOrientacao}>
+        <FormControl fullWidth error={!!errors.disponivelOrientacao} sx={{ minHeight: 40 }}>
           <InputLabel>Disponível para Orientação</InputLabel>
           <Select
             label="Disponível para Orientação"
@@ -98,12 +114,14 @@ export default function PreferenciasProfessorView() {
             ))}
           </Select>
           {errors.disponivelOrientacao && (
-            <Typography color="error">{errors.disponivelOrientacao.message}</Typography>
+            <Typography variant="caption" color="error">
+              {errors.disponivelOrientacao.message}
+            </Typography>
           )}
         </FormControl>
 
         {/* Linguagem de Programação (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.linguagemProgramacao}>
+        <FormControl fullWidth error={!!errors.linguagemProgramacao} sx={{ minHeight: 40 }}>
           <InputLabel>Linguagem de Programação</InputLabel>
           <Select
             label="Linguagem de Programação"
@@ -125,11 +143,15 @@ export default function PreferenciasProfessorView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.linguagemProgramacao && <Typography color="error">{errors.linguagemProgramacao.message}</Typography>}
+          {errors.linguagemProgramacao && (
+            <Typography variant="caption" color="error">
+              {errors.linguagemProgramacao.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Disciplinas Lecionadas (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.disciplinasLecionadas}>
+        <FormControl fullWidth error={!!errors.disciplinasLecionadas} sx={{ minHeight: 40 }}>
           <InputLabel>Disciplinas Lecionadas</InputLabel>
           <Select
             label="Disciplinas Lecionadas"
@@ -149,11 +171,15 @@ export default function PreferenciasProfessorView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.disciplinasLecionadas && <Typography color="error">{errors.disciplinasLecionadas.message}</Typography>}
+          {errors.disciplinasLecionadas && (
+            <Typography variant="caption" color="error">
+              {errors.disciplinasLecionadas.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Habilidades Pessoais (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.habilidadesPessoais}>
+        <FormControl fullWidth error={!!errors.habilidadesPessoais} sx={{ minHeight: 40 }}>
           <InputLabel>Habilidades Pessoais</InputLabel>
           <Select
             label="Habilidades Pessoais"
@@ -175,11 +201,15 @@ export default function PreferenciasProfessorView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.habilidadesPessoais && <Typography color="error">{errors.habilidadesPessoais.message}</Typography>}
+          {errors.habilidadesPessoais && (
+            <Typography variant="caption" color="error">
+              {errors.habilidadesPessoais.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Temas de Interesse (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.temasDeInteresse}>
+        <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40 }}>
           <InputLabel>Temas de Interesse</InputLabel>
           <Select
             label="Temas de Interesse"
@@ -201,18 +231,70 @@ export default function PreferenciasProfessorView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.temasDeInteresse && <Typography color="error">{errors.temasDeInteresse.message}</Typography>}
+          {errors.temasDeInteresse && (
+            <Typography variant="caption" color="error">
+              {errors.temasDeInteresse.message}
+            </Typography>
+          )}
+        </FormControl>
+
+        {/* Disponibilidade (Seleção simples) */}
+        <FormControl fullWidth error={!!errors.disponibilidade} sx={{ minHeight: 40 }}>
+          <InputLabel>Disponibilidade</InputLabel>
+          <Select
+            label="Disponibilidade"
+            {...preferenciasProfessor('disponibilidade')}
+            error={!!errors.disponibilidade}
+          >
+            {disponibilidades.map((disponibilidade) => (
+              <MenuItem key={disponibilidade} value={disponibilidade}>
+                {disponibilidade}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.disponibilidade && (
+            <Typography variant="caption" color="error">
+              {errors.disponibilidade.message}
+            </Typography>
+          )}
+        </FormControl>
+
+        {/* Modalidade de Trabalho (Seleção simples) */}
+        <FormControl fullWidth error={!!errors.modalidadeTrabalho} sx={{ minHeight: 40 }}>
+          <InputLabel>Modalidade de Trabalho</InputLabel>
+          <Select
+            label="Modalidade de Trabalho"
+            {...preferenciasProfessor('modalidadeTrabalho')}
+            error={!!errors.modalidadeTrabalho}
+          >
+            {modalidades_trabalho.map((modalidade) => (
+              <MenuItem key={modalidade} value={modalidade}>
+                {modalidade}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.modalidadeTrabalho && (
+            <Typography variant="caption" color="error">
+              {errors.modalidadeTrabalho.message}
+            </Typography>
+          )}
         </FormControl>
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 3 }}>
-        <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary">
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2, mb: -2 }}>
+        <LoadingButton
+          size="large"
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ width: '30%' }} // Ajuste a largura conforme necessário
+        >
           Salvar
         </LoadingButton>
       </Stack>
     </form>
   );
-  
+
   return (
     <Box
       sx={{
@@ -226,8 +308,15 @@ export default function PreferenciasProfessorView() {
         justifyContent: 'center',
       }}
     >
-      <Card sx={{ p: 4, width: '100%', maxWidth: 400, overflow: 'auto' }}>
-        <Typography variant="h5" align="center" sx={{ mb: 3 }}>
+      <Card 
+        sx={{ 
+          p: 4, 
+          width: '100%', 
+          maxWidth: '800px', // Definido para 800 pixels
+          overflow: 'auto' 
+        }}
+      >
+        <Typography variant="h5" align="center" sx={{ mb: 2 }}>
           Compartilhe conosco suas preferências!
         </Typography>
 
