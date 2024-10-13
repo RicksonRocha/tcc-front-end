@@ -34,6 +34,11 @@ const schemaPreferenciasAluno = yup.object().shape({
   modalidadeTrabalho: yup
     .string()
     .required('Modalidade de trabalho é obrigatório!'),
+  frameworkFront: yup
+    .array()
+    .min(1, 'Deve ser informado no mínimo 1 framework')
+    .max(2, 'Pode-se informar até 2 frameworks')
+    .required('Framework de Front-end é obrigatório!'),
 });
 
 export default schemaPreferenciasAluno;

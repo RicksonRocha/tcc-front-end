@@ -32,3 +32,7 @@ export const disponibilidades = [
 export const modalidade_trabalho = [
   'Presencial', 'Remoto', 'Flexível'
 ]
+
+export const framework_front = [
+  'React', 'Angular', 'Vue', 'Bootstrap'
+]

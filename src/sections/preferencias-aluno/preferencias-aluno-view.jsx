@@ -25,7 +25,8 @@ import {
   habilidades_pessoais, 
   temas_de_interesse, 
   disponibilidades, 
-  modalidade_trabalho 
+  modalidade_trabalho,
+  framework_front
 } from './opcoes';
 
 // ----------------------------------------------------------------------
@@ -43,7 +44,8 @@ export default function PreferenciasAlunoView() {
     habilidadesPessoais: [],
     temasDeInteresse: [],
     disponibilidade: '',
-    modalidadeTrabalho: '', // Corrigido para singular
+    modalidadeTrabalho: '',
+    frameworkFront: [],
   };
 
   const {
@@ -71,9 +73,9 @@ export default function PreferenciasAlunoView() {
 
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3} sx={{ mt: 2 }}>
+      <Stack spacing={2} sx={{ mt: 2 }}> {/* Reduzi o spacing de 3 para 2 */}
         {/* Turno (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 40 }}>
           <InputLabel>Turno</InputLabel>
           <Select
             label="Turno"
@@ -94,7 +96,7 @@ export default function PreferenciasAlunoView() {
         </FormControl>
 
         {/* Linguagem de Programação (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.linguagemProgramacao} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.linguagemProgramacao} sx={{ minHeight: 40 }}>
           <InputLabel>Linguagem de Programação</InputLabel>
           <Select
             label="Linguagem de Programação"
@@ -124,7 +126,7 @@ export default function PreferenciasAlunoView() {
         </FormControl>
 
         {/* Banco de Dados (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.bancoDeDados} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.bancoDeDados} sx={{ minHeight: 40 }}>
           <InputLabel>Banco de Dados</InputLabel>
           <Select
             label="Banco de Dados"
@@ -154,7 +156,7 @@ export default function PreferenciasAlunoView() {
         </FormControl>
 
         {/* Nível de Experiência (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.nivelDeExperiencia} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.nivelDeExperiencia} sx={{ minHeight: 40 }}>
           <InputLabel>Nível de Experiência</InputLabel>
           <Select
             label="Nível de Experiência"
@@ -175,7 +177,7 @@ export default function PreferenciasAlunoView() {
         </FormControl>
 
         {/* Habilidades Pessoais (Seleção múltipla em menu suspenso) */}
-        <FormControl fullWidth error={!!errors.habilidadesPessoais} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.habilidadesPessoais} sx={{ minHeight: 40 }}>
           <InputLabel>Habilidades Pessoais</InputLabel>
           <Select
             label="Habilidades Pessoais"
@@ -205,7 +207,7 @@ export default function PreferenciasAlunoView() {
         </FormControl>
 
         {/* Temas de Interesse (Seleção múltipla em menu suspenso) */}
-        <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40 }}>
           <InputLabel>Temas de Interesse</InputLabel>
           <Select
             label="Temas de Interesse"
@@ -235,7 +237,7 @@ export default function PreferenciasAlunoView() {
         </FormControl>
 
         {/* Disponibilidade (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.disponibilidade} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.disponibilidade} sx={{ minHeight: 40 }}>
           <InputLabel>Disponibilidade</InputLabel>
           <Select
             label="Disponibilidade"
@@ -255,29 +257,39 @@ export default function PreferenciasAlunoView() {
           )}
         </FormControl>
 
-        {/* Modalidade de Trabalho (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.modalidadeTrabalho} sx={{ minHeight: 50 }}>
-          <InputLabel>Modalidade de Trabalho</InputLabel>
+        {/* **Novo Campo: Framework Front-end (Seleção múltipla)** */}
+        <FormControl fullWidth error={!!errors.frameworkFront} sx={{ minHeight: 40 }}>
+          <InputLabel>Framework Front-end</InputLabel>
           <Select
-            label="Modalidade de Trabalho"
-            {...preferenciasAluno('modalidadeTrabalho')}
-            error={!!errors.modalidadeTrabalho}
+            label="Framework Front-end"
+            multiple
+            value={watch('frameworkFront') || []}
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected.length <= 5) { // Defina um limite conforme necessário
+                setValue('frameworkFront', selected);
+              }
+            }}
+            renderValue={(selected) => selected.join(', ')}
+            error={!!errors.frameworkFront}
           >
-            {modalidade_trabalho.map((modalidade) => (
-              <MenuItem key={modalidade} value={modalidade}>
-                {modalidade}
+            {framework_front.map((framework) => (
+              <MenuItem key={framework} value={framework}>
+                <Checkbox checked={watch('frameworkFront')?.includes(framework)} />
+                {framework}
               </MenuItem>
             ))}
           </Select>
-          {errors.modalidadeTrabalho && (
+          {errors.frameworkFront && (
             <Typography variant="caption" color="error">
-              {errors.modalidadeTrabalho.message}
+              {errors.frameworkFront.message}
             </Typography>
           )}
         </FormControl>
+        {/* Fim do Novo Campo */}
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2, mb: -2 }}>
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2 }}> {/* Reduzi a margem y */}
         <LoadingButton
           fullWidth
           size="large"
@@ -305,8 +317,17 @@ export default function PreferenciasAlunoView() {
         justifyContent: 'center',
       }}
     >
-      <Card sx={{ p: 4, width: '100%', maxWidth: { xs: 300, sm: 400, md: 600, lg: 800 }, overflow: 'auto' }}>
-        <Typography variant="h5" align="center" sx={{ mb: 2 }}>
+      <Card 
+        sx={{ 
+          p: 3, // Reduzi o padding de 4 para 3
+          width: '100%', 
+          maxWidth: 800, // Mantive a largura máxima de 800px
+          overflow: 'auto',
+          boxShadow: 3, // Opcional: ajusta a sombra para um visual mais leve
+          borderRadius: 2, // Opcional: ajusta o arredondamento das bordas
+        }}
+      >
+        <Typography variant="h5" align="center" sx={{ mb: 1 }}> {/* Reduzi a margem inferior de 2 para 1 */}
           Compartilhe conosco suas preferências!
         </Typography>
 
@@ -316,7 +337,7 @@ export default function PreferenciasAlunoView() {
           direction="row"
           alignItems="center"
           justifyContent="center"
-          sx={{ mt: 2, cursor: 'pointer' }}
+          sx={{ mt: 1, cursor: 'pointer' }} // Reduzi a margem superior de 2 para 1
         >
           {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
             Já tem uma conta? Entrar
