@@ -1,0 +1,1 @@
+export { default as PreferenciasProfessorView } from './preferencias-professor-view';

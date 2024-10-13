@@ -64,8 +64,6 @@ export default function PreferenciasAlunoView() {
     try {
       await dispatch(preferenciasUserAluno({ ...data }));
       reset();
-      // Opcional: redirecionar após o submit
-      // push('/alguma-rota');
     } catch (e) {
       console.log(e);
     }
@@ -266,7 +264,7 @@ export default function PreferenciasAlunoView() {
             value={watch('frameworkFront') || []}
             onChange={(e) => {
               const selected = e.target.value;
-              if (selected.length <= 5) { // Defina um limite conforme necessário
+              if (selected.length <= 5) { 
                 setValue('frameworkFront', selected);
               }
             }}
@@ -289,7 +287,7 @@ export default function PreferenciasAlunoView() {
         {/* Fim do Novo Campo */}
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2 }}> {/* Reduzi a margem y */}
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2 }}> {}
         <LoadingButton
           fullWidth
           size="large"
@@ -319,15 +317,15 @@ export default function PreferenciasAlunoView() {
     >
       <Card 
         sx={{ 
-          p: 3, // Reduzi o padding de 4 para 3
+          p: 3, 
           width: '100%', 
-          maxWidth: 800, // Mantive a largura máxima de 800px
+          maxWidth: 800, 
           overflow: 'auto',
-          boxShadow: 3, // Opcional: ajusta a sombra para um visual mais leve
-          borderRadius: 2, // Opcional: ajusta o arredondamento das bordas
+          boxShadow: 3, 
+          borderRadius: 2, 
         }}
       >
-        <Typography variant="h5" align="center" sx={{ mb: 1 }}> {/* Reduzi a margem inferior de 2 para 1 */}
+        <Typography variant="h5" align="center" sx={{ mb: 1 }}> {}
           Compartilhe conosco suas preferências!
         </Typography>
 
@@ -337,7 +335,7 @@ export default function PreferenciasAlunoView() {
           direction="row"
           alignItems="center"
           justifyContent="center"
-          sx={{ mt: 1, cursor: 'pointer' }} // Reduzi a margem superior de 2 para 1
+          sx={{ mt: 1, cursor: 'pointer' }} 
         >
           {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
             Já tem uma conta? Entrar

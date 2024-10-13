@@ -1,42 +1,44 @@
-import SvgColor from 'src/components/svg-color';
+import Iconify from 'src/components/iconify'; 
 
 // ----------------------------------------------------------------------
 
-const icon = (name) => (
-  <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
-);
-
 const navConfig = [
   {
-    title: 'dashboard',
+    title: 'Visão Geral',
     path: '/',
-    icon: icon('ic_analytics'),
+    icon: <Iconify icon="ic:round-dashboard" />, 
   },
   {
-    title: 'user',
-    path: '/user',
-    icon: icon('ic_user'),
+    title: 'Meu Perfil',
+    path: '/preferencias-aluno',
+    icon: <Iconify icon="ic:round-account-circle" />, 
   },
   {
-    title: 'product',
-    path: '/products',
-    icon: icon('ic_cart'),
+    title: 'Equipes/Alunos',
+    path: '/equipes',
+    icon: <Iconify icon="ic:round-group" />, 
   },
   {
-    title: 'blog',
+    title: 'Orientadores',
     path: '/blog',
-    icon: icon('ic_blog'),
+    icon: <Iconify icon="ic:round-school" />, 
   },
   {
-    title: 'login',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
-    title: 'Not found',
+    title: 'Cronograma',
     path: '/404',
-    icon: icon('ic_disabled'),
+    icon: <Iconify icon="ic:round-calendar-today" />, 
+  },
+  {
+    title: 'Materiais de Apoio',
+    path: '/404',
+    icon: <Iconify icon="ic:round-library-books" />, 
+  },
+  {
+    title: 'Login',
+    path: '/login',
+    icon: <Iconify icon="ic:round-login" />, 
   },
 ];
 
 export default navConfig;
+

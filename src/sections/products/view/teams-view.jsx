@@ -5,16 +5,14 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import { products } from 'src/_mock/products';
+import { teams } from 'src/_mock/teams';
 
-import ProductCard from '../product-card';
-import ProductSort from '../product-sort';
-import ProductFilters from '../product-filters';
-import ProductCartWidget from '../product-cart-widget';
+import TeamCard from '../team-card';
+import TeamFilters from '../team-filters';
 
 // ----------------------------------------------------------------------
 
-export default function ProductsView() {
+export default function TeamsView() {
   const [openFilter, setOpenFilter] = useState(false);
 
   const handleOpenFilter = () => {
@@ -28,7 +26,7 @@ export default function ProductsView() {
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Products
+        Equipes e Alunos
       </Typography>
 
       <Stack
@@ -39,25 +37,22 @@ export default function ProductsView() {
         sx={{ mb: 5 }}
       >
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
+          <TeamFilters
             openFilter={openFilter}
             onOpenFilter={handleOpenFilter}
             onCloseFilter={handleCloseFilter}
           />
-
-          <ProductSort />
         </Stack>
       </Stack>
 
       <Grid container spacing={3}>
-        {products.map((product) => (
-          <Grid key={product.id} xs={12} sm={6} md={3}>
-            <ProductCard product={product} />
+        {teams.map((team) => (
+          <Grid key={team.id} xs={12} sm={6} md={3}>
+            <TeamCard team={team} />
           </Grid>
         ))}
       </Grid>
 
-      <ProductCartWidget />
     </Container>
   );
 }
