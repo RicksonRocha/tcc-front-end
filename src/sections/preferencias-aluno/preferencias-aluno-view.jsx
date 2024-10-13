@@ -1,23 +1,27 @@
-import { useState } from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { alpha, useTheme } from '@mui/material/styles';
-import { bgGradient } from 'src/theme/css';
+import { useTheme } from '@mui/material/styles';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { preferenciasUserAluno } from 'src/features/auth/auth-actions';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { turnos, linguagens_de_programacao, bancos_de_dados, nivel_experiencia, habilidades_pessoais, temas_de_interesse } from './opcoes';
+import {
+  turnos,
+  bancos_de_dados,
+  nivel_experiencia,
+  temas_de_interesse,
+  habilidades_pessoais,
+  linguagens_de_programacao,
+} from './opcoes';
 
 // ----------------------------------------------------------------------
 
@@ -62,18 +66,18 @@ export default function PreferenciasAlunoView() {
         {/* Turno (Seleção simples) */}
         <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 50 }}>
           <InputLabel>Turno</InputLabel>
-          <Select
-            label="Turno"
-            {...preferenciasAluno('turno')}
-            error={!!errors.turno}
-          >
+          <Select label="Turno" {...preferenciasAluno('turno')} error={!!errors.turno}>
             {turnos.map((turno) => (
               <MenuItem key={turno} value={turno}>
                 {turno}
               </MenuItem>
             ))}
           </Select>
-          {errors.turno && <Typography variant="caption" color="error">{errors.turno.message}</Typography>}
+          {errors.turno && (
+            <Typography variant="caption" color="error">
+              {errors.turno.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Linguagem de Programação (Seleção múltipla) */}
@@ -99,7 +103,11 @@ export default function PreferenciasAlunoView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.linguagemProgramacao && <Typography variant="caption" color="error">{errors.linguagemProgramacao.message}</Typography>}
+          {errors.linguagemProgramacao && (
+            <Typography variant="caption" color="error">
+              {errors.linguagemProgramacao.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Banco de Dados (Seleção múltipla) */}
@@ -125,7 +133,11 @@ export default function PreferenciasAlunoView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.bancoDeDados && <Typography variant="caption" color="error">{errors.bancoDeDados.message}</Typography>}
+          {errors.bancoDeDados && (
+            <Typography variant="caption" color="error">
+              {errors.bancoDeDados.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Nível de Experiência (Seleção simples) */}
@@ -142,7 +154,11 @@ export default function PreferenciasAlunoView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.nivelDeExperiencia && <Typography variant="caption" color="error">{errors.nivelDeExperiencia.message}</Typography>}
+          {errors.nivelDeExperiencia && (
+            <Typography variant="caption" color="error">
+              {errors.nivelDeExperiencia.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Habilidades Pessoais (Seleção múltipla em menu suspenso) */}
@@ -168,7 +184,11 @@ export default function PreferenciasAlunoView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.habilidadesPessoais && <Typography variant="caption" color="error">{errors.habilidadesPessoais.message}</Typography>}
+          {errors.habilidadesPessoais && (
+            <Typography variant="caption" color="error">
+              {errors.habilidadesPessoais.message}
+            </Typography>
+          )}
         </FormControl>
 
         {/* Temas de Interesse (Seleção múltipla em menu suspenso) */}
@@ -194,49 +214,47 @@ export default function PreferenciasAlunoView() {
               </MenuItem>
             ))}
           </Select>
-          {errors.temasDeInteresse && <Typography variant="caption" color="error">{errors.temasDeInteresse.message}</Typography>}
+          {errors.temasDeInteresse && (
+            <Typography variant="caption" color="error">
+              {errors.temasDeInteresse.message}
+            </Typography>
+          )}
         </FormControl>
       </Stack>
 
       <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2, mb: -2 }}>
-        <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary" sx={{ width: '50%' }}>
+        <LoadingButton
+          fullWidth
+          size="large"
+          type="submit"
+          variant="contained"
+          color="primary"
+          sx={{ width: '50%' }}
+        >
           Salvar
         </LoadingButton>
       </Stack>
     </form>
   );
-  
+
   return (
-    <Box
-      sx={{
-        ...bgGradient({
-          color: alpha(theme.palette.background.default, 0.9),
-          imgUrl: '/assets/background/overlay_4.jpg',
-        }),
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Card sx={{ p: 4, width: '100%', maxWidth: { xs: 300, sm: 400, md: 600, lg: 800 }, overflow: 'auto' }}>
-        <Typography variant="h5" align="center" sx={{ mb: 2 }}>
-          Compartilhe conosco suas preferências!
-        </Typography>
+    <Card>
+      <Typography variant="h5" align="center" sx={{ mb: 2 }}>
+        Compartilhe conosco suas preferências!
+      </Typography>
 
-        {renderForm()}
+      {renderForm()}
 
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          sx={{ mt: 2, cursor: 'pointer' }}
-        >
-          {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        sx={{ mt: 2, cursor: 'pointer' }}
+      >
+        {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
             Já tem uma conta? Entrar
           </Link> */}
-        </Stack>
-      </Card>
-    </Box>
+      </Stack>
+    </Card>
   );
 }
