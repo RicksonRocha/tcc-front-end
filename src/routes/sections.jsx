@@ -4,6 +4,7 @@ import { userLogin } from 'src/features/auth/auth-actions';
 
 import DashboardLayout from 'src/layouts/dashboard';
 import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
+import StudentPage from 'src/pages/student';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -34,6 +35,7 @@ export default function Router() {
         { element: <IndexPage />, index: true }, // Rota para o componente Index
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },
+        { path: 'alunos', element: <StudentPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],
     },

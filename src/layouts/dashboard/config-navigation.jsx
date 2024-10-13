@@ -14,9 +14,14 @@ const navConfig = [
     icon: <Iconify icon="ic:round-account-circle" />, 
   },
   {
-    title: 'Equipes/Alunos',
+    title: 'Equipes',
     path: '/equipes',
     icon: <Iconify icon="ic:round-group" />, 
+  },
+  {
+    title: 'Alunos',
+    path: '/alunos',
+    icon: <Iconify icon="ic:round-person" />, 
   },
   {
     title: 'Orientadores',

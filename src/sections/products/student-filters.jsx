@@ -12,47 +12,32 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-// ----------------------------------------------------------------------
-
-export const TEAM_OPTIONS = ['Aberta', 'Completa'];
+export const STUDENT_TEAM_OPTIONS = ['Com equipe', 'Sem equipe'];
 export const TURNO_OPTIONS = ['Vespertino', 'Noturno'];
+export const LINGUAGEM_OPTIONS = ['Python', 'SQL', 'Java', 'C++', 'R', 'C#', 'C', 'PHP', 'TypeScript', 'JavaScript'];
+export const TECH_BD_OPTIONS = ['MySQL', 'PostgreSQL', 'MongoDB', 'Oracle', 'Cassandra', 'MariaDB', 'SQL Server'];
+
+export const HABILIDADES_PESSOAIS_OPTIONS = ['Comunicação', 'Organização', 'Proatividade', 'Pensamento estratégico', 'Liderança', 'Planejamento', 'Trabalho em equipe', 'Adaptabilidade', 'Atenção', 'Criatividade', 'Resiliência', 'Gerenciamento de tempo', 'Negociação', 'Resolução de problemas'];
 
 export const TEMAS_TCC_OPTIONS = ['Tecnologia e inovação', 'Educação', 'Meio ambiente e sustentabilidade', 'Inteligência artificial', 'Análise de dados', 'Metodologias ágeis', 'Economia e Finanças', 'Saúde e bem estar', 'Cidadania', 'Política'];
 
-export const ORIENTADOR_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
+export const MODALIDADE_AGENDAS_OPTIONS = ['Presencial', 'Remoto', 'Flexível'];
 
 // ----------------------------------------------------------------------
 
-export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
-
-  const [filterState, setFilterState] = useState({
-    teamStatus: '', 
-    turno: '',
-    temasTCC: [],
-    orientador: [],
-  });
-
-  // Para lidar com a limpeza de todos os filtros
-  const handleClearAll = () => {
-    setFilterState({
-      teamStatus: '',
-      turno: '',
-      temasTCC: [],
-      orientador: [],
-    });
-    setFilteredTeam(''); 
-  };
-
+export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter, filterState, setFilterState }) {
+  
   const handleCheckboxChange = (category, value) => {
+    const updatedState = filterState[category].includes(value)
+      ? filterState[category].filter((item) => item !== value)
+      : [...filterState[category], value];
+
     setFilterState((prev) => ({
       ...prev,
-      [category]: prev[category].includes(value)
-        ? prev[category].filter((item) => item !== value)
-        : [...prev[category], value],
+      [category]: updatedState,
     }));
   };
 
@@ -61,22 +46,30 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
       ...prev,
       [category]: value,
     }));
-
-    if (category === 'teamStatus') {
-      setFilteredTeam(value); // Atualiza o filtro de equipe no componente pai
-    }
   };
 
-  const renderTeam = (
+  const handleClearAll = () => {
+    setFilterState({
+      turno: '',
+      studentTeam: '',
+      linguagem: [],
+      techBD: [],
+      habilidadesPessoais: [],
+      temasTCC: [],
+      modalidadeAgendas: [],
+    });
+  };
+
+  const renderEquipeEstudante = (
     <Stack spacing={1}>
       <Typography variant="subtitle3">
-        <b>Situação da Equipe</b>
+        <b>Situação do(a) aluno(a)</b>
       </Typography>
       <RadioGroup
-        value={filterState.teamStatus}
-        onChange={(e) => handleRadioChange('teamStatus', e.target.value)}
+        value={filterState.studentTeam}
+        onChange={(e) => handleRadioChange('studentTeam', e.target.value)}
       >
-        {TEAM_OPTIONS.map((item) => (
+        {STUDENT_TEAM_OPTIONS.map((item) => (
           <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
         ))}
       </RadioGroup>
@@ -89,11 +82,83 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
       <Typography variant="subtitle3">
         <b>Turno</b>
       </Typography>
-      <RadioGroup value={filterState.turno} onChange={(e) => handleRadioChange('turno', e.target.value)}>
+      <RadioGroup
+        value={filterState.turno}
+        onChange={(e) => handleRadioChange('turno', e.target.value)}
+      >
         {TURNO_OPTIONS.map((item) => (
           <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
         ))}
       </RadioGroup>
+    </Stack>
+  );
+
+  const renderLinguagem = (
+    <Stack spacing={1}>
+      <Divider /> 
+      <Typography variant="subtitle3">
+        <b>Linguagens de Programação</b>
+      </Typography>
+      <FormGroup>
+        {LINGUAGEM_OPTIONS.map((item) => (
+          <FormControlLabel
+            key={item}
+            control={
+              <Checkbox
+                checked={filterState.linguagem.includes(item)}
+                onChange={() => handleCheckboxChange('linguagem', item)}
+              />
+            }
+            label={item}
+          />
+        ))}
+      </FormGroup>
+    </Stack>
+  );
+
+  const renderTechBD = (
+    <Stack spacing={1}>
+      <Divider />
+      <Typography variant="subtitle3">
+        <b>Banco de Dados</b>
+      </Typography>
+      <FormGroup>
+        {TECH_BD_OPTIONS.map((item) => (
+          <FormControlLabel
+            key={item}
+            control={
+              <Checkbox
+                checked={filterState.techBD.includes(item)}
+                onChange={() => handleCheckboxChange('techBD', item)}
+              />
+            }
+            label={item}
+          />
+        ))}
+      </FormGroup>
+    </Stack>
+  );
+
+  const renderHabilidadesPessoais = (
+    <Stack spacing={1}>
+      <Divider />
+      <Typography variant="subtitle3">
+        <b>Habilidades Pessoais</b>
+      </Typography>
+      <FormGroup>
+        {HABILIDADES_PESSOAIS_OPTIONS.map((item) => (
+          <FormControlLabel
+            key={item}
+            control={
+              <Checkbox
+                checked={filterState.habilidadesPessoais.includes(item)}
+                onChange={() => handleCheckboxChange('habilidadesPessoais', item)}
+              />
+            }
+            label={item}
+          />
+        ))}
+      </FormGroup>
     </Stack>
   );
 
@@ -120,20 +185,20 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
     </Stack>
   );
 
-  const renderOrientador = (
+  const renderModalidadeAgendas = (
     <Stack spacing={1}>
       <Divider />
       <Typography variant="subtitle3">
-        <b>Orientação</b>
+        <b>Modalidade de agendas</b>
       </Typography>
       <FormGroup>
-        {ORIENTADOR_OPTIONS.map((item) => (
+        {MODALIDADE_AGENDAS_OPTIONS.map((item) => (
           <FormControlLabel
             key={item}
             control={
               <Checkbox
-                checked={filterState.orientador.includes(item)}
-                onChange={() => handleCheckboxChange('orientador', item)}
+                checked={filterState.modalidadeAgendas.includes(item)}
+                onChange={() => handleCheckboxChange('modalidadeAgendas', item)}
               />
             }
             label={item}
@@ -155,16 +220,6 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
         >
           Filtros&nbsp;
         </Button>
-
-        <Button
-          disableRipple
-          color="inherit"
-          endIcon={<Iconify icon="ic:round-group" />}
-          onClick={() => alert('Deve levar para a tela de edição/detalhes da equipe.')}
-          sx={{ fontSize: '16px' }}
-        >
-          Minha Equipe
-        </Button>
       </Box>
 
       <Drawer
@@ -182,7 +237,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
             </Typography>
 
             <Typography variant="body1" sx={{ ml: 1, mt: 0.5 }}>
-              Conheça as equipes já cadastradas!
+              Aqui você pode encontrar perfis compatíveis!
             </Typography>
           </Box>
 
@@ -195,10 +250,13 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
 
         <Scrollbar>
           <Stack spacing={3} sx={{ p: 3 }}>
-            {renderTeam}
+            {renderEquipeEstudante}
             {renderTurno}
             {renderTemasTCC}
-            {renderOrientador}
+            {renderLinguagem}
+            {renderTechBD}
+            {renderHabilidadesPessoais}
+            {renderModalidadeAgendas}
           </Stack>
         </Scrollbar>
 
@@ -220,9 +278,10 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
   );
 }
 
-TeamFilters.propTypes = {
+StudentFilters.propTypes = {
   openFilter: PropTypes.bool,
   onOpenFilter: PropTypes.func,
   onCloseFilter: PropTypes.func,
-  setFilteredTeam: PropTypes.func, // Função para atualizar o filtro de equipes
+  filterState: PropTypes.object, // Recebe o estado dos filtros
+  setFilterState: PropTypes.func, // Função pra atualizar o estado dos filtros
 };
