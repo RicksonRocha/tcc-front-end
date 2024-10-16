@@ -45,19 +45,32 @@ AnalyticsOrderTimeline.propTypes = {
 
 function OrderItem({ item, lastTimeline }) {
   const { type, title } = item;
+
+  const timelineDotColor =
+    (type === 'order1' && 'primary') ||
+    (type === 'order2' && 'success') ||
+    (type === 'order3' && 'primary') ||
+    (type === 'order4' && 'success') ||
+    'primary';
+
   return (
     <TimelineItem>
       <TimelineSeparator>
         <TimelineDot
-          color={
-            (type === 'order1' && 'primary') ||
-            (type === 'order2' && 'success') ||
-            (type === 'order3' && 'primary') ||
-            (type === 'order4' && 'success') ||
-            'primary'
-          }
+          color={timelineDotColor}
+          sx={{
+            width: 8,  
+            height: 8, 
+          }}
         />
-        {lastTimeline ? null : <TimelineConnector />}
+        {!lastTimeline && (
+          <TimelineConnector
+            sx={{
+              backgroundColor: timelineDotColor, 
+              height: 1, 
+            }}
+          />
+        )}
       </TimelineSeparator>
 
       <TimelineContent>
