@@ -84,9 +84,9 @@ export const preferenciasUserAluno = createAsyncThunk(
 
 export const preferenciasUserProfessor = createAsyncThunk(
   'auth/preferencias-professor',
-  async ({ turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse}, { rejectWithValue }) => {
+  async ({ turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho}, { rejectWithValue }) => {
     try {
-      await axios.post(`${backendURL}/auth/preferencias-professor`, { turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse }, config);
+      await axios.post(`${backendURL}/auth/preferencias-professor`, { turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho}, config);
     } catch (error) {
       if (error.response.data.error) {
         return rejectWithValue(error.response.data.error);
