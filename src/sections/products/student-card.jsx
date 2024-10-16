@@ -5,14 +5,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Button from '@mui/material/Button'; 
+import { primary } from 'src/theme/palette';
 
 // ----------------------------------------------------------------------
 
-export default function ShopTeamCard({ team }) {
+export default function StudentCard({ student }) {
   
-  // Cor do status com base no valor de team.status
-  const statusColor = team.status === 'Completa' ? 'error' : 'success';
-  const statusColorCode = team.status === 'Completa' ? '#FF4842' : '#00AB55';
+  // Cor do status com base no valor de student.status
+  const statusColor = student.status === 'Com equipe' ? 'error' : 'success';
 
   const renderStatus = (
     <Label
@@ -26,7 +26,7 @@ export default function ShopTeamCard({ team }) {
         textTransform: 'uppercase',
       }}
     >
-      {team.status}
+      {student.status}
     </Label>
   );
 
@@ -36,7 +36,7 @@ export default function ShopTeamCard({ team }) {
       sx={{
         top: 0,
         width: 1,
-        height: 1,
+        height: '100%',
         backgroundColor: '#EDEFF1',
         position: 'absolute',
         display: 'flex',
@@ -44,39 +44,38 @@ export default function ShopTeamCard({ team }) {
         justifyContent: 'center',
       }}
     >
-      <Typography variant="h7" sx={{ textAlign: 'center', px: 2 }}>
-        {team.name}
+      <Typography variant="h7" sx={{ textAlign: 'center', px: 2, mt: 2.5 }}>
+        {student.name}
       </Typography>
     </Box>
   );
 
-  // Quantidade de integrantes com cor baseada no status
-  const renderQtdeIntegrantes = (
+  // Exibe o turno do aluno
+  const renderTurno = (
     <Typography
       variant="subtitle2"
       sx={{ textAlign: 'center', mt: 2, fontWeight: 'bold' }}
     >
-      {`Qtde Integrantes: `}
-      <Box component="span" sx={{ color: statusColorCode, fontSize: '14px' }}>
-        {team.members}
+      {`Turno: `}
+      <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+        {student.turno}
       </Box>
     </Typography>
   );
 
   return (
     <Card>
-      <Box sx={{ pt: '100%', position: 'relative' }}>
-        {team.status && renderStatus}
+      <Box sx={{ pt: '40%', position: 'relative' }}>
+        {student.status && renderStatus}
         {renderName}
       </Box>
 
-      <Stack spacing={2} sx={{ p: 3 }}>
+      <Stack spacing={2} sx={{ p: 2 }}>
 
-        {renderQtdeIntegrantes}
+        {renderTurno}
   
         <Button
           variant="contained"
-          disabled={team.status === 'Completa'} // Desabilitado para equipes completas
           sx={{
             backgroundColor: '#EDEFF1', 
             color: '#212B36', 
@@ -85,13 +84,13 @@ export default function ShopTeamCard({ team }) {
             },
           }}
         >
-          Solicitar entrada
+          Conectar
         </Button>
       </Stack>
     </Card>
   );
 }
 
-ShopTeamCard.propTypes = {
-  team: PropTypes.object,
+StudentCard.propTypes = {
+  student: PropTypes.object,
 };

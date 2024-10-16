@@ -20,8 +20,8 @@ const TEAMS_NAME = [
 // ----------------------------------------------------------------------
 
 export const teams = [...Array(12)].map((_, index) => {
-  const members = faker.number.int({ min: 2, max: 5 }); // Adicionando quantidade de membros (2 a 5)
-  const status = members < 5 ? 'Equipe Aberta' : 'Equipe Completa'; // Status baseado no número de membros
+  const members = faker.number.int({ min: 2, max: 5 });
+  const status = members < 5 ? 'Aberta' : 'Completa'; 
 
   return {
     id: faker.string.uuid(),
@@ -30,5 +30,6 @@ export const teams = [...Array(12)].map((_, index) => {
     status,
   };
 });
+
 
 
