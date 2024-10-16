@@ -3,6 +3,7 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import { userLogin } from 'src/features/auth/auth-actions';
 
 import DashboardLayout from 'src/layouts/dashboard';
+import MyTeamPage from 'src/pages/my-team-page';
 import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
 import StudentPage from 'src/pages/student';
 
@@ -36,6 +37,7 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },
         { path: 'alunos', element: <StudentPage /> },
+        { path: 'minha-equipe', element: <MyTeamPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],
     },

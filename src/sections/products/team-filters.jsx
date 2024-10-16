@@ -15,6 +15,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +29,8 @@ export const ORIENTADOR_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
 // ----------------------------------------------------------------------
 
 export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
+
+  const router = useRouter();
 
   const [filterState, setFilterState] = useState({
     teamStatus: '', 
@@ -160,7 +163,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           disableRipple
           color="inherit"
           endIcon={<Iconify icon="ic:round-group" />}
-          onClick={() => alert('Deve levar para a tela de edição/detalhes da equipe.')}
+          onClick={() => router.push('/minha-equipe')}
           sx={{ fontSize: '16px' }}
         >
           Minha Equipe
