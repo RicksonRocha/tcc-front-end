@@ -25,7 +25,7 @@ const navConfig = [
   },
   {
     title: 'Orientadores',
-    path: '/blog',
+    path: '/orientadores',
     icon: <Iconify icon="ic:round-school" />, 
   },
   {

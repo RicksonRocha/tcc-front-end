@@ -7,15 +7,15 @@ import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert'; // Para exibir mensagem estilizada
+import { primary } from 'src/theme/palette';
 
 // ----------------------------------------------------------------------
 
-export default function TeamCard({ team }) {
-  const [successMessage, setSuccessMessage] = useState(''); // Adiciona estado para mensagem de sucesso
+export default function TeacherCard({ teacher }) {
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // Cor do status com base no valor de team.status
-  const statusColor = team.status === 'Completa' ? 'error' : 'success';
-  const statusColorCode = team.status === 'Completa' ? '#FF4842' : '#00AB55';
+  // Cor do status com base no valor de teacher.status
+  const statusColor = teacher.status === 'Indisponível para Orientação' ? 'error' : 'success';
 
   const renderStatus = (
     <Label
@@ -23,13 +23,14 @@ export default function TeamCard({ team }) {
       color={statusColor}
       sx={{
         zIndex: 9,
-        top: 16,
-        right: 16,
         position: 'absolute',
+        top: '30%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)', // Centraliza horizontal e verticalmente
         textTransform: 'uppercase',
       }}
     >
-      {team.status}
+      {teacher.status}
     </Label>
   );
 
@@ -39,7 +40,7 @@ export default function TeamCard({ team }) {
       sx={{
         top: 0,
         width: 1,
-        height: 1,
+        height: '100%',
         backgroundColor: '#EDEFF1',
         position: 'absolute',
         display: 'flex',
@@ -47,29 +48,29 @@ export default function TeamCard({ team }) {
         justifyContent: 'center',
       }}
     >
-      <Typography variant="h7" sx={{ textAlign: 'center', px: 2 }}>
-        {team.name}
+      <Typography variant="h7" sx={{ textAlign: 'center', px: 2, mt: 4 }}>
+        {teacher.name}
       </Typography>
     </Box>
   );
 
-  // Quantidade de integrantes com cor baseada no status
-  const renderQtdeIntegrantes = (
+  // Exibe o turno do(a) prof
+  const renderTurno = (
     <Typography
       variant="body2"
       sx={{ textAlign: 'center', mt: 2 }}
     >
-      {`Qtde Integrantes: `}
-      <Box component="span" sx={{ color: statusColorCode, fontSize: '14px' }}>
-        {team.members}
+      {`Turno: `}
+      <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+        {teacher.turno}
       </Box>
     </Typography>
   );
 
   const handleClick = () => {
-    // Exibir a mensagem de sucesso ao solicitar entrada
-    setSuccessMessage('Solicitação de entrada enviada!');
-    
+    // Exibir a mensagem de sucesso ao solicitar orientação
+    setSuccessMessage('Solicitação de orientação enviada!');
+
     // Oculta a mensagem após alguns segundos
     setTimeout(() => {
       setSuccessMessage('');
@@ -78,17 +79,17 @@ export default function TeamCard({ team }) {
 
   return (
     <Card>
-      <Box sx={{ pt: '100%', position: 'relative' }}>
-        {team.status && renderStatus}
+      <Box sx={{ pt: '40%', position: 'relative' }}>
+        {teacher.status && renderStatus}
         {renderName}
       </Box>
 
-      <Stack spacing={2} sx={{ p: 3 }}>
-        {renderQtdeIntegrantes}
+      <Stack spacing={2} sx={{ p: 2 }}>
+        {renderTurno}
 
         <Button
           variant="contained"
-          disabled={team.status === 'Completa'} // Desabilitado para equipes completas
+          disabled={teacher.status === 'Indisponível para Orientação'}
           onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',
@@ -98,7 +99,7 @@ export default function TeamCard({ team }) {
             },
           }}
         >
-          Solicitar entrada
+          Solicitar Orientação
         </Button>
 
         {/* Mensagem de sucesso */}
@@ -112,7 +113,6 @@ export default function TeamCard({ team }) {
   );
 }
 
-TeamCard.propTypes = {
-  team: PropTypes.object,
+TeacherCard.propTypes = {
+  teacher: PropTypes.object,
 };
-

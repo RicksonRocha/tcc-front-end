@@ -53,8 +53,8 @@ export default function StudentCard({ student }) {
   // Exibe o turno do aluno
   const renderTurno = (
     <Typography
-      variant="subtitle2"
-      sx={{ textAlign: 'center', mt: 2, fontWeight: 'bold' }}
+      variant="body2"
+      sx={{ textAlign: 'center', mt: 2 }}
     >
       {`Turno: `}
       <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
