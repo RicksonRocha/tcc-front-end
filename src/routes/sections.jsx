@@ -6,6 +6,7 @@ import DashboardLayout from 'src/layouts/dashboard';
 import MyTeamPage from 'src/pages/my-team-page';
 import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
 import StudentPage from 'src/pages/student';
+import TeacherPage from 'src/pages/teacher';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -16,6 +17,7 @@ export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
 export const TeamsPage = lazy(() => import('src/pages/teams'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferencias-professor'));
+
 // ----------------------------------------------------------------------
 
 export default function Router() {
@@ -38,7 +40,7 @@ export default function Router() {
         { path: 'equipes', element: <TeamsPage /> },
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
-        { path: 'blog', element: <BlogPage /> },
+        { path: 'orientadores', element: <TeacherPage /> },
       ],
     },
     {
