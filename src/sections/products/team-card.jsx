@@ -11,9 +11,10 @@ import Alert from '@mui/material/Alert';
 export default function TeamCard({ team }) {
   const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
 
-  // Cor do status com base no valor de team.status
-  const statusColor = team.status === 'Completa' ? 'error' : 'success';
-  const statusColorCode = team.status === 'Completa' ? '#FF4842' : '#00AB55';
+  // Define o status como "Completa" se isActive for true
+  const teamStatus = team.isActive ? 'Completa' : 'Aberta';
+  const statusColor = teamStatus === 'Completa' ? 'error' : 'success';
+  const statusColorCode = teamStatus === 'Completa' ? '#FF4842' : '#00AB55';
 
   const renderStatus = (
     <Label
@@ -27,7 +28,7 @@ export default function TeamCard({ team }) {
         textTransform: 'uppercase',
       }}
     >
-      {team.status || 'Aberta'}
+      {teamStatus}
     </Label>
   );
 
@@ -78,7 +79,7 @@ export default function TeamCard({ team }) {
 
         <Button
           variant="contained"
-          disabled={team.status === 'Completa'}
+          disabled={teamStatus === 'Completa'}
           onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',

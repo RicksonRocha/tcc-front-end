@@ -9,35 +9,41 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Switch from '@mui/material/Switch';
 import Autocomplete from '@mui/material/Autocomplete';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
+import Alert from '@mui/material/Alert';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
-import Alert from '@mui/material/Alert';
 import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation } from 'src/api/team';
+import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [advisorValue, setAdvisorValue] = useState('');
 
-  // Obtém dados da equipe pelo ID
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
 
-  const { control, register, handleSubmit, formState: { errors }, watch, reset } = useForm({
+  const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm({
     resolver: yupResolver(schemaTeamForm),
     defaultValues: {
       tccTitle: '',
       tccDescription: '',
       members: [],
       advisor: '',
+      temasDeInteresse: [],
     },
   });
 
   const members = watch('members');
+  const temasDeInteresse = watch('temasDeInteresse') || [];
 
-  // Carrega os dados da equipe no formulário ao receber `teamData`
   useEffect(() => {
     if (teamData) {
       reset({
@@ -45,6 +51,7 @@ export default function MyTeamForm({ teamId }) {
         tccDescription: teamData.description || '',
         members: teamData.integrantes || [],
         advisor: teamData.orientador || '',
+        temasDeInteresse: teamData.temas || [],
       });
       setIsClosed(teamData.isActive || false);
       setAdvisorValue(teamData.orientador || '');
@@ -58,6 +65,7 @@ export default function MyTeamForm({ teamId }) {
       isActive: isClosed,
       orientador: advisorValue,
       integrantes: data.members,
+      temas: data.temasDeInteresse,
     };
 
     try {
@@ -73,7 +81,7 @@ export default function MyTeamForm({ teamId }) {
       setSuccessMessage(`Erro ao salvar equipe: ${error.message}`);
     }
 
-    setTimeout(() => setSuccessMessage(''), 3000); // Limpa a mensagem após 3 segundos
+    setTimeout(() => setSuccessMessage(''), 3000);
   };
 
   return (
@@ -149,6 +157,37 @@ export default function MyTeamForm({ teamId }) {
             </Grid>
 
             <Grid item xs={12}>
+              <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40, width: '100%' }}>
+                <InputLabel>Temas de Interesse</InputLabel>
+                <Select
+                  label="Temas de Interesse"
+                  multiple
+                  value={temasDeInteresse}
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    if (selected.length <= 3) {
+                      setValue('temasDeInteresse', selected);
+                    }
+                  }}
+                  renderValue={(selected) => selected.join(', ')}
+                  error={!!errors.temasDeInteresse}
+                >
+                  {TEMAS_TCC_OPTIONS.map((tema) => (
+                    <MenuItem key={tema} value={tema}>
+                      <Checkbox checked={temasDeInteresse.includes(tema)} />
+                      {tema}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {temasDeInteresse.length === 3 && (
+                <Typography variant="body1" color="#6c7b88" sx={{ mt: 2, fontSize: '0.875rem', ml: 1.5 }}>
+                  Limite de 3 temas atingido.
+                </Typography>
+              )}
+            </Grid>
+
+            <Grid item xs={12}>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <Switch
                   checked={isClosed}
@@ -183,4 +222,5 @@ export default function MyTeamForm({ teamId }) {
 MyTeamForm.propTypes = {
   teamId: PropTypes.number,
 };
+
 
