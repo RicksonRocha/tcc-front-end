@@ -1,13 +1,27 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import axios from 'axios';
+import { isTokenExpired, refreshAccessToken } from 'src/features/auth/auth-utils';
 
-// Configuração da API base
-export const api = createApi({
-  reducerPath: 'api', 
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3030', // URL da API local para testes
-  }),
-  endpoints: () => ({}), 
-  // Os endpoints serão definidos em arquivos separados, como user.js e etc.
+const api = axios.create({
+  baseURL: import.meta.env.VITE_KEY_API,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// Interceptor para verificar o token antes de cada requisição
+api.interceptors.request.use(async (config) => {
+  let token = localStorage.getItem('access_token');
+
+  if (isTokenExpired(token)) {
+    try {
+      token = await refreshAccessToken(); // Atualiza o token se expirado
+    } catch (error) {
+      localStorage.clear(); // Limpa storage e força logout
+      window.location.href = '/login'; // Redireciona para login
+      throw error;
+    }
+  }
+
+  config.headers.Authorization = `Bearer ${token}`; // Adiciona o token atualizado
+  return config;
 });
 
 export default api;

@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
- 
+
 const backendURL = import.meta.env.VITE_KEY_API;
 const config = {
   headers: {
     'Content-Type': 'application/json',
   },
 };
- 
+
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ name, email, password, role }, { rejectWithValue }) => {
@@ -21,13 +21,14 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
- 
+
 export const userLogin = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(`${backendURL}/auth/login`, { email, password }, config);
       localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
       return data;
     } catch (error) {
       if (error.response.data.error) {
@@ -70,9 +71,36 @@ export const resetPassword = createAsyncThunk(
 
 export const preferenciasUserAluno = createAsyncThunk(
   'auth/preferencias-aluno',
-  async ({ turno, linguagemProgramacao, bancoDeDados, nivelDeExperiencia, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho, frameworkFront}, { rejectWithValue }) => {
+  async (
+    {
+      turno,
+      linguagemProgramacao,
+      bancoDeDados,
+      nivelDeExperiencia,
+      habilidadesPessoais,
+      temasDeInteresse,
+      disponibilidade,
+      modalidadeTrabalho,
+      frameworkFront,
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      await axios.post(`${backendURL}/auth/preferencias-aluno`, { turno, linguagemProgramacao, bancoDeDados, nivelDeExperiencia, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho, frameworkFront}, config);
+      await axios.post(
+        `${backendURL}/auth/preferencias-aluno`,
+        {
+          turno,
+          linguagemProgramacao,
+          bancoDeDados,
+          nivelDeExperiencia,
+          habilidadesPessoais,
+          temasDeInteresse,
+          disponibilidade,
+          modalidadeTrabalho,
+          frameworkFront,
+        },
+        config
+      );
     } catch (error) {
       if (error.response.data.error) {
         return rejectWithValue(error.response.data.error);
@@ -84,9 +112,34 @@ export const preferenciasUserAluno = createAsyncThunk(
 
 export const preferenciasUserProfessor = createAsyncThunk(
   'auth/preferencias-professor',
-  async ({ turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho}, { rejectWithValue }) => {
+  async (
+    {
+      turno,
+      disponivelOrientacao,
+      linguagemProgramacao,
+      disciplinasLecionadas,
+      habilidadesPessoais,
+      temasDeInteresse,
+      disponibilidade,
+      modalidadeTrabalho,
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      await axios.post(`${backendURL}/auth/preferencias-professor`, { turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho}, config);
+      await axios.post(
+        `${backendURL}/auth/preferencias-professor`,
+        {
+          turno,
+          disponivelOrientacao,
+          linguagemProgramacao,
+          disciplinasLecionadas,
+          habilidadesPessoais,
+          temasDeInteresse,
+          disponibilidade,
+          modalidadeTrabalho,
+        },
+        config
+      );
     } catch (error) {
       if (error.response.data.error) {
         return rejectWithValue(error.response.data.error);
@@ -95,4 +148,3 @@ export const preferenciasUserProfessor = createAsyncThunk(
     }
   }
 );
-
