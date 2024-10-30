@@ -3,6 +3,7 @@ import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 import { userLogin } from 'src/features/auth/auth-actions';
 
 import DashboardLayout from 'src/layouts/dashboard';
+import MyProfilePage from 'src/pages/my-profile';
 import MyTeamPage from 'src/pages/my-team-page';
 import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
 import StudentPage from 'src/pages/student';
@@ -23,7 +24,6 @@ export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferenci
 
 export default function Router() {
   const routes = useRoutes([
-
     // Rota de redirecionamento para login ao acessar a raiz
     { path: '/', element: userLogin ? <IndexPage /> : <Navigate to="/login" /> },
 
@@ -39,6 +39,8 @@ export default function Router() {
         { element: <IndexPage />, index: true }, // Rota para o componente Index
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },
+        { path: 'my-profile', element: <MyProfilePage /> },
+        { path: 'blog', element: <BlogPage /> },
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
         { path: 'orientadores', element: <TeacherPage /> },
