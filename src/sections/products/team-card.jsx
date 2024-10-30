@@ -6,16 +6,15 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert'; // Para exibir mensagem estilizada
-
-// ----------------------------------------------------------------------
+import Alert from '@mui/material/Alert';
 
 export default function TeamCard({ team }) {
-  const [successMessage, setSuccessMessage] = useState(''); // Adiciona estado para mensagem de sucesso
+  const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
 
-  // Cor do status com base no valor de team.status
-  const statusColor = team.status === 'Completa' ? 'error' : 'success';
-  const statusColorCode = team.status === 'Completa' ? '#FF4842' : '#00AB55';
+  // Define o status como "Completa" se isActive for true
+  const teamStatus = team.isActive ? 'Completa' : 'Aberta';
+  const statusColor = teamStatus === 'Completa' ? 'error' : 'success';
+  const statusColorCode = teamStatus === 'Completa' ? '#FF4842' : '#00AB55';
 
   const renderStatus = (
     <Label
@@ -29,11 +28,10 @@ export default function TeamCard({ team }) {
         textTransform: 'uppercase',
       }}
     >
-      {team.status}
+      {teamStatus}
     </Label>
   );
 
-  // Área de fundo com centralização do nome
   const renderName = (
     <Box
       sx={{
@@ -48,29 +46,22 @@ export default function TeamCard({ team }) {
       }}
     >
       <Typography variant="h7" sx={{ textAlign: 'center', px: 2 }}>
-        {team.name}
+        {team.name || 'Nome não disponível'}
       </Typography>
     </Box>
   );
 
-  // Quantidade de integrantes com cor baseada no status
   const renderQtdeIntegrantes = (
-    <Typography
-      variant="body2"
-      sx={{ textAlign: 'center', mt: 2 }}
-    >
+    <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
       {`Qtde Integrantes: `}
       <Box component="span" sx={{ color: statusColorCode, fontSize: '14px' }}>
-        {team.members}
+        {team.integrantes?.length || 0} {/* Exibe o número correto de integrantes */}
       </Box>
     </Typography>
   );
 
   const handleClick = () => {
-    // Exibir a mensagem de sucesso ao solicitar entrada
     setSuccessMessage('Solicitação de entrada enviada!');
-    
-    // Oculta a mensagem após alguns segundos
     setTimeout(() => {
       setSuccessMessage('');
     }, 1000);
@@ -79,7 +70,7 @@ export default function TeamCard({ team }) {
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        {team.status && renderStatus}
+        {renderStatus}
         {renderName}
       </Box>
 
@@ -88,7 +79,7 @@ export default function TeamCard({ team }) {
 
         <Button
           variant="contained"
-          disabled={team.status === 'Completa'} // Desabilitado para equipes completas
+          disabled={teamStatus === 'Completa'}
           onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',
@@ -101,7 +92,6 @@ export default function TeamCard({ team }) {
           Solicitar entrada
         </Button>
 
-        {/* Mensagem de sucesso */}
         {successMessage && (
           <Alert severity="success" sx={{ mt: 2 }}>
             {successMessage}
@@ -113,6 +103,11 @@ export default function TeamCard({ team }) {
 }
 
 TeamCard.propTypes = {
-  team: PropTypes.object,
+  team: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string,
+    status: PropTypes.string,
+    integrantes: PropTypes.arrayOf(PropTypes.string), // Array de membros como strings
+  }).isRequired,
 };
 

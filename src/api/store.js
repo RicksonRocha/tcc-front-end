@@ -3,6 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import authSlice from 'src/features/auth/auth-slice';
 import { userApi } from './user';
 import { studentApi } from './student'; 
+import { teamApi } from './team';
 
  
 export const store = configureStore({
@@ -10,8 +11,9 @@ export const store = configureStore({
     auth: authSlice,
     [userApi.reducerPath]: userApi.reducer,
     [studentApi.reducerPath]: studentApi.reducer,
+    [teamApi.reducerPath]: teamApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userApi.middleware, studentApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(userApi.middleware, studentApi.middleware, teamApi.middleware),
 });
  
 setupListeners(store.dispatch);
