@@ -14,6 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import { useRouter } from 'src/routes/hooks';
 
 export const STUDENT_TEAM_OPTIONS = ['Com equipe', 'Sem equipe'];
 export const TURNO_OPTIONS = ['Vespertino', 'Noturno'];
@@ -29,7 +30,9 @@ export const MODALIDADE_AGENDAS_OPTIONS = ['Presencial', 'Remoto', 'Flexível'];
 // ----------------------------------------------------------------------
 
 export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter, filterState, setFilterState }) {
-  
+
+  const router = useRouter();
+
   const handleCheckboxChange = (category, value) => {
     const updatedState = filterState[category].includes(value)
       ? filterState[category].filter((item) => item !== value)
@@ -50,8 +53,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
 
   const handleClearAll = () => {
     setFilterState({
-      turno: '',
       studentTeam: '',
+      turno: '',
       linguagem: [],
       techBD: [],
       habilidadesPessoais: [],
@@ -95,7 +98,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
 
   const renderLinguagem = (
     <Stack spacing={1}>
-      <Divider /> 
+      <Divider />
       <Typography variant="subtitle3">
         <b>Linguagens de Programação</b>
       </Typography>
@@ -222,6 +225,18 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
         </Button>
       </Box>
 
+      <Button
+        disableRipple
+        color="inherit"
+        endIcon={<Iconify icon="ic:baseline-bubble-chart" />}
+        onClick={() => {
+          window.alert("Aqui serão apresentados apenas os 3 perfis mais compatíveis com o aluno atual.");
+        }}
+        sx={{ fontSize: '16px' }}
+      >
+        Perfis Sugeridos
+      </Button>
+
       <Drawer
         anchor="right"
         open={openFilter}
@@ -235,19 +250,15 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             <Typography variant="h6" sx={{ ml: 1 }}>
               Filtros
             </Typography>
-
             <Typography variant="body1" sx={{ ml: 1, mt: 0.5 }}>
               Aqui você pode encontrar perfis compatíveis!
             </Typography>
           </Box>
-
           <IconButton onClick={onCloseFilter}>
             <Iconify icon="eva:close-fill" />
           </IconButton>
         </Stack>
-
         <Divider />
-
         <Scrollbar>
           <Stack spacing={3} sx={{ p: 3 }}>
             {renderEquipeEstudante}
@@ -259,7 +270,6 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             {renderModalidadeAgendas}
           </Stack>
         </Scrollbar>
-
         <Box sx={{ p: 3 }}>
           <Button
             fullWidth
@@ -283,5 +293,6 @@ StudentFilters.propTypes = {
   onOpenFilter: PropTypes.func,
   onCloseFilter: PropTypes.func,
   filterState: PropTypes.object, // Recebe o estado dos filtros
-  setFilterState: PropTypes.func, // Função pra atualizar o estado dos filtros
+  setFilterState: PropTypes.func, // Função para atualizar o estado dos filtros
 };
+

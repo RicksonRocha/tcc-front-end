@@ -7,12 +7,11 @@ import Label from 'src/components/label';
 import Button from '@mui/material/Button'; 
 import { primary } from 'src/theme/palette';
 
-// ----------------------------------------------------------------------
-
 export default function StudentCard({ student }) {
   
-  // Cor do status com base no valor de student.status
-  const statusColor = student.status === 'Com equipe' ? 'error' : 'success';
+  // Define o status e cor padrão
+  const status = student.status || 'Sem equipe';
+  const statusColor = status === 'Com equipe' ? 'error' : 'success';
 
   const renderStatus = (
     <Label
@@ -26,7 +25,7 @@ export default function StudentCard({ student }) {
         textTransform: 'uppercase',
       }}
     >
-      {student.status}
+      {status}
     </Label>
   );
 
@@ -45,7 +44,7 @@ export default function StudentCard({ student }) {
       }}
     >
       <Typography variant="h7" sx={{ textAlign: 'center', px: 2, mt: 2.5 }}>
-        {student.name}
+        {student.name || 'null'} 
       </Typography>
     </Box>
   );
@@ -58,7 +57,7 @@ export default function StudentCard({ student }) {
     >
       {`Turno: `}
       <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
-        {student.turno}
+        {student.turno || 'null'} 
       </Box>
     </Typography>
   );
@@ -66,14 +65,13 @@ export default function StudentCard({ student }) {
   return (
     <Card>
       <Box sx={{ pt: '40%', position: 'relative' }}>
-        {student.status && renderStatus}
-        {renderName}
+        {renderStatus} 
+        {renderName}   
       </Box>
 
       <Stack spacing={2} sx={{ p: 2 }}>
+        {renderTurno}  
 
-        {renderTurno}
-  
         <Button
           variant="contained"
           sx={{
@@ -92,5 +90,15 @@ export default function StudentCard({ student }) {
 }
 
 StudentCard.propTypes = {
-  student: PropTypes.object,
+  student: PropTypes.shape({
+    name: PropTypes.string,
+    turno: PropTypes.string,
+    status: PropTypes.string,
+    linguagem: PropTypes.arrayOf(PropTypes.string),
+    techBD: PropTypes.arrayOf(PropTypes.string),
+    habilidadesPessoais: PropTypes.arrayOf(PropTypes.string),
+    temasTCC: PropTypes.arrayOf(PropTypes.string),
+    modalidadeAgendas: PropTypes.arrayOf(PropTypes.string),
+  }),
 };
+
