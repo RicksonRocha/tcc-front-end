@@ -35,7 +35,7 @@ const navConfig = [
   },
   {
     title: 'Materiais de Apoio',
-    path: '/404',
+    path: '/materiais-apoio',
     icon: <Iconify icon="ic:round-library-books" />, 
   },
   {
