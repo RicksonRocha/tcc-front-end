@@ -14,51 +14,68 @@ import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-import { useRouter } from 'src/routes/hooks';
-import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 
-export const TEAM_OPTIONS = ['Aberta', 'Completa'];
-export const ORIENTADOR_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
+export const DISPONIBILIDADE_OPTIONS = ['Disponível para Orientação', 'Indisponível para Orientação'];
+export const TURNO_OPTIONS = ['Vespertino', 'Noturno', 'Vespertino e Noturno'];
+export const TEMAS_TCC_OPTIONS = ['Tecnologia e inovação', 'Educação', 'Meio ambiente e sustentabilidade', 'Inteligência artificial', 'Análise de dados', 'Metodologias ágeis', 'Economia e Finanças', 'Saúde e bem estar', 'Cidadania', 'Política'];
 
-export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
-  const router = useRouter();
+// ----------------------------------------------------------------------
 
-  const [filterState, setFilterState] = useState({
-    teamStatus: '', 
-    temasTCC: [],
-    orientador: [],
-  });
-
-  const handleClearAll = () => {
-    const initialState = { teamStatus: '', temasTCC: [], orientador: [] };
-    setFilterState(initialState);
-    setFilteredTeam(initialState); // Limpa todos os filtros
-  };
+export default function TeacherFilters({ openFilter, onOpenFilter, onCloseFilter, filterState, setFilterState }) {
 
   const handleCheckboxChange = (category, value) => {
-    const updatedCategory = filterState[category].includes(value)
+    const updatedState = filterState[category].includes(value)
       ? filterState[category].filter((item) => item !== value)
       : [...filterState[category], value];
 
-    const newFilterState = { ...filterState, [category]: updatedCategory };
-    setFilterState(newFilterState);
-    setFilteredTeam(newFilterState); // Passa o estado completo para TeamsView
+    setFilterState((prev) => ({
+      ...prev,
+      [category]: updatedState,
+    }));
   };
 
   const handleRadioChange = (category, value) => {
-    const newFilterState = { ...filterState, [category]: value };
-    setFilterState(newFilterState);
-    setFilteredTeam(newFilterState); // Passa o estado completo
+    setFilterState((prev) => ({
+      ...prev,
+      [category]: value,
+    }));
   };
 
-  const renderTeam = (
+  const handleClearAll = () => {
+    setFilterState({
+      turno: '',
+      teacherDisp: '',
+      temasTCC: [],
+    });
+  };
+
+  const renderDisponibilidade = (
     <Stack spacing={1}>
-      <Typography variant="subtitle3"><b>Situação da Equipe</b></Typography>
+      <Typography variant="subtitle3">
+        <b>Situação do(a) professor(a)</b>
+      </Typography>
       <RadioGroup
-        value={filterState.teamStatus}
-        onChange={(e) => handleRadioChange('teamStatus', e.target.value)}
+        value={filterState.teacherDisp}
+        onChange={(e) => handleRadioChange('teacherDisp', e.target.value)}
       >
-        {TEAM_OPTIONS.map((item) => (
+        {DISPONIBILIDADE_OPTIONS.map((item) => (
+          <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
+        ))}
+      </RadioGroup>
+    </Stack>
+  );
+
+  const renderTurno = (
+    <Stack spacing={1}>
+      <Divider />
+      <Typography variant="subtitle3">
+        <b>Turno</b>
+      </Typography>
+      <RadioGroup
+        value={filterState.turno}
+        onChange={(e) => handleRadioChange('turno', e.target.value)}
+      >
+        {TURNO_OPTIONS.map((item) => (
           <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
         ))}
       </RadioGroup>
@@ -68,34 +85,19 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
   const renderTemasTCC = (
     <Stack spacing={1}>
       <Divider />
-      <Typography variant="subtitle3"><b>Temas de Interesse</b></Typography>
+      <Typography variant="subtitle3">
+        <b>Temas de Interesse</b>
+      </Typography>
       <FormGroup>
         {TEMAS_TCC_OPTIONS.map((item) => (
           <FormControlLabel
             key={item}
-            control={<Checkbox
-              checked={filterState.temasTCC.includes(item)}
-              onChange={() => handleCheckboxChange('temasTCC', item)}
-            />}
-            label={item}
-          />
-        ))}
-      </FormGroup>
-    </Stack>
-  );
-
-  const renderOrientador = (
-    <Stack spacing={1}>
-      <Divider />
-      <Typography variant="subtitle3"><b>Orientação</b></Typography>
-      <FormGroup>
-        {ORIENTADOR_OPTIONS.map((item) => (
-          <FormControlLabel
-            key={item}
-            control={<Checkbox
-              checked={filterState.orientador.includes(item)}
-              onChange={() => handleCheckboxChange('orientador', item)}
-            />}
+            control={
+              <Checkbox
+                checked={filterState.temasTCC.includes(item)}
+                onChange={() => handleCheckboxChange('temasTCC', item)}
+              />
+            }
             label={item}
           />
         ))}
@@ -115,17 +117,19 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
         >
           Filtros&nbsp;
         </Button>
-
-        <Button
-          disableRipple
-          color="inherit"
-          endIcon={<Iconify icon="ic:round-group" />}
-          onClick={() => router.push('/minha-equipe')}
-          sx={{ fontSize: '16px' }}
-        >
-          Minha Equipe
-        </Button>
       </Box>
+
+      <Button
+        disableRipple
+        color="inherit"
+        endIcon={<Iconify icon="ic:baseline-bubble-chart" />}
+        onClick={() => {
+          window.alert("Aqui serão apresentados apenas os 3 perfis mais compatíveis com o aluno atual.");
+        }}
+        sx={{ fontSize: '16px' }}
+      >
+        Perfis Sugeridos
+      </Button>
 
       <Drawer
         anchor="right"
@@ -140,10 +144,12 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
             <Typography variant="h6" sx={{ ml: 1 }}>
               Filtros
             </Typography>
+
             <Typography variant="body1" sx={{ ml: 1, mt: 0.5 }}>
-              Conheça as equipes já cadastradas!
+              Aqui você pode encontrar perfis compatíveis!
             </Typography>
           </Box>
+
           <IconButton onClick={onCloseFilter}>
             <Iconify icon="eva:close-fill" />
           </IconButton>
@@ -153,9 +159,9 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
 
         <Scrollbar>
           <Stack spacing={3} sx={{ p: 3 }}>
-            {renderTeam}
+            {renderDisponibilidade}
+            {renderTurno}
             {renderTemasTCC}
-            {renderOrientador}
           </Stack>
         </Scrollbar>
 
@@ -167,7 +173,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
             color="inherit"
             variant="outlined"
             startIcon={<Iconify icon="ic:round-clear-all" />}
-            onClick={handleClearAll}
+            onClick={handleClearAll} // Limpa todos os filtros
           >
             Limpar todos
           </Button>
@@ -177,11 +183,10 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
   );
 }
 
-TeamFilters.propTypes = {
+TeacherFilters.propTypes = {
   openFilter: PropTypes.bool,
   onOpenFilter: PropTypes.func,
   onCloseFilter: PropTypes.func,
-  setFilteredTeam: PropTypes.func,
+  filterState: PropTypes.object, // Recebe o estado dos filtros
+  setFilterState: PropTypes.func, // Função pra atualizar o estado dos filtros
 };
-
-

@@ -14,14 +14,19 @@ const navConfig = [
     icon: <Iconify icon="ic:round-account-circle" />,
   },
   {
-    title: 'Equipes/Alunos',
+    title: 'Equipes',
     path: '/equipes',
     icon: <Iconify icon="ic:round-group" />,
   },
   {
+    title: 'Alunos',
+    path: '/alunos',
+    icon: <Iconify icon="ic:round-person" />,
+  },
+  {
     title: 'Orientadores',
-    path: '/blog',
     icon: <Iconify icon="ic:round-school" />,
+    path: '/orientadores',
   },
   {
     title: 'Cronograma',
@@ -30,7 +35,7 @@ const navConfig = [
   },
   {
     title: 'Materiais de Apoio',
-    path: '/404',
+    path: '/materiais-apoio',
     icon: <Iconify icon="ic:round-library-books" />,
   },
   {

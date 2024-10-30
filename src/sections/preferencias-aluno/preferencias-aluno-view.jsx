@@ -17,6 +17,8 @@ import InputLabel from '@mui/material/InputLabel';
 import {
   turnos,
   bancos_de_dados,
+  framework_front,
+  disponibilidades,
   nivel_experiencia,
   temas_de_interesse,
   habilidades_pessoais,
@@ -37,6 +39,9 @@ export default function PreferenciasAlunoView() {
     nivelDeExperiencia: '',
     habilidadesPessoais: [],
     temasDeInteresse: [],
+    disponibilidade: '',
+    modalidadeTrabalho: '',
+    frameworkFront: [],
   };
 
   const {
@@ -62,9 +67,11 @@ export default function PreferenciasAlunoView() {
 
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={3} sx={{ mt: 2 }}>
+      <Stack spacing={2} sx={{ mt: 2 }}>
+        {' '}
+        {/* Reduzi o spacing de 3 para 2 */}
         {/* Turno (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 40 }}>
           <InputLabel>Turno</InputLabel>
           <Select label="Turno" {...preferenciasAluno('turno')} error={!!errors.turno}>
             {turnos.map((turno) => (
@@ -79,9 +86,8 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Linguagem de Programação (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.linguagemProgramacao} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.linguagemProgramacao} sx={{ minHeight: 40 }}>
           <InputLabel>Linguagem de Programação</InputLabel>
           <Select
             label="Linguagem de Programação"
@@ -109,9 +115,8 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Banco de Dados (Seleção múltipla) */}
-        <FormControl fullWidth error={!!errors.bancoDeDados} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.bancoDeDados} sx={{ minHeight: 40 }}>
           <InputLabel>Banco de Dados</InputLabel>
           <Select
             label="Banco de Dados"
@@ -139,9 +144,8 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Nível de Experiência (Seleção simples) */}
-        <FormControl fullWidth error={!!errors.nivelDeExperiencia} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.nivelDeExperiencia} sx={{ minHeight: 40 }}>
           <InputLabel>Nível de Experiência</InputLabel>
           <Select
             label="Nível de Experiência"
@@ -160,9 +164,8 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Habilidades Pessoais (Seleção múltipla em menu suspenso) */}
-        <FormControl fullWidth error={!!errors.habilidadesPessoais} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.habilidadesPessoais} sx={{ minHeight: 40 }}>
           <InputLabel>Habilidades Pessoais</InputLabel>
           <Select
             label="Habilidades Pessoais"
@@ -190,9 +193,8 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Temas de Interesse (Seleção múltipla em menu suspenso) */}
-        <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 50 }}>
+        <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40 }}>
           <InputLabel>Temas de Interesse</InputLabel>
           <Select
             label="Temas de Interesse"
@@ -220,9 +222,61 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
+        {/* Disponibilidade (Seleção simples) */}
+        <FormControl fullWidth error={!!errors.disponibilidade} sx={{ minHeight: 40 }}>
+          <InputLabel>Disponibilidade</InputLabel>
+          <Select
+            label="Disponibilidade"
+            {...preferenciasAluno('disponibilidade')}
+            error={!!errors.disponibilidade}
+          >
+            {disponibilidades.map((disponibilidade) => (
+              <MenuItem key={disponibilidade} value={disponibilidade}>
+                {disponibilidade}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.disponibilidade && (
+            <Typography variant="caption" color="error">
+              {errors.disponibilidade.message}
+            </Typography>
+          )}
+        </FormControl>
+        {/* **Novo Campo: Framework Front-end (Seleção múltipla)** */}
+        <FormControl fullWidth error={!!errors.frameworkFront} sx={{ minHeight: 40 }}>
+          <InputLabel>Framework Front-end</InputLabel>
+          <Select
+            label="Framework Front-end"
+            multiple
+            value={watch('frameworkFront') || []}
+            onChange={(e) => {
+              const selected = e.target.value;
+              if (selected.length <= 5) {
+                setValue('frameworkFront', selected);
+              }
+            }}
+            renderValue={(selected) => selected.join(', ')}
+            error={!!errors.frameworkFront}
+          >
+            {framework_front.map((framework) => (
+              <MenuItem key={framework} value={framework}>
+                <Checkbox checked={watch('frameworkFront')?.includes(framework)} />
+                {framework}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors.frameworkFront && (
+            <Typography variant="caption" color="error">
+              {errors.frameworkFront.message}
+            </Typography>
+          )}
+        </FormControl>
+        {/* Fim do Novo Campo */}
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2, mb: -2 }}>
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2 }}>
+        {' '}
+        {}
         <LoadingButton
           fullWidth
           size="large"
@@ -244,17 +298,6 @@ export default function PreferenciasAlunoView() {
       </Typography>
 
       {renderForm()}
-
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        sx={{ mt: 2, cursor: 'pointer' }}
-      >
-        {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
-            Já tem uma conta? Entrar
-          </Link> */}
-      </Stack>
     </Card>
   );
 }

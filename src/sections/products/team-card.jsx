@@ -1,22 +1,25 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
-import Button from '@mui/material/Button'; 
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 
-// ----------------------------------------------------------------------
+export default function TeamCard({ team }) {
+  const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
 
-export default function ShopTeamCard({ team }) {
-  // Cor do status com base no valor de team.status
-  const statusColor = team.status === 'Equipe Completa' ? 'error' : 'success';
-  const statusColorCode = team.status === 'Equipe Completa' ? '#FF4842' : '#00AB55';
+  // Define o status como "Completa" se isActive for true
+  const teamStatus = team.isActive ? 'Completa' : 'Aberta';
+  const statusColor = teamStatus === 'Completa' ? 'error' : 'success';
+  const statusColorCode = teamStatus === 'Completa' ? '#FF4842' : '#00AB55';
 
   const renderStatus = (
     <Label
       variant="filled"
-      color={statusColor} 
+      color={statusColor}
       sx={{
         zIndex: 9,
         top: 16,
@@ -25,11 +28,10 @@ export default function ShopTeamCard({ team }) {
         textTransform: 'uppercase',
       }}
     >
-      {team.status}
+      {teamStatus}
     </Label>
   );
 
-  // Área de fundo com centralização do nome
   const renderName = (
     <Box
       sx={{
@@ -44,53 +46,68 @@ export default function ShopTeamCard({ team }) {
       }}
     >
       <Typography variant="h7" sx={{ textAlign: 'center', px: 2 }}>
-        {team.name}
+        {team.name || 'Nome não disponível'}
       </Typography>
     </Box>
   );
 
-  // Quantidade de integrantes com cor baseada no status
   const renderQtdeIntegrantes = (
-    <Typography
-      variant="subtitle2"
-      sx={{ textAlign: 'center', mt: 2, fontWeight: 'bold' }}
-    >
+    <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
       {`Qtde Integrantes: `}
-      <Box component="span" sx={{ color: statusColorCode }}>
-        {team.members}
+      <Box component="span" sx={{ color: statusColorCode, fontSize: '14px' }}>
+        {team.integrantes?.length || 0} {/* Exibe o número correto de integrantes */}
       </Box>
     </Typography>
   );
 
+  const handleClick = () => {
+    setSuccessMessage('Solicitação de entrada enviada!');
+    setTimeout(() => {
+      setSuccessMessage('');
+    }, 1000);
+  };
+
   return (
     <Card>
       <Box sx={{ pt: '100%', position: 'relative' }}>
-        {team.status && renderStatus}
+        {renderStatus}
         {renderName}
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
-
         {renderQtdeIntegrantes}
-  
+
         <Button
           variant="contained"
-          disabled={team.status === 'Equipe Completa'} // Desabilitado para equipes completas
+          disabled={teamStatus === 'Completa'}
+          onClick={handleClick}
           sx={{
-            backgroundColor: '#EDEFF1', 
-            color: '#212B36', 
+            backgroundColor: '#EDEFF1',
+            color: '#212B36',
             '&:hover': {
-              backgroundColor: '#DDE0E2', 
+              backgroundColor: '#DDE0E2',
             },
           }}
         >
           Solicitar entrada
         </Button>
+
+        {successMessage && (
+          <Alert severity="success" sx={{ mt: 2 }}>
+            {successMessage}
+          </Alert>
+        )}
       </Stack>
     </Card>
   );
 }
 
-ShopTeamCard.propTypes = {
-  team: PropTypes.object,
+TeamCard.propTypes = {
+  team: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string,
+    status: PropTypes.string,
+    integrantes: PropTypes.arrayOf(PropTypes.string), // Array de membros como strings
+  }).isRequired,
 };
+

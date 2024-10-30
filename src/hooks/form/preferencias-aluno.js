@@ -8,7 +8,7 @@ const schemaPreferenciasAluno = yup.object().shape({
   linguagemProgramacao: yup
     .array()
     .min(1, 'Deve ser informado no mínimo 1 linguagem de programação')
-    .max(3, 'Pode-se informar até 3 linguagens')
+    .max(2, 'Pode-se informar até 2 linguagens')
     .required('Linguagem de programação é obrigatória!'),
   bancoDeDados: yup
     .array()
@@ -21,13 +21,24 @@ const schemaPreferenciasAluno = yup.object().shape({
   habilidadesPessoais: yup
     .array()
     .min(2, 'Deve ser informado no mínimo 2 habilidades')
-    .max(4, 'Pode-se informar até 4 habilidades')
+    .max(3, 'Pode-se informar até 3 habilidades')
     .required('Habilidades pessoais são obrigatórias!'),
   temasDeInteresse: yup
     .array()
     .min(2, 'Deve ser informado no mínimo 2 temas de interesse')
-    .max(4, 'Pode-se informar até 4 temas de interesse')
+    .max(3, 'Pode-se informar até 3 temas de interesse')
     .required('Temas de interesse são obrigatórios!'),
+  disponibilidade: yup
+    .string()
+    .required('Disponibilidade é obrigatório!'),
+  modalidadeTrabalho: yup
+    .string()
+    .required('Modalidade de trabalho é obrigatório!'),
+  frameworkFront: yup
+    .array()
+    .min(1, 'Deve ser informado no mínimo 1 framework')
+    .max(2, 'Pode-se informar até 2 frameworks')
+    .required('Framework de Front-end é obrigatório!'),
 });
 
 export default schemaPreferenciasAluno;
