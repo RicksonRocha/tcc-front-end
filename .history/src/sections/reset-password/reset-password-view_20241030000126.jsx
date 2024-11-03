@@ -45,22 +45,24 @@ export default function ResetPasswordView() {
 
   const onSubmit = async (data) => {
     try {
-      // Dispatch do thunk, enviando email e a nova senha
-      const result = await dispatch(
-        resetPassword({
+      const response = await fetch('http://localhost:8080/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           email: data.email,
           newsenha: data.newPassword,
-        })
-      );
+        }),
+      });
 
-      if (resetPassword.fulfilled.match(result)) {
-        // Se for sucesso, exibe a mensagem e reseta o formulário
-        reset();
-        alert('Senha redefinida com sucesso!');
-      } else {
-        // Se houver erro, exibe a mensagem de erro
-        alert(result.payload || 'Erro ao redefinir a senha.');
+      if (!response.ok) {
+        throw new Error('Erro ao redefinir a senha. Verifique se o e-mail está correto.');
       }
+
+      // Sucesso: Limpa o formulário
+      reset();
+      alert('Senha redefinida com sucesso!');
     } catch (e) {
       console.log(e);
       alert('Houve um erro ao redefinir sua senha.');

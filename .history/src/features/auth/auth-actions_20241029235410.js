@@ -75,7 +75,7 @@ export const resetPassword = createAsyncThunk(
     try {
       // Faz a requisição para o endpoint reset-password
       const response = await axios.post(
-        `http://localhost:3000/auth/reset-password`, // usar ${backendURL} não estava dando certo, constava como undefined, tive que colocar o endereço direto
+        `${backendURL}/auth/reset-password`,
         { email, newsenha },
         config
       );
