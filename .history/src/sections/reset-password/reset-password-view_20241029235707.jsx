@@ -15,8 +15,8 @@ import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaResetPassword from 'src/hooks/form/reset-password';
-import { useDispatch, useSelector } from 'react-redux';
-import { resetPassword } from 'src/features/auth/auth-actions';
+import { useDispatch } from 'react-redux';
+import { resetPassword } from 'path/to/your/thunk'; // Importar o thunk que criamos
 
 // ----------------------------------------------------------------------
 
@@ -43,6 +43,7 @@ export default function ResetPasswordView() {
     defaultValues, // Incluindo valores padrão
   });
 
+  // Aqui usamos o dispatch para chamar o thunk resetPassword
   const onSubmit = async (data) => {
     try {
       // Dispatch do thunk, enviando email e a nova senha

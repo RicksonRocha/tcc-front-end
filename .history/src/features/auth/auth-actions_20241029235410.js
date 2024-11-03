@@ -28,7 +28,6 @@ export const userLogin = createAsyncThunk(
     try {
       const { data } = await axios.post(`${backendURL}/auth/login`, { email, password }, config);
       localStorage.setItem('access_token', data.access_token);
-      localStorage.setItem('refresh_token', data.refresh_token);
       return data;
     } catch (error) {
       if (error.response.data.error) {
@@ -76,7 +75,7 @@ export const resetPassword = createAsyncThunk(
     try {
       // Faz a requisição para o endpoint reset-password
       const response = await axios.post(
-        `http://localhost:3000/auth/reset-password`, // usar ${backendURL} não estava dando certo, constava como undefined, tive que colocar o endereço direto
+        `${backendURL}/auth/reset-password`,
         { email, newsenha },
         config
       );
