@@ -1,1 +1,5 @@
-export { default as ProductsView } from './products-view';
+export { default as TeamsView } from './teams-view';
+export { default as StudentView } from './student-view';
+export { default as MyTeamPageView } from './my-team-view';
+export { default as TeacherView } from './teacher-view';
+export { default as SupportMaterial } from './support-material';

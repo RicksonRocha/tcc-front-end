@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserView } from 'src/sections/user/view';
+import { MyTeamPageView } from 'src/sections/products/view';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function MyTeamPage() {
   return (
     <>
       <Helmet>
-        <title> Meu Perfil </title>
+        <title> Minha Equipe </title>
       </Helmet>
 
-      <UserView />
+      <MyTeamPageView />
     </>
   );
 }

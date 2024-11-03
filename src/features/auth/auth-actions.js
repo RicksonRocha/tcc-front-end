@@ -67,3 +67,32 @@ export const resetPassword = createAsyncThunk(
     }
   }
 );
+
+export const preferenciasUserAluno = createAsyncThunk(
+  'auth/preferencias-aluno',
+  async ({ turno, linguagemProgramacao, bancoDeDados, nivelDeExperiencia, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho, frameworkFront}, { rejectWithValue }) => {
+    try {
+      await axios.post(`${backendURL}/auth/preferencias-aluno`, { turno, linguagemProgramacao, bancoDeDados, nivelDeExperiencia, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho, frameworkFront}, config);
+    } catch (error) {
+      if (error.response.data.error) {
+        return rejectWithValue(error.response.data.error);
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const preferenciasUserProfessor = createAsyncThunk(
+  'auth/preferencias-professor',
+  async ({ turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho}, { rejectWithValue }) => {
+    try {
+      await axios.post(`${backendURL}/auth/preferencias-professor`, { turno, disponivelOrientacao, linguagemProgramacao, disciplinasLecionadas, habilidadesPessoais, temasDeInteresse, disponibilidade, modalidadeTrabalho}, config);
+    } catch (error) {
+      if (error.response.data.error) {
+        return rejectWithValue(error.response.data.error);
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+

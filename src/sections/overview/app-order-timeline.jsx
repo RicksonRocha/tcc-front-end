@@ -10,8 +10,6 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
-import { fDateTime } from 'src/utils/format-time';
-
 // ----------------------------------------------------------------------
 
 export default function AnalyticsOrderTimeline({ title, subheader, list, ...other }) {
@@ -46,28 +44,37 @@ AnalyticsOrderTimeline.propTypes = {
 // ----------------------------------------------------------------------
 
 function OrderItem({ item, lastTimeline }) {
-  const { type, title, time } = item;
+  const { type, title } = item;
+
+  const timelineDotColor =
+    (type === 'order1' && 'primary') ||
+    (type === 'order2' && 'success') ||
+    (type === 'order3' && 'primary') ||
+    (type === 'order4' && 'success') ||
+    'primary';
+
   return (
     <TimelineItem>
       <TimelineSeparator>
         <TimelineDot
-          color={
-            (type === 'order1' && 'primary') ||
-            (type === 'order2' && 'success') ||
-            (type === 'order3' && 'info') ||
-            (type === 'order4' && 'warning') ||
-            'error'
-          }
+          color={timelineDotColor}
+          sx={{
+            width: 8,  
+            height: 8, 
+          }}
         />
-        {lastTimeline ? null : <TimelineConnector />}
+        {!lastTimeline && (
+          <TimelineConnector
+            sx={{
+              backgroundColor: timelineDotColor, 
+              height: 1, 
+            }}
+          />
+        )}
       </TimelineSeparator>
 
       <TimelineContent>
-        <Typography variant="subtitle2">{title}</Typography>
-
-        <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-          {fDateTime(time)}
-        </Typography>
+        <Typography variant="body1">{title}</Typography>
       </TimelineContent>
     </TimelineItem>
   );
