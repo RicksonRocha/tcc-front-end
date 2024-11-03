@@ -1,32 +1,28 @@
-import { useState } from 'react';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { alpha, useTheme } from '@mui/material/styles';
-import { bgGradient } from 'src/theme/css';
+import { useTheme } from '@mui/material/styles';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { preferenciasUserAluno } from 'src/features/auth/auth-actions';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import { 
-  turnos, 
-  linguagens_de_programacao, 
-  bancos_de_dados, 
-  nivel_experiencia, 
-  habilidades_pessoais, 
-  temas_de_interesse, 
-  disponibilidades, 
-  modalidade_trabalho,
-  framework_front
+import {
+  turnos,
+  bancos_de_dados,
+  framework_front,
+  disponibilidades,
+  nivel_experiencia,
+  temas_de_interesse,
+  habilidades_pessoais,
+  linguagens_de_programacao,
 } from './opcoes';
 
 // ----------------------------------------------------------------------
@@ -71,15 +67,13 @@ export default function PreferenciasAlunoView() {
 
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2} sx={{ mt: 2 }}> {/* Reduzi o spacing de 3 para 2 */}
+      <Stack spacing={2} sx={{ mt: 2 }}>
+        {' '}
+        {/* Reduzi o spacing de 3 para 2 */}
         {/* Turno (Seleção simples) */}
         <FormControl fullWidth error={!!errors.turno} sx={{ minHeight: 40 }}>
           <InputLabel>Turno</InputLabel>
-          <Select
-            label="Turno"
-            {...preferenciasAluno('turno')}
-            error={!!errors.turno}
-          >
+          <Select label="Turno" {...preferenciasAluno('turno')} error={!!errors.turno}>
             {turnos.map((turno) => (
               <MenuItem key={turno} value={turno}>
                 {turno}
@@ -92,7 +86,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Linguagem de Programação (Seleção múltipla) */}
         <FormControl fullWidth error={!!errors.linguagemProgramacao} sx={{ minHeight: 40 }}>
           <InputLabel>Linguagem de Programação</InputLabel>
@@ -122,7 +115,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Banco de Dados (Seleção múltipla) */}
         <FormControl fullWidth error={!!errors.bancoDeDados} sx={{ minHeight: 40 }}>
           <InputLabel>Banco de Dados</InputLabel>
@@ -152,7 +144,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Nível de Experiência (Seleção simples) */}
         <FormControl fullWidth error={!!errors.nivelDeExperiencia} sx={{ minHeight: 40 }}>
           <InputLabel>Nível de Experiência</InputLabel>
@@ -173,7 +164,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Habilidades Pessoais (Seleção múltipla em menu suspenso) */}
         <FormControl fullWidth error={!!errors.habilidadesPessoais} sx={{ minHeight: 40 }}>
           <InputLabel>Habilidades Pessoais</InputLabel>
@@ -203,7 +193,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Temas de Interesse (Seleção múltipla em menu suspenso) */}
         <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40 }}>
           <InputLabel>Temas de Interesse</InputLabel>
@@ -233,7 +222,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* Disponibilidade (Seleção simples) */}
         <FormControl fullWidth error={!!errors.disponibilidade} sx={{ minHeight: 40 }}>
           <InputLabel>Disponibilidade</InputLabel>
@@ -254,7 +242,6 @@ export default function PreferenciasAlunoView() {
             </Typography>
           )}
         </FormControl>
-
         {/* **Novo Campo: Framework Front-end (Seleção múltipla)** */}
         <FormControl fullWidth error={!!errors.frameworkFront} sx={{ minHeight: 40 }}>
           <InputLabel>Framework Front-end</InputLabel>
@@ -264,7 +251,7 @@ export default function PreferenciasAlunoView() {
             value={watch('frameworkFront') || []}
             onChange={(e) => {
               const selected = e.target.value;
-              if (selected.length <= 5) { 
+              if (selected.length <= 5) {
                 setValue('frameworkFront', selected);
               }
             }}
@@ -287,7 +274,9 @@ export default function PreferenciasAlunoView() {
         {/* Fim do Novo Campo */}
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2 }}> {}
+      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 2 }}>
+        {' '}
+        {}
         <LoadingButton
           fullWidth
           size="large"
@@ -303,45 +292,12 @@ export default function PreferenciasAlunoView() {
   );
 
   return (
-    <Box
-      sx={{
-        ...bgGradient({
-          color: alpha(theme.palette.background.default, 0.9),
-          imgUrl: '/assets/background/overlay_4.jpg',
-        }),
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Card 
-        sx={{ 
-          p: 3, 
-          width: '100%', 
-          maxWidth: 800, 
-          overflow: 'auto',
-          boxShadow: 3, 
-          borderRadius: 2, 
-        }}
-      >
-        <Typography variant="h5" align="center" sx={{ mb: 1 }}> {}
-          Compartilhe conosco suas preferências!
-        </Typography>
+    <Card>
+      <Typography variant="h5" align="center" sx={{ mb: 2 }}>
+        Compartilhe conosco suas preferências!
+      </Typography>
 
-        {renderForm()}
-
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
-          sx={{ mt: 1, cursor: 'pointer' }} 
-        >
-          {/* <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
-            Já tem uma conta? Entrar
-          </Link> */}
-        </Stack>
-      </Card>
-    </Box>
+      {renderForm()}
+    </Card>
   );
 }

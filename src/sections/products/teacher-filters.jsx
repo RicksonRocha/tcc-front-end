@@ -22,7 +22,7 @@ export const TEMAS_TCC_OPTIONS = ['Tecnologia e inovação', 'Educação', 'Meio
 // ----------------------------------------------------------------------
 
 export default function TeacherFilters({ openFilter, onOpenFilter, onCloseFilter, filterState, setFilterState }) {
-  
+
   const handleCheckboxChange = (category, value) => {
     const updatedState = filterState[category].includes(value)
       ? filterState[category].filter((item) => item !== value)
@@ -118,6 +118,18 @@ export default function TeacherFilters({ openFilter, onOpenFilter, onCloseFilter
           Filtros&nbsp;
         </Button>
       </Box>
+
+      <Button
+        disableRipple
+        color="inherit"
+        endIcon={<Iconify icon="ic:baseline-bubble-chart" />}
+        onClick={() => {
+          window.alert("Aqui serão apresentados apenas os 3 perfis mais compatíveis com o aluno atual.");
+        }}
+        sx={{ fontSize: '16px' }}
+      >
+        Perfis Sugeridos
+      </Button>
 
       <Drawer
         anchor="right"

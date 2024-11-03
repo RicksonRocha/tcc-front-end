@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet-async';
-
 import { PreferenciasAlunoView } from 'src/sections/preferencias-aluno';
 
 // ----------------------------------------------------------------------
