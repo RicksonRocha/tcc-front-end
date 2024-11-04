@@ -3,21 +3,21 @@ import axios from 'axios';
 const backendURL = import.meta.env.VITE_KEY_API;
 
 export async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem('refresh_token');
+  const refreshToken = localStorage.getItem('refreshToken');
 
   if (!refreshToken) {
     throw new Error('Sem refresh token disponível');
   }
 
   try {
-    const { data } = await axios.post(`${backendURL}/auth/refresh`, {
-      refresh_token: refreshToken,
+    const { data } = await axios.post(`${backendURL}/auth/refresh-token`, {
+      refreshToken,
     });
 
-    localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('refresh_token', data.refresh_token);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('refreshToken', data.refreshToken);
 
-    return data.access_token;
+    return data.token;
   } catch (error) {
     console.error('Erro ao renovar token:', error);
     throw new Error('Falha ao renovar o token');

@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 
-import DashboardLayout from 'src/layouts/dashboard';
 import MyProfilePage from 'src/pages/my-profile';
 import MyTeamPage from 'src/pages/my-team-page';
 import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
@@ -30,14 +29,6 @@ export default function Router() {
       path: '/',
       element: <ProtectedRoute />, // Rota protegida
       children: [
-        {
-          element: (
-            <DashboardLayout>
-              <IndexPage />
-            </DashboardLayout>
-          ),
-          index: true,
-        },
         { element: <IndexPage />, index: true }, // Rota para o componente Index
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },

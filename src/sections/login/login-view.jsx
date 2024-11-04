@@ -48,12 +48,11 @@ export default function LoginView() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(userLogin({ ...data }));
+      await dispatch(userLogin(data));
       reset();
-      // Redireciona para a página de Visão Geral após login
       push('/');
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   };
 
@@ -84,17 +83,18 @@ export default function LoginView() {
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="center" sx={{ my: 3, cursor: 'pointer' }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="center"
+        sx={{ my: 3, cursor: 'pointer' }}
+      >
         <Link variant="subtitle2" underline="hover" onClick={() => push('/reset-password')}>
           Esqueceu sua senha?
         </Link>
       </Stack>
 
-      <LoadingButton
-        fullWidth size="large"
-        type="submit"
-        variant="contained"
-        color="primary"> 
+      <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary">
         Login
       </LoadingButton>
     </form>
@@ -117,7 +117,11 @@ export default function LoginView() {
           </Typography>
           <Typography variant="body2" align="center" sx={{ mt: 2, mb: 5 }}>
             Não possui uma conta?
-            <Link variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }} onClick={() => push('/register')}>
+            <Link
+              variant="subtitle2"
+              sx={{ ml: 0.5, cursor: 'pointer' }}
+              onClick={() => push('/register')}
+            >
               Cadastre-se
             </Link>
           </Typography>
@@ -127,4 +131,3 @@ export default function LoginView() {
     </Box>
   );
 }
-

@@ -8,7 +8,7 @@ const api = axios.create({
 
 // Interceptor para verificar o token antes de cada requisição
 api.interceptors.request.use(async (config) => {
-  let token = localStorage.getItem('access_token');
+  let token = localStorage.getItem('token');
 
   if (isTokenExpired(token)) {
     try {
