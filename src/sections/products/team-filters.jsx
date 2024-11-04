@@ -18,21 +18,21 @@ import { useRouter } from 'src/routes/hooks';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 
 export const TEAM_OPTIONS = ['Aberta', 'Completa'];
-export const ORIENTADOR_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
+export const TEACHER_TCC_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
 
 export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
   const router = useRouter();
 
   const [filterState, setFilterState] = useState({
     teamStatus: '', 
-    temasTCC: [],
-    orientador: [],
+    themes: [],
+    teacherTcc: [],
   });
 
   const handleClearAll = () => {
-    const initialState = { teamStatus: '', temasTCC: [], orientador: [] };
+    const initialState = { teamStatus: '', themes: [], teacherTcc: [] };
     setFilterState(initialState);
-    setFilteredTeam(initialState); // Limpa todos os filtros
+    setFilteredTeam(initialState);
   };
 
   const handleCheckboxChange = (category, value) => {
@@ -42,13 +42,13 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
 
     const newFilterState = { ...filterState, [category]: updatedCategory };
     setFilterState(newFilterState);
-    setFilteredTeam(newFilterState); // Passa o estado completo para TeamsView
+    setFilteredTeam(newFilterState);
   };
 
   const handleRadioChange = (category, value) => {
     const newFilterState = { ...filterState, [category]: value };
     setFilterState(newFilterState);
-    setFilteredTeam(newFilterState); // Passa o estado completo
+    setFilteredTeam(newFilterState);
   };
 
   const renderTeam = (
@@ -65,7 +65,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
     </Stack>
   );
 
-  const renderTemasTCC = (
+  const renderThemes = (
     <Stack spacing={1}>
       <Divider />
       <Typography variant="subtitle3"><b>Temas de Interesse</b></Typography>
@@ -74,8 +74,8 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           <FormControlLabel
             key={item}
             control={<Checkbox
-              checked={filterState.temasTCC.includes(item)}
-              onChange={() => handleCheckboxChange('temasTCC', item)}
+              checked={filterState.themes.includes(item)}
+              onChange={() => handleCheckboxChange('themes', item)}
             />}
             label={item}
           />
@@ -84,17 +84,17 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
     </Stack>
   );
 
-  const renderOrientador = (
+  const renderTeacherTcc = (
     <Stack spacing={1}>
       <Divider />
       <Typography variant="subtitle3"><b>Orientação</b></Typography>
       <FormGroup>
-        {ORIENTADOR_OPTIONS.map((item) => (
+        {TEACHER_TCC_OPTIONS.map((item) => (
           <FormControlLabel
             key={item}
             control={<Checkbox
-              checked={filterState.orientador.includes(item)}
-              onChange={() => handleCheckboxChange('orientador', item)}
+              checked={filterState.teacherTcc.includes(item)}
+              onChange={() => handleCheckboxChange('teacherTcc', item)}
             />}
             label={item}
           />
@@ -154,8 +154,8 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
         <Scrollbar>
           <Stack spacing={3} sx={{ p: 3 }}>
             {renderTeam}
-            {renderTemasTCC}
-            {renderOrientador}
+            {renderThemes}
+            {renderTeacherTcc}
           </Stack>
         </Scrollbar>
 

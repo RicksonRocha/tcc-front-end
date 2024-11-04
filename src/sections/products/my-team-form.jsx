@@ -20,6 +20,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
 import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation } from 'src/api/team';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
+import { useRouter } from 'src/routes/hooks/use-router';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
@@ -29,6 +30,7 @@ export default function MyTeamForm({ teamId }) {
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
+  const { push } = useRouter();
 
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm({
     resolver: yupResolver(schemaTeamForm),
@@ -63,9 +65,9 @@ export default function MyTeamForm({ teamId }) {
       name: data.tccTitle,
       description: data.tccDescription,
       isActive: isClosed,
-      orientador: advisorValue,
-      integrantes: data.members,
-      temas: data.temasDeInteresse,
+      teacherTcc: advisorValue,
+      members: data.members,
+      themes: data.temasDeInteresse,
     };
 
     try {
@@ -76,6 +78,12 @@ export default function MyTeamForm({ teamId }) {
         await createTeam(formData).unwrap();
         setSuccessMessage('Equipe criada com sucesso!');
       }
+
+      // Aguarda 2 segundos antes de redirecionar
+      setTimeout(() => {
+        push('/equipes');
+      }, 3000);
+      
     } catch (error) {
       console.error('Erro ao salvar equipe:', error);
       setSuccessMessage(`Erro ao salvar equipe: ${error.message}`);
@@ -86,7 +94,7 @@ export default function MyTeamForm({ teamId }) {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2, px: 2 }}>
-      <Card sx={{ p: 3, width: '100%', maxWidth: 800, overflow: 'auto' }}>
+      <Card sx={{ p: 3, width: '100%', maxWidth: '100%', overflow: 'auto' }}>
         <Typography variant="h5" align="center" sx={{ mb: 3 }}>
           Formulário
         </Typography>
@@ -222,5 +230,7 @@ export default function MyTeamForm({ teamId }) {
 MyTeamForm.propTypes = {
   teamId: PropTypes.number,
 };
+
+
 
 
