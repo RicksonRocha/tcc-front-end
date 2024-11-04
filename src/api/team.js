@@ -9,20 +9,20 @@ export const teamApi = createApi({
     
     // Endpoint para obter todas as equipes
     getTeams: build.query({
-      query: () => '/tcc', 
+      query: () => '/university/tcc', 
       providesTags: ['Teams'],
     }),
 
     // Endpoint para obter uma equipe específica por ID
     getTeamById: build.query({
-      query: (id) => `/tcc/${id}`, 
+      query: (id) => `/university/tcc/${id}`, 
       providesTags: (result, error, id) => [{ type: 'Teams', id }],
     }),
 
     // Endpoint para criar uma nova equipe
     createTeam: build.mutation({
       query: (newTeam) => ({
-        url: '/tcc',
+        url: '/university/tcc',
         method: 'POST',
         body: newTeam,
       }),
@@ -32,7 +32,7 @@ export const teamApi = createApi({
     // Endpoint para atualizar uma equipe existente
     updateTeam: build.mutation({
       query: ({ id, ...updatedData }) => ({
-        url: `/tcc/${id}`,
+        url: `/university/tcc/${id}`,
         method: 'PUT',
         body: updatedData,
       }),
@@ -42,7 +42,7 @@ export const teamApi = createApi({
     // Endpoint para deletar uma equipe
     deleteTeam: build.mutation({
       query: (id) => ({
-        url: `/tcc/${id}`,
+        url: `/university/tcc/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Teams', id }],
