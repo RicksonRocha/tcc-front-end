@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 
 export default function TeamCard({ team }) {
-  const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Define o status como "Completa" se isActive for true
   const teamStatus = team.isActive ? 'Completa' : 'Aberta';
@@ -55,7 +55,7 @@ export default function TeamCard({ team }) {
     <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
       {`Qtde Integrantes: `}
       <Box component="span" sx={{ color: statusColorCode, fontSize: '14px' }}>
-        {team.integrantes?.length || 0} {/* Exibe o número correto de integrantes */}
+        {team.members?.length || 0}
       </Box>
     </Typography>
   );
@@ -106,8 +106,7 @@ TeamCard.propTypes = {
   team: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string,
-    status: PropTypes.string,
-    integrantes: PropTypes.arrayOf(PropTypes.string), // Array de membros como strings
+    isActive: PropTypes.bool,
+    members: PropTypes.arrayOf(PropTypes.string), // Array de membros como strings
   }).isRequired,
 };
-

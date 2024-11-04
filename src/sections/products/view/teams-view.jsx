@@ -3,58 +3,97 @@ import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
+import { useSnackbar } from 'notistack';
 import TeamCard from '../team-card';
 import TeamFilters from '../team-filters';
 
 export default function TeamsView() {
-  const [teams, setTeams] = useState([]); // Estado para armazenar as equipes da API
+  const [teams, setTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openFilter, setOpenFilter] = useState(false);
   const [filteredTeam, setFilteredTeam] = useState({
     teamStatus: '',
-    temasTCC: [],
-    orientador: [],
-  }); 
-  const [error, setError] = useState(null); // Estado para armazenar o erro
+    themes: [],
+    teacherTcc: [],
+  });
+  const { enqueueSnackbar } = useSnackbar();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await fetch('http://localhost:8081/api/university/tcc'); // URL da API de equipes
+        const response = await fetch('http://localhost:8081/api/university/tcc');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
+
         const data = await response.json();
-        setTeams(data); // Armazena os dados das equipes no estado
+        setTeams(data);
         setError(null);
       } catch (err) {
-        console.error("Erro ao buscar equipes:", err);
-        setError({ message: "Erro ao carregar equipes", details: err.toString() });
+
+        enqueueSnackbar("Erro ao carregar equipes.", {
+          variant: 'error',
+          anchorOrigin: { vertical: 'top', horizontal: 'center' },
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchTeams(); 
-  }, []);
+    fetchTeams();
+  }, [enqueueSnackbar]);
 
-  // Filtra equipes com base nos critérios selecionados em filteredTeam
   const filteredTeams = teams.filter((team) => {
-    const { teamStatus, temasTCC, orientador } = filteredTeam;
+    const { teamStatus, themes, teacherTcc } = filteredTeam;
 
     const statusMatch = !teamStatus || (teamStatus === 'Completa' ? team.isActive : !team.isActive);
-    const temasMatch = temasTCC.length === 0 || temasTCC.some((tema) => team.temas?.includes(tema));
-    const orientadorMatch =
-      orientador.length === 0 ||
-      (orientador.includes('Com orientador(a)') && team.orientador) ||
-      (orientador.includes('Sem orientador(a)') && !team.orientador);
+    const themesMatch = themes.length === 0 || themes.some((tema) => team.themes?.includes(tema));
+    const teacherTccMatch =
+      teacherTcc.length === 0 ||
+      (teacherTcc.includes('Com orientador(a)') && team.teacherTcc) ||
+      (teacherTcc.includes('Sem orientador(a)') && !team.teacherTcc);
 
-    return statusMatch && temasMatch && orientadorMatch;
+    return statusMatch && themesMatch && teacherTccMatch;
   });
 
-  // Para exibir mensagens de erro, carregamento ou lista vazia
-  if (isLoading) return <Typography>Carregando...</Typography>;
-  if (error && error.message) return <Typography>Erro ao carregar equipes: {error.message}</Typography>;
-  if (teams.length === 0) return <Typography>Nenhuma equipe encontrada.</Typography>;
+  const renderContent = () => {
+    if (isLoading) {
+      return Array.from(new Array(8)).map((_, index) => (
+        <Grid key={index} xs={12} sm={6} md={3}>
+          <Skeleton variant="rounded" height={200} sx={{ borderRadius: 2 }} />
+          <Skeleton variant="text" height={32} sx={{ mt: 2, width: '60%' }} />
+          <Skeleton variant="text" height={32} sx={{ width: '80%' }} />
+        </Grid>
+      ));
+    }
+
+    if (error) {
+      enqueueSnackbar(error, { variant: 'error' }); // Exibe o erro via Notistack
+      return (
+        <Grid item xs={12}>
+          <Typography color="error" variant="h6" align="center">
+            {error}
+          </Typography>
+        </Grid>
+      );
+    }
+
+    if (filteredTeams.length === 0) {
+      return (
+        <Grid item xs={12}>
+          <Typography variant="body1" align="left" sx={{ ml: 3 }}>
+            Nenhuma equipe encontrada.
+          </Typography>
+        </Grid>
+      );
+    }
+
+    return filteredTeams.map((team) => (
+      <Grid key={team.id} xs={12} sm={6} md={3}>
+        <TeamCard team={team} />
+      </Grid>
+    ));
+  };
 
   return (
     <Container>
@@ -74,20 +113,17 @@ export default function TeamsView() {
             openFilter={openFilter}
             onOpenFilter={() => setOpenFilter(true)}
             onCloseFilter={() => setOpenFilter(false)}
-            setFilteredTeam={setFilteredTeam} // Passa o estado de filtro completo ao pai
+            setFilteredTeam={setFilteredTeam}
           />
         </Stack>
       </Stack>
 
       <Grid container spacing={3}>
-        {filteredTeams.map((team) => (
-          <Grid key={team.id} xs={12} sm={6} md={3}>
-            <TeamCard team={team} />
-          </Grid>
-        ))}
+        {renderContent()}
       </Grid>
     </Container>
   );
 }
+
 
 
