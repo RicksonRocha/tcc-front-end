@@ -44,7 +44,7 @@ export default function StudentCard({ student }) {
       }}
     >
       <Typography variant="h7" sx={{ textAlign: 'center', px: 2, mt: 2.5 }}>
-        {student.name || 'null'} 
+        {student.name || 'Null'} 
       </Typography>
     </Box>
   );
@@ -57,7 +57,7 @@ export default function StudentCard({ student }) {
     >
       {`Turno: `}
       <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
-        {student.turno || 'null'} 
+        {student.turno || 'Não informado'} 
       </Box>
     </Typography>
   );
