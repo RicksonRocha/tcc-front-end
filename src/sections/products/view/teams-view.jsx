@@ -1,47 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import { useSnackbar } from 'notistack';
+import { useGetTeamsQuery } from 'src/api/team'; 
 import TeamCard from '../team-card';
 import TeamFilters from '../team-filters';
 
 export default function TeamsView() {
-  const [teams, setTeams] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
+  
+  // Usando o hook 
+  const { data: teams = [], isLoading, error } = useGetTeamsQuery();
+  
   const [openFilter, setOpenFilter] = useState(false);
   const [filteredTeam, setFilteredTeam] = useState({
     teamStatus: '',
     themes: [],
     teacherTcc: [],
   });
-  const { enqueueSnackbar } = useSnackbar();
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const response = await fetch('http://localhost:8081/api/university/tcc');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-        const data = await response.json();
-        setTeams(data);
-        setError(null);
-      } catch (err) {
-
-        enqueueSnackbar("Erro ao carregar equipes.", {
-          variant: 'error',
-          anchorOrigin: { vertical: 'top', horizontal: 'center' },
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTeams();
-  }, [enqueueSnackbar]);
+  if (error) {
+    enqueueSnackbar("Erro ao carregar equipes.", {
+      variant: 'error',
+      anchorOrigin: { vertical: 'top', horizontal: 'center' },
+    });
+  }
 
   const filteredTeams = teams.filter((team) => {
     const { teamStatus, themes, teacherTcc } = filteredTeam;
@@ -65,17 +51,6 @@ export default function TeamsView() {
           <Skeleton variant="text" height={32} sx={{ width: '80%' }} />
         </Grid>
       ));
-    }
-
-    if (error) {
-      enqueueSnackbar(error, { variant: 'error' }); // Exibe o erro via Notistack
-      return (
-        <Grid item xs={12}>
-          <Typography color="error" variant="h6" align="center">
-            {error}
-          </Typography>
-        </Grid>
-      );
     }
 
     if (filteredTeams.length === 0) {
@@ -124,6 +99,7 @@ export default function TeamsView() {
     </Container>
   );
 }
+
 
 
 

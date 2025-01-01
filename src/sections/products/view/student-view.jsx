@@ -1,16 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
-import { useSnackbar } from 'notistack'; // Importando useSnackbar
+import { useSnackbar } from 'notistack';
+import { useGetStudentsQuery } from 'src/api/student'; 
 import StudentCard from '../student-card';
 import StudentFilters from '../student-filters';
 
 export default function StudentView() {
-  const [students, setStudents] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
+  
+  // Usando o hook 
+  const { data: students = [], isLoading, error } = useGetStudentsQuery();
+  
   const [openFilter, setOpenFilter] = useState(false);
   const [filterState, setFilterState] = useState({
     studentTeam: '',
@@ -21,32 +25,31 @@ export default function StudentView() {
     temasTCC: [],
     modalidadeAgendas: [],
   });
-  const { enqueueSnackbar } = useSnackbar(); // Inicializando o Notistack
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const response = await fetch('http://localhost:8081/api/university/student');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  if (error) {
+    enqueueSnackbar("Erro ao carregar alunos.", {
+      variant: 'error',
+      anchorOrigin: { vertical: 'top', horizontal: 'center' },
+    });
+  }
 
-        const data = await response.json();
-        setStudents(data);
-        setError(null);
-      } catch (err) {
+  // Filtra alunos com base nos critérios de `filterState`
+  const filteredStudents = students.filter((student) => {
+    const {
+      studentTeam, turno, linguagem, techBD, habilidadesPessoais,
+      temasTCC, modalidadeAgendas,
+    } = filterState;
 
-        // Exibindo a notificação de erro com Notistack
-        enqueueSnackbar("Erro ao carregar alunos.", {
-          variant: 'error',
-          anchorOrigin: { vertical: 'top', horizontal: 'center' },
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (studentTeam && student.status !== studentTeam) return false;
+    if (turno && student.turno !== turno) return false;
+    if (linguagem.length > 0 && !linguagem.some((lang) => student.linguagem?.includes(lang))) return false;
+    if (techBD.length > 0 && !techBD.some((tech) => student.techBD?.includes(tech))) return false;
+    if (habilidadesPessoais.length > 0 && !habilidadesPessoais.some((habilidade) => student.habilidadesPessoais?.includes(habilidade))) return false;
+    if (temasTCC.length > 0 && !temasTCC.some((tema) => student.temasTCC?.includes(tema))) return false;
+    if (modalidadeAgendas.length > 0 && !modalidadeAgendas.some((modalidade) => student.modalidadeAgendas?.includes(modalidade))) return false;
 
-    fetchStudents();
-  }, [enqueueSnackbar]);
+    return true;
+  });
 
   const renderContent = () => {
     if (isLoading) {
@@ -59,27 +62,17 @@ export default function StudentView() {
       ));
     }
 
-    if (error) {
+    if (filteredStudents.length === 0) {
       return (
         <Grid item xs={12}>
-          <Typography color="error" variant="h6" align="center">
-            {error}
-          </Typography>
-        </Grid>
-      );
-    }
-
-    if (students.length === 0) {
-      return (
-        <Grid item xs={12}>
-          <Typography variant="body1" align="left" sx={{ ml: 3 }}>
+          <Typography variant="body1" align="center">
             Nenhum aluno encontrado.
           </Typography>
         </Grid>
       );
     }
 
-    return students.map((student) => (
+    return filteredStudents.map((student) => (
       <Grid key={student.id} xs={12} sm={6} md={3}>
         <StudentCard student={student} />
       </Grid>
