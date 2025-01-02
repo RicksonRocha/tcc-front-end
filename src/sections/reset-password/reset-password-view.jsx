@@ -4,33 +4,26 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Link from '@mui/material/Link';
 import { alpha, useTheme } from '@mui/material/styles';
 import { bgGradient } from 'src/theme/css';
-import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaResetPassword from 'src/hooks/form/reset-password';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { resetPassword } from 'src/features/auth/auth-actions';
 
 // ----------------------------------------------------------------------
 
 export default function ResetPasswordView() {
   const theme = useTheme();
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { push } = useRouter();
   const dispatch = useDispatch();
 
   const defaultValues = {
     email: '',
-    newPassword: '',
-    confirmPassword: '',
   };
 
   const {
@@ -40,30 +33,29 @@ export default function ResetPasswordView() {
     reset,
   } = useForm({
     resolver: yupResolver(schemaResetPassword),
-    defaultValues, // Incluindo valores padrão
+    defaultValues,
   });
 
   const onSubmit = async (data) => {
     try {
-      // Dispatch do thunk, enviando email e a nova senha
+      // Dispatch do thunk, enviando o email
       const result = await dispatch(
         resetPassword({
           email: data.email,
-          newsenha: data.newPassword,
         })
       );
 
       if (resetPassword.fulfilled.match(result)) {
         // Se for sucesso, exibe a mensagem e reseta o formulário
         reset();
-        alert('Senha redefinida com sucesso!');
+        alert('Solicitação de redefinição de senha enviada com sucesso!');
       } else {
         // Se houver erro, exibe a mensagem de erro
-        alert(result.payload || 'Erro ao redefinir a senha.');
+        alert(result.payload || 'Erro ao solicitar redefinição de senha.');
       }
     } catch (e) {
       console.log(e);
-      alert('Houve um erro ao redefinir sua senha.');
+      alert('Houve um erro ao solicitar redefinição de senha.');
     }
   };
 
@@ -96,48 +88,9 @@ export default function ResetPasswordView() {
                 label="Email"
                 type="email"
                 fullWidth
-                {...register('email')} // Registrando o campo de email
+                {...register('email')}
                 error={!!errors.email}
                 helperText={errors.email?.message}
-              />
-
-              <TextField
-                label="Nova Senha"
-                type={showNewPassword ? 'text' : 'password'}
-                fullWidth
-                {...register('newPassword')}
-                error={!!errors.newPassword}
-                helperText={errors.newPassword?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowNewPassword(!showNewPassword)} edge="end">
-                        <Iconify icon={showNewPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              <TextField
-                label="Confirmação de Senha"
-                type={showConfirmPassword ? 'text' : 'password'}
-                fullWidth
-                {...register('confirmPassword')}
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        edge="end"
-                      >
-                        <Iconify icon={showConfirmPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
               />
             </Stack>
 
@@ -149,7 +102,7 @@ export default function ResetPasswordView() {
                 variant="contained"
                 color="primary"
               >
-                Salvar
+                Enviar
               </LoadingButton>
             </Stack>
 
