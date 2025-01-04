@@ -10,6 +10,9 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import { account } from 'src/_mock/account';
+import { useDispatch } from 'react-redux';
+import { logout } from 'src/features/auth/auth-slice';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +35,8 @@ import { account } from 'src/_mock/account';
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const dispatch = useDispatch();
+  const { push } = useRouter();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -39,6 +44,8 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+    dispatch(logout());
+    push('/');
   };
 
   return (

@@ -1,30 +1,33 @@
-import { createSlice } from '@reduxjs/toolkit'
- 
+import { createSlice } from '@reduxjs/toolkit';
+
 import { userLogin, registerUser } from './auth-actions';
- 
-const access_token = localStorage.getItem('access_token')
-  ? localStorage.getItem('access_token')
-  : null
- 
- 
+
+const token = localStorage.getItem('token') ? localStorage.getItem('token') : null;
+
+const refreshToken = localStorage.getItem('refreshToken')
+  ? localStorage.getItem('refreshToken')
+  : null;
+
 const initialState = {
   loading: false,
   auth: {}, // for user object
-  access_token, // for storing the JWT
+  token, // for storing the JWT
+  refreshToken, // for storing the JWT
   error: null,
   success: false, // for monitoring the registration process.
-}
- 
+};
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     logout: (state) => {
-      localStorage.removeItem('access_token') // deletes token from storage
-      state.loading = false
-      state.access_token = null
-      state.auth = null
-      state.error = null
+      localStorage.removeItem('token'); // deletes token from storage
+      localStorage.removeItem('refreshToken'); // deletes token from storage
+      state.loading = false;
+      state.token = null;
+      state.auth = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -51,14 +54,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.success = true; // registro bem-sucedido
         state.auth = payload; // Atualiza user com os dados do payload
+        console.log('payload auth', payload);
       })
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;        
+        state.error = action.payload;
       });
   },
-})
- 
-export const { logout } = authSlice.actions
- 
-export default authSlice.reducer
+});
+
+export const { logout } = authSlice.actions;
+
+export default authSlice.reducer;

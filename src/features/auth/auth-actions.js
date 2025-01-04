@@ -27,7 +27,8 @@ export const userLogin = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(`${backendURL}/auth/login`, { email, password }, config);
-      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('refreshToken', data.refreshToken);
       return data;
     } catch (error) {
       if (error.response.data.error) {
