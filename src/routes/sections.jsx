@@ -19,17 +19,13 @@ export const TeamsPage = lazy(() => import('src/pages/teams'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferencias-professor'));
 
-// ----------------------------------------------------------------------
-
 export default function Router() {
   const routes = useRoutes([
-    // Rota de redirecionamento para login ao acessar a raiz
-    // { path: '/', element: userLogin ? <IndexPage /> : <Navigate to="/login" /> },
     {
       path: '/',
-      element: <ProtectedRoute />, // Rota protegida
+      element: <ProtectedRoute />,
       children: [
-        { element: <IndexPage />, index: true }, // Rota para o componente Index
+        { element: <IndexPage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },
         { path: 'my-profile', element: <MyProfilePage /> },

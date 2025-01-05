@@ -1,12 +1,12 @@
 import { Outlet, Navigate } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/dashboard';
+import { useAuth } from './hooks/use-auth';
 
 const ProtectedRoute = () => {
-  const token = localStorage.getItem('token');
-  const refreshToken = localStorage.getItem('refreshToken');
+  const { token, refreshToken } = useAuth();
 
   if (!token && !refreshToken) {
-    return <Navigate to="/login" replace />; // Redireciona se não houver tokens
+    return <Navigate to="/login" replace />;
   }
 
   return (

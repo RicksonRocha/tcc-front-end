@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { saveTokens, clearTokens } from 'src/utils/token-services';
 import { userLogin, registerUser } from './auth-actions';
 
 const token = localStorage.getItem('token') ? localStorage.getItem('token') : null;
@@ -22,10 +23,10 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      localStorage.removeItem('token'); // deletes token from storage
-      localStorage.removeItem('refreshToken'); // deletes token from storage
+      clearTokens();
       state.loading = false;
       state.token = null;
+      state.refreshToken = null;
       state.auth = null;
       state.error = null;
     },
@@ -38,7 +39,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.success = true; // registro bem-sucedido
+        state.success = true;
         state.auth = payload; // Atualiza user com os dados do payload
       })
       .addCase(registerUser.rejected, (state, { payload }) => {
@@ -52,9 +53,11 @@ const authSlice = createSlice({
       })
       .addCase(userLogin.fulfilled, (state, { payload }) => {
         state.loading = false;
-        state.success = true; // registro bem-sucedido
-        state.auth = payload; // Atualiza user com os dados do payload
-        console.log('payload auth', payload);
+        state.success = true;
+        state.auth = payload; // Atualiza user com os dados do payload { token, refreshToken }
+        state.token = payload.token;
+        state.refreshToken = payload.refreshToken;
+        saveTokens(payload.token, payload.refreshToken);
       })
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false;
