@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { isTokenExpired, refreshAccessToken } from 'src/features/auth/auth-utils';
+import { useAuth } from 'src/routes/hooks/use-auth';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_KEY_API,
@@ -8,7 +9,7 @@ const api = axios.create({
 
 // Interceptor para verificar o token antes de cada requisição
 api.interceptors.request.use(async (config) => {
-  let token = localStorage.getItem('token');
+  let { token } = useAuth();
 
   if (isTokenExpired(token)) {
     try {
