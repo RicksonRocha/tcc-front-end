@@ -5,10 +5,8 @@ const baseQueryApi = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_KEY_API,
   prepareHeaders: async (headers, { getState }) => {
     const { token } = getState().auth;
-    console.log('token basequery api', getState().auth, token);
     try {
       if (isTokenExpired(token)) {
-        // Atualiza o token se expirado
         const newToken = await refreshAccessToken();
         headers.set('authorization', `Bearer ${newToken}`);
       } else if (token) {
