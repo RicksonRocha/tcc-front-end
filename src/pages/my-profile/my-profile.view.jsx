@@ -28,14 +28,16 @@ import {
   habilidades_pessoais,
   linguagens_de_programacao,
 } from 'src/sections/preferencias-aluno/opcoes';
+import { modalidades_trabalho } from 'src/sections/preferencias-professor/opcoes';
 
 export default function MyProfileView(props) {
   const {
     open,
     handleOpen,
+    onSubmit,
+    isLoading,
     formMethods: {
       handleSubmit,
-      onSubmit,
       register,
       formState: { errors },
       watch,
@@ -93,7 +95,7 @@ export default function MyProfileView(props) {
         </Card>
       </Container>
 
-      <Dialog open={open} maxWidth="lg">
+      <Dialog open={open} fullWidth maxWidth="sm">
         <DialogTitle>Preferências</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -271,6 +273,26 @@ export default function MyProfileView(props) {
                 )}
               </FormControl>
 
+              <FormControl fullWidth error={!!errors.modalidadeTrabalho}>
+                <InputLabel>Modalidade de trabalho</InputLabel>
+                <Select
+                  label="Modalidade de trabalho"
+                  {...register('modalidadeTrabalho')}
+                  error={!!errors.modalidadeTrabalho}
+                >
+                  {modalidades_trabalho.map((modalidadeTrabalho) => (
+                    <MenuItem key={modalidadeTrabalho} value={modalidadeTrabalho}>
+                      {modalidadeTrabalho}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errors.modalidadeTrabalho && (
+                  <Typography variant="caption" color="error">
+                    {errors.modalidadeTrabalho.message}
+                  </Typography>
+                )}
+              </FormControl>
+
               <FormControl fullWidth error={!!errors.frameworkFront}>
                 <InputLabel>Framework Front-end</InputLabel>
                 <Select
@@ -305,9 +327,8 @@ export default function MyProfileView(props) {
         <DialogActions>
           <Button onClick={handleOpen}>Fechar</Button>
           <LoadingButton
-            fullWidth
-            size="large"
             type="submit"
+            loading={isLoading}
             variant="contained"
             color="primary"
             onClick={handleSubmit(onSubmit)}

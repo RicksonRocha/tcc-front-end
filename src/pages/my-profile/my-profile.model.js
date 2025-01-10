@@ -2,12 +2,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { preferenciasUserAluno } from 'src/features/auth/auth-actions';
+import { useCreatePreferenceMutation } from 'src/api/preference';
 import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
 
 export default function useMyProfileModel() {
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+  const [createPreference, { isLoading }] = useCreatePreferenceMutation();
 
   const handleOpen = () => {
     setOpen((prev) => !prev);
@@ -34,12 +35,12 @@ export default function useMyProfileModel() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(preferenciasUserAluno({ ...data }));
+      await createPreference(data);
       reset();
     } catch (e) {
       console.log(e);
     }
   };
 
-  return { open, handleOpen, formMethods, onSubmit };
+  return { open, handleOpen, formMethods, onSubmit, isLoading };
 }

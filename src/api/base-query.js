@@ -16,8 +16,8 @@ const baseQueryApi = fetchBaseQuery({
       headers.set('accept', 'application/json');
       return headers;
     } catch (error) {
-      localStorage.clear(); // Limpa storage e força logout
-      window.location.href = '/login'; // Redireciona para login
+      localStorage.clear();
+      window.location.href = '/login';
       throw error;
     }
   },
