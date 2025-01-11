@@ -102,7 +102,7 @@ export default function SupportMaterialTable() {
                 backgroundColor: "#1877F2",
                 color: "white",
                 "&:hover": {
-                  backgroundColor: "#0C44AE", 
+                  backgroundColor: "#0C44AE",
                 },
               }}
               onClick={handleAddRow}
@@ -191,7 +191,14 @@ export default function SupportMaterialTable() {
           </TableContainer>
         </>
       ) : (
-        <Typography>Ingresse em uma equipe para ter acesso a área de Materiais de Apoio!</Typography>
+        <Container>
+          <Typography variant="h5" textAlign="left" gutterBottom marginTop={3}>
+            Olá! Parece que você ainda não está em uma equipe.
+          </Typography>
+          <Typography textAlign="left">
+            Ingresse em uma equipe para ter acesso à área de Materiais de Apoio!
+          </Typography>
+        </Container>
       )}
     </Container>
   );
