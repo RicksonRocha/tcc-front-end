@@ -120,7 +120,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           disableRipple
           color="inherit"
           endIcon={<Iconify icon="ic:round-group" />}
-          onClick={() => router.push('/minha-equipe')}
+          onClick={() => router.push('/minha-equipe/')}
           sx={{ fontSize: '16px' }}
         >
           Minha Equipe

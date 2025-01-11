@@ -21,6 +21,7 @@ import schemaTeamForm from 'src/hooks/form/my-team-form';
 import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation } from 'src/api/team';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
+import { useSelector } from 'react-redux';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
@@ -31,6 +32,9 @@ export default function MyTeamForm({ teamId }) {
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
   const { push } = useRouter();
+
+  // Obtém o email do usuário logado a partir do estado global
+  const userEmail = useSelector((state) => state.auth.auth.email);
 
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm({
     resolver: yupResolver(schemaTeamForm),
@@ -51,12 +55,12 @@ export default function MyTeamForm({ teamId }) {
       reset({
         tccTitle: teamData.name || '',
         tccDescription: teamData.description || '',
-        members: teamData.integrantes || [],
-        advisor: teamData.orientador || '',
-        temasDeInteresse: teamData.temas || [],
+        members: teamData.members || [],
+        advisor: teamData.teacherTcc || '',
+        temasDeInteresse: teamData.themes || [],
       });
       setIsClosed(teamData.isActive || false);
-      setAdvisorValue(teamData.orientador || '');
+      setAdvisorValue(teamData.teacherTcc || '');
     }
   }, [teamData, reset]);
 
@@ -68,6 +72,7 @@ export default function MyTeamForm({ teamId }) {
       teacherTcc: advisorValue,
       members: data.members,
       themes: data.temasDeInteresse,
+      createdBy: userEmail, // Inclui o usuário logado como criador da equipe
     };
 
     try {
