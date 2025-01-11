@@ -22,6 +22,7 @@ import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation } fro
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useSelector } from 'react-redux';
+import { Button } from '@mui/material';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
@@ -88,7 +89,7 @@ export default function MyTeamForm({ teamId }) {
       setTimeout(() => {
         push('/equipes');
       }, 3000);
-      
+
     } catch (error) {
       console.error('Erro ao salvar equipe:', error);
       setSuccessMessage(`Erro ao salvar equipe: ${error.message}`);
@@ -117,6 +118,7 @@ export default function MyTeamForm({ teamId }) {
                 label="Título do TCC"
                 fullWidth
                 {...register('tccTitle')}
+                InputLabelProps={{ shrink: true }} // Garante que o label não sobreponha
                 error={!!errors.tccTitle}
                 helperText={errors.tccTitle?.message}
               />
@@ -129,6 +131,7 @@ export default function MyTeamForm({ teamId }) {
                 multiline
                 rows={4}
                 {...register('tccDescription')}
+                InputLabelProps={{ shrink: true }} // Adicionado para corrigir sobreposição
                 error={!!errors.tccDescription}
                 helperText={errors.tccDescription?.message}
               />
@@ -149,6 +152,7 @@ export default function MyTeamForm({ teamId }) {
                       <TextField
                         {...params}
                         label="Nomes dos Integrantes"
+                        InputLabelProps={{ shrink: true }} // Adicionado para corrigir sobreposição
                         error={!!errors.members}
                         helperText={errors.members?.message}
                       />
@@ -164,6 +168,7 @@ export default function MyTeamForm({ teamId }) {
                 fullWidth
                 value={advisorValue}
                 onChange={(event) => setAdvisorValue(event.target.value)}
+                InputLabelProps={{ shrink: true }} // Adicionado para corrigir sobreposição
                 error={!!errors.advisor}
                 helperText={errors.advisor?.message}
               />
@@ -171,7 +176,7 @@ export default function MyTeamForm({ teamId }) {
 
             <Grid item xs={12}>
               <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40, width: '100%' }}>
-                <InputLabel>Temas de Interesse</InputLabel>
+                <InputLabel shrink>Temas de Interesse</InputLabel>
                 <Select
                   label="Temas de Interesse"
                   multiple
@@ -214,7 +219,17 @@ export default function MyTeamForm({ teamId }) {
             </Grid>
           </Grid>
 
-          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mt: 4 }}>
+          <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+            <Button
+              fullWidth
+              size="large"
+              variant="contained"
+              color="primary"
+              sx={{ maxWidth: 300, fontSize: '16px' }}
+              onClick={() => push('/equipes')} // Redireciona para a tela de equipes
+            >
+              Voltar
+            </Button>
             <LoadingButton
               fullWidth
               size="large"
