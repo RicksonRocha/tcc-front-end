@@ -1,13 +1,8 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import axios from 'axios';
 
-// Configuração da API base
-export const api = createApi({
-  reducerPath: 'api', 
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3030', // URL da API local para testes
-  }),
-  endpoints: () => ({}), 
-  // Os endpoints serão definidos em arquivos separados, como user.js e etc.
+const api = axios.create({
+  baseURL: import.meta.env.VITE_KEY_API,
+  headers: { 'Content-Type': 'application/json' },
 });
 
 export default api;

@@ -58,9 +58,9 @@ export default function RegisterView() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(registerUser({ ...data }));
+      const response = await dispatch(registerUser(data));
+      console.log('response', response);
       reset();
-      push('/login');
     } catch (e) {
       console.log(e);
     }

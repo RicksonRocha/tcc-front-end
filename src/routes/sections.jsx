@@ -1,14 +1,13 @@
-import { lazy, Suspense } from 'react';
-import { Outlet, Navigate, useRoutes } from 'react-router-dom';
-import { userLogin } from 'src/features/auth/auth-actions';
+import { lazy } from 'react';
+import { Navigate, useRoutes } from 'react-router-dom';
 
-import DashboardLayout from 'src/layouts/dashboard';
 import MyProfilePage from 'src/pages/my-profile';
 import MyTeamPage from 'src/pages/my-team-page';
 import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
 import StudentPage from 'src/pages/student';
 import TeacherPage from 'src/pages/teacher';
 import SupportMaterialPage from 'src/pages/support-material';
+import ProtectedRoute from './protected-route';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -20,23 +19,13 @@ export const TeamsPage = lazy(() => import('src/pages/teams'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferencias-professor'));
 
-// ----------------------------------------------------------------------
-
 export default function Router() {
   const routes = useRoutes([
-    // Rota de redirecionamento para login ao acessar a raiz
-    { path: '/', element: userLogin ? <IndexPage /> : <Navigate to="/login" /> },
-
     {
-      element: (
-        <DashboardLayout>
-          <Suspense>
-            <Outlet />
-          </Suspense>
-        </DashboardLayout>
-      ),
+      path: '/',
+      element: <ProtectedRoute />,
       children: [
-        { element: <IndexPage />, index: true }, // Rota para o componente Index
+        { element: <IndexPage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },
         { path: 'my-profile', element: <MyProfilePage /> },
@@ -47,6 +36,7 @@ export default function Router() {
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
       ],
     },
+
     {
       path: 'login',
       element: <LoginPage />,
