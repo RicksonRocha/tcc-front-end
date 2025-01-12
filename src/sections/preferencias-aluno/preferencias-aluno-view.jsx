@@ -7,13 +7,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
-import { useDispatch } from 'react-redux';
 import { preferenciasUserAluno } from 'src/features/auth/auth-actions';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   turnos,
   bancos_de_dados,
@@ -56,12 +56,31 @@ export default function PreferenciasAlunoView() {
     defaultValues,
   });
 
+  // Obtém o ID do usuário logado
+  const userId = useSelector((state) => state.auth.auth.id);
+
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const payload = {
+  //       ...data,
+  //       userId, // Inclui o userId no payload
+  //     };
+  
+  //     console.log('Payload enviado:', payload);
+  
+  //     await dispatch(preferenciasUserAluno(payload));
+  //     reset();
+  //   } catch (e) {
+  //     console.error('Erro ao criar preferências:', e);
+  //   }
+  // };
+
   const onSubmit = async (data) => {
     try {
-      await dispatch(preferenciasUserAluno({ ...data }));
+      await dispatch(preferenciasUserAluno(data));
       reset();
     } catch (e) {
-      console.log(e);
+      console.error('Erro ao criar preferências:', e);
     }
   };
 
@@ -251,7 +270,7 @@ export default function PreferenciasAlunoView() {
             value={watch('frameworkFront') || []}
             onChange={(e) => {
               const selected = e.target.value;
-              if (selected.length <= 5) {
+              if (selected.length <= 2) {
                 setValue('frameworkFront', selected);
               }
             }}
