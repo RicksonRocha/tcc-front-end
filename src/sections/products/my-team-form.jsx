@@ -37,7 +37,15 @@ export default function MyTeamForm({ teamId }) {
   // Obtém o email do usuário logado a partir do estado global
   const userEmail = useSelector((state) => state.auth.auth.email);
 
-  const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm({
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    reset,
+  } = useForm({
     resolver: yupResolver(schemaTeamForm),
     defaultValues: {
       tccTitle: '',
@@ -89,7 +97,6 @@ export default function MyTeamForm({ teamId }) {
       setTimeout(() => {
         push('/equipes');
       }, 3000);
-
     } catch (error) {
       console.error('Erro ao salvar equipe:', error);
       setSuccessMessage(`Erro ao salvar equipe: ${error.message}`);
@@ -184,11 +191,10 @@ export default function MyTeamForm({ teamId }) {
                   onChange={(e) => {
                     const selected = e.target.value;
                     if (selected.length <= 3) {
-                      setValue('temasDeInteresse', selected);
+                      setValue('temasDeInteresse', selected, { shouldValidate: true });
                     }
                   }}
                   renderValue={(selected) => selected.join(', ')}
-                  error={!!errors.temasDeInteresse}
                 >
                   {TEMAS_TCC_OPTIONS.map((tema) => (
                     <MenuItem key={tema} value={tema}>
@@ -198,9 +204,9 @@ export default function MyTeamForm({ teamId }) {
                   ))}
                 </Select>
               </FormControl>
-              {temasDeInteresse.length === 3 && (
-                <Typography variant="body1" color="#6c7b88" sx={{ mt: 2, fontSize: '0.875rem', ml: 1.5 }}>
-                  Limite de 3 temas atingido.
+              {errors.temasDeInteresse && (
+                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                  {errors.temasDeInteresse?.message}
                 </Typography>
               )}
             </Grid>
