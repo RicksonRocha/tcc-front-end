@@ -32,6 +32,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
+        { path: 'minha-equipe/:teamId', element: <MyTeamPage /> },
         { path: 'orientadores', element: <TeacherPage /> },
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
       ],

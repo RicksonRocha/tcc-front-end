@@ -16,6 +16,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useRouter } from 'src/routes/hooks';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
+import { useGetTeamByStudentQuery } from 'src/api/team';
 
 export const TEAM_OPTIONS = ['Aberta', 'Completa'];
 export const TEACHER_TCC_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
@@ -23,8 +24,10 @@ export const TEACHER_TCC_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
 export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
   const router = useRouter();
 
+  const { data: teamData, error, isLoading } = useGetTeamByStudentQuery();
+
   const [filterState, setFilterState] = useState({
-    teamStatus: '', 
+    teamStatus: '',
     themes: [],
     teacherTcc: [],
   });
@@ -51,6 +54,16 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
     setFilteredTeam(newFilterState);
   };
 
+  const handleMyTeamClick = () => {
+    if (teamData) {
+      router.push(`/minha-equipe/${teamData.id}`); // Redireciona para edição da equipe
+    } else if (error?.status === 404) {
+      router.push('/minha-equipe'); // Redireciona para criação de nova equipe
+    } else {
+      console.error('Erro ao buscar equipe:', error);
+    }
+  };
+
   const renderTeam = (
     <Stack spacing={1}>
       <Typography variant="subtitle3"><b>Situação da Equipe</b></Typography>
@@ -73,10 +86,12 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
         {TEMAS_TCC_OPTIONS.map((item) => (
           <FormControlLabel
             key={item}
-            control={<Checkbox
-              checked={filterState.themes.includes(item)}
-              onChange={() => handleCheckboxChange('themes', item)}
-            />}
+            control={
+              <Checkbox
+                checked={filterState.themes.includes(item)}
+                onChange={() => handleCheckboxChange('themes', item)}
+              />
+            }
             label={item}
           />
         ))}
@@ -92,10 +107,12 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
         {TEACHER_TCC_OPTIONS.map((item) => (
           <FormControlLabel
             key={item}
-            control={<Checkbox
-              checked={filterState.teacherTcc.includes(item)}
-              onChange={() => handleCheckboxChange('teacherTcc', item)}
-            />}
+            control={
+              <Checkbox
+                checked={filterState.teacherTcc.includes(item)}
+                onChange={() => handleCheckboxChange('teacherTcc', item)}
+              />
+            }
             label={item}
           />
         ))}
@@ -120,8 +137,9 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           disableRipple
           color="inherit"
           endIcon={<Iconify icon="ic:round-group" />}
-          onClick={() => router.push('/minha-equipe')}
+          onClick={handleMyTeamClick}
           sx={{ fontSize: '16px' }}
+          disabled={isLoading} // Desabilita enquanto carrega
         >
           Minha Equipe
         </Button>
@@ -183,5 +201,4 @@ TeamFilters.propTypes = {
   onCloseFilter: PropTypes.func,
   setFilteredTeam: PropTypes.func,
 };
-
 
