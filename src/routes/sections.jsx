@@ -3,7 +3,6 @@ import { Navigate, useRoutes } from 'react-router-dom';
 
 import MyProfilePage from 'src/pages/my-profile';
 import MyTeamPage from 'src/pages/my-team-page';
-import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
 import StudentPage from 'src/pages/student';
 import TeacherPage from 'src/pages/teacher';
 import SupportMaterialPage from 'src/pages/support-material';
@@ -48,10 +47,6 @@ export default function Router() {
     {
       path: 'reset-password',
       element: <ResetPasswordPage />,
-    },
-    {
-      path: 'preferencias-aluno',
-      element: <PreferenciasAlunoPage />,
     },
     {
       path: 'preferencias-professor',

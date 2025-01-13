@@ -17,11 +17,14 @@ export const preferenceApi = createApi({
     }),
 
     createPreference: build.mutation({
-      query: (payload) => ({
-        url: '/cluster/preferencias-aluno',
-        method: 'POST',
-        body: payload,
-      }),
+      query: (payload) => {
+        console.log(payload);
+        return {
+          url: '/cluster/preferencias-aluno',
+          method: 'POST',
+          body: payload,
+        }
+      },
       invalidatesTags: ['Teams'],
     }),
 

@@ -25,14 +25,7 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 3030, // Porta do front-end
-    proxy: {
-      '/api/cluster': {
-        target: 'http://localhost:8082', // Porta do back-end
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/cluster/, '/api/cluster'), // Mantém o caminho para o Spring Boot
-      },
-    },
+    port: 3030,
   },
   preview: {
     port: 3030,

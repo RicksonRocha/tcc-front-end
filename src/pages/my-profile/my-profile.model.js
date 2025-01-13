@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useCreatePreferenceMutation } from 'src/api/preference';
 import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
+import { useAuth } from 'src/routes/hooks/use-auth';
 
 export default function useMyProfileModel() {
   const [open, setOpen] = useState(false);
@@ -33,10 +34,13 @@ export default function useMyProfileModel() {
 
   const { reset } = formMethods;
 
+  const { auth } = useAuth()
+
   const onSubmit = async (data) => {
     try {
-      await createPreference(data);
+      await createPreference({ ...data, user_id: auth.id });
       reset();
+      console.log(auth);
     } catch (e) {
       console.log(e);
     }
