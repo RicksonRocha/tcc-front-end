@@ -12,7 +12,8 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ name, email, password, role }, { rejectWithValue }) => {
     try {
-      await axios.post(`${backendURL}/auth/register`, { name, email, password, role }, config);
+      const { data } = await axios.post(`${backendURL}/auth/register`, { name, email, password, role }, config);
+      return data; // Retorna os dados do usuário registrado
     } catch (error) {
       if (error.response.data.error) {
         return rejectWithValue(error.response.data.error);
