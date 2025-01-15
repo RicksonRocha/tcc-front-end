@@ -18,7 +18,7 @@ import Alert from '@mui/material/Alert';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
-import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation } from 'src/api/team';
+import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation, useDeleteTeamMutation } from 'src/api/team';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useSelector } from 'react-redux';
@@ -32,6 +32,7 @@ export default function MyTeamForm({ teamId }) {
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
+  const [deleteTeam] = useDeleteTeamMutation();
   const { push } = useRouter();
 
   // Obtém o email do usuário logado a partir do estado global
@@ -105,6 +106,21 @@ export default function MyTeamForm({ teamId }) {
     setTimeout(() => setSuccessMessage(''), 3000);
   };
 
+  const handleDelete = async () => {
+    try {
+      if (teamId) {
+        await deleteTeam(teamId).unwrap();
+        setSuccessMessage('Equipe excluída com sucesso!');
+        setTimeout(() => push('/equipes'), 3000);
+      }
+    } catch (error) {
+      console.error('Erro ao excluir equipe:', error);
+      setSuccessMessage(`Erro ao excluir equipe: ${error.message}`);
+    }
+
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2, px: 2 }}>
       <Card sx={{ p: 3, width: '100%', maxWidth: '100%', overflow: 'auto' }}>
@@ -136,9 +152,9 @@ export default function MyTeamForm({ teamId }) {
                 label="Descrição da Proposta"
                 fullWidth
                 multiline
-                rows={4}
+                rows={3}
                 {...register('tccDescription')}
-                InputLabelProps={{ shrink: true }} // Adicionado para corrigir sobreposição
+                InputLabelProps={{ shrink: true }}
                 error={!!errors.tccDescription}
                 helperText={errors.tccDescription?.message}
               />
@@ -159,7 +175,7 @@ export default function MyTeamForm({ teamId }) {
                       <TextField
                         {...params}
                         label="Nomes dos Integrantes"
-                        InputLabelProps={{ shrink: true }} // Adicionado para corrigir sobreposição
+                        InputLabelProps={{ shrink: true }} 
                         error={!!errors.members}
                         helperText={errors.members?.message}
                       />
@@ -175,7 +191,7 @@ export default function MyTeamForm({ teamId }) {
                 fullWidth
                 value={advisorValue}
                 onChange={(event) => setAdvisorValue(event.target.value)}
-                InputLabelProps={{ shrink: true }} // Adicionado para corrigir sobreposição
+                InputLabelProps={{ shrink: true }} 
                 error={!!errors.advisor}
                 helperText={errors.advisor?.message}
               />
@@ -231,8 +247,8 @@ export default function MyTeamForm({ teamId }) {
               size="large"
               variant="contained"
               color="primary"
-              sx={{ maxWidth: 300, fontSize: '16px' }}
-              onClick={() => push('/equipes')} // Redireciona para a tela de equipes
+              sx={{ maxWidth: 150, fontSize: '16px' }}
+              onClick={() => push('/equipes')} 
             >
               Voltar
             </Button>
@@ -242,10 +258,22 @@ export default function MyTeamForm({ teamId }) {
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ maxWidth: 300, fontSize: '16px' }}
+              sx={{ maxWidth: 150, fontSize: '16px' }}
             >
               Salvar
             </LoadingButton>
+            {teamId && (
+              <Button
+                fullWidth
+                size="large"
+                variant="contained"
+                color="error"
+                sx={{ maxWidth: 150, fontSize: '16px' }}
+                onClick={handleDelete}
+              >
+                Excluir
+              </Button>
+            )}
           </Stack>
         </form>
       </Card>
