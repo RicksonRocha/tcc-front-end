@@ -15,7 +15,7 @@ export const userApi = createApi({
 
     // Endpoint para listar todos os usuários
     getUsers: build.query({
-      query: () => '/users',
+      query: () => '/user/all',
     }),
   }),
 });

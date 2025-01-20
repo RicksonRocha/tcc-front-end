@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from 'src/api/api';
 import {
   Container,
   Typography,
@@ -20,20 +20,24 @@ import {
   Box,
 } from '@mui/material';
 
-const API_BASE_URL = "http://localhost:3000/api/crud-users";
+// Endpoints
+const GET_USERS_URL = '/user/all';
+const CREATE_USER_URL = '/auth/register';
+// Rota base para atualizar/excluir
+const USER_URL = '/user';
 
 export default function CrudUsersAdmTable() {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [newUser, setNewUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "ALUNO",
+    name: '',
+    email: '',
+    password: '',
+    role: 'ALUNO',
   });
   const [showForm, setShowForm] = useState(false);
-  const [filters, setFilters] = useState({ email: "", role: "" });
+  const [filters, setFilters] = useState({ email: '', role: '' });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -41,95 +45,118 @@ export default function CrudUsersAdmTable() {
     fetchUsers();
   }, []);
 
+  // 1) Buscar todos os usuários usando GET /user/all
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(API_BASE_URL);
+      const response = await api.get(GET_USERS_URL);
       setUsers(response.data);
       setFilteredUsers(response.data);
     } catch (error) {
-      console.error("Erro ao buscar usuários:", error);
+      console.error('Erro ao buscar usuários:', error);
     }
   };
 
+  // Validação simples de senha
   const validatePassword = (password) => /^\d{8,}$/.test(password);
 
   const handleAddRow = () => {
-    setNewUser({ name: "", email: "", password: "", role: "ALUNO" });
+    setNewUser({ name: '', email: '', password: '', role: 'ALUNO' });
     setSelectedUserId(null);
     setShowForm(true);
     setErrors({});
   };
 
+  // 2) Criar ou Atualizar usuário
   const handleSave = async () => {
+    // Se for criar um usuário, a senha é obrigatória
     if (!newUser.password && selectedUserId === null) {
-      setErrors((prev) => ({ ...prev, password: "Senha é obrigatória." }));
+      setErrors((prev) => ({ ...prev, password: 'Senha é obrigatória.' }));
       return;
     }
-
+    // Se tiver senha, valida se tem no mínimo 8 dígitos numéricos
     if (newUser.password && !validatePassword(newUser.password)) {
       setErrors((prev) => ({
         ...prev,
-        password: "A senha deve conter no mínimo 8 números.",
+        password: 'A senha deve conter no mínimo 8 números.',
       }));
       return;
     }
 
     try {
       if (selectedUserId) {
-        await axios.put(`${API_BASE_URL}/${selectedUserId}`, newUser);
+        // Atualizar (PUT /user/{id})
+        await api.put(`${USER_URL}/${selectedUserId}`, {
+          email: newUser.email,
+          password: newUser.password, // se estiver vazio, não tem problema
+          role: newUser.role,
+          name: newUser.name,
+        });
       } else {
-        await axios.post(API_BASE_URL, newUser);
+        // Criar (POST /auth/register)
+        await api.post(CREATE_USER_URL, {
+          email: newUser.email,
+          password: newUser.password,
+          role: newUser.role,
+          name: newUser.name,
+        });
       }
-      setNewUser({ name: "", email: "", password: "", role: "ALUNO" });
+      // Limpar e recarregar lista
+      setNewUser({ name: '', email: '', password: '', role: 'ALUNO' });
       setSelectedUserId(null);
       setShowForm(false);
       fetchUsers();
     } catch (error) {
-      console.error("Erro ao salvar usuário:", error);
+      console.error('Erro ao salvar usuário:', error);
     }
   };
 
+  // Ao clicar em "Editar", carregamos os dados no formulário
   const handleEdit = () => {
     const user = users.find((u) => u.id === selectedUserId);
     if (user) {
       setNewUser({
         name: user.name,
         email: user.email,
-        password: "",
+        password: '',
         role: user.role,
       });
       setShowForm(true);
     }
   };
 
+  // 3) Excluir usuário (DELETE /user/{id})
   const handleDelete = async () => {
     try {
       if (selectedUserId) {
-        await axios.delete(`${API_BASE_URL}/${selectedUserId}`);
+        await api.delete(`${USER_URL}/${selectedUserId}`);
         setSelectedUserId(null);
         fetchUsers();
       }
     } catch (error) {
-      console.error("Erro ao excluir usuário:", error);
+      console.error('Erro ao excluir usuário:', error);
     }
   };
 
+  // Selecionar/deselecionar usuário da lista
   const handleRowClick = (id) => {
     setSelectedUserId((prev) => (prev === id ? null : id));
   };
 
+  // Cancelar edição/criação
   const handleCancel = () => {
     setShowForm(false);
     setSelectedUserId(null);
-    setNewUser({ name: "", email: "", password: "", role: "ALUNO" });
+    setNewUser({ name: '', email: '', password: '', role: 'ALUNO' });
     setErrors({});
   };
 
+  // Atualizar estado do formulário
   const handleChange = (field, value) => {
     setNewUser((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: "" }));
+    setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
+  // 4) Lógica de filtros (Drawer)
   const applyFilters = () => {
     const filtered = users.filter(
       (user) =>
@@ -141,24 +168,24 @@ export default function CrudUsersAdmTable() {
   };
 
   const clearFilters = () => {
-    setFilters({ email: "", role: "" });
+    setFilters({ email: '', role: '' });
     setFilteredUsers(users);
     setIsFilterOpen(false);
   };
 
   return (
     <Container>
-      <Typography variant="h4" align="center" sx={{ mb: 3 }}>
+      <Typography variant="h4" align="left" sx={{ mb: 3 }}>
         Usuários
       </Typography>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 3, justifyContent: "flex-start" }}>
+      <Stack direction="row" spacing={1} sx={{ mb: 3, justifyContent: 'flex-start' }}>
         <Button
           size="small"
           variant="contained"
           color="primary"
           onClick={handleAddRow}
-          sx={{ height: "32px", minWidth: "100px" }}
+          sx={{ height: '32px', minWidth: '100px' }}
         >
           Adicionar
         </Button>
@@ -168,7 +195,7 @@ export default function CrudUsersAdmTable() {
           color="secondary"
           onClick={handleEdit}
           disabled={!selectedUserId}
-          sx={{ height: "32px", minWidth: "100px" }}
+          sx={{ height: '32px', minWidth: '100px' }}
         >
           Editar
         </Button>
@@ -176,12 +203,12 @@ export default function CrudUsersAdmTable() {
           size="small"
           variant="contained"
           sx={{
-            height: "32px",
-            minWidth: "100px",
-            backgroundColor: "#FF4842",
-            color: "white",
-            "&:hover": {
-              backgroundColor: "#FF7A75",
+            height: '32px',
+            minWidth: '100px',
+            backgroundColor: '#FF4842',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#FF7A75',
             },
           }}
           onClick={handleDelete}
@@ -193,12 +220,13 @@ export default function CrudUsersAdmTable() {
           size="small"
           variant="outlined"
           onClick={() => setIsFilterOpen(true)}
-          sx={{ height: "32px", minWidth: "100px" }}
+          sx={{ height: '32px', minWidth: '100px' }}
         >
           Filtros
         </Button>
       </Stack>
 
+      {/* Drawer de Filtros */}
       <Drawer
         anchor="right"
         open={isFilterOpen}
@@ -243,7 +271,7 @@ export default function CrudUsersAdmTable() {
             variant="contained"
             color="primary"
             onClick={applyFilters}
-            sx={{ minWidth: "100px" }}
+            sx={{ minWidth: '100px' }}
           >
             Aplicar
           </Button>
@@ -251,13 +279,14 @@ export default function CrudUsersAdmTable() {
             size="small"
             variant="outlined"
             onClick={clearFilters}
-            sx={{ minWidth: "100px" }}
+            sx={{ minWidth: '100px' }}
           >
             Limpar
           </Button>
         </Stack>
       </Drawer>
 
+      {/* Tabela ou Form */}
       {!showForm ? (
         <TableContainer component={Paper}>
           <Table>
@@ -275,8 +304,9 @@ export default function CrudUsersAdmTable() {
                   onClick={() => handleRowClick(user.id)}
                   selected={selectedUserId === user.id}
                   sx={{
-                    cursor: "pointer",
-                    backgroundColor: selectedUserId === user.id ? "rgba(0, 0, 255, 0.1)" : "inherit",
+                    cursor: 'pointer',
+                    backgroundColor:
+                      selectedUserId === user.id ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
                   }}
                 >
                   <TableCell>{user.name}</TableCell>
@@ -292,13 +322,13 @@ export default function CrudUsersAdmTable() {
           <TextField
             label="Nome"
             value={newUser.name}
-            onChange={(e) => handleChange("name", e.target.value)}
+            onChange={(e) => handleChange('name', e.target.value)}
             fullWidth
           />
           <TextField
             label="E-mail"
             value={newUser.email}
-            onChange={(e) => handleChange("email", e.target.value)}
+            onChange={(e) => handleChange('email', e.target.value)}
             fullWidth
           />
           {selectedUserId === null && (
@@ -306,7 +336,7 @@ export default function CrudUsersAdmTable() {
               label="Senha"
               type="password"
               value={newUser.password}
-              onChange={(e) => handleChange("password", e.target.value)}
+              onChange={(e) => handleChange('password', e.target.value)}
               fullWidth
               error={!!errors.password}
               helperText={errors.password}
@@ -317,7 +347,7 @@ export default function CrudUsersAdmTable() {
           </Typography>
           <RadioGroup
             value={newUser.role}
-            onChange={(e) => handleChange("role", e.target.value)}
+            onChange={(e) => handleChange('role', e.target.value)}
             row
           >
             <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
@@ -330,7 +360,7 @@ export default function CrudUsersAdmTable() {
               variant="contained"
               color="primary"
               onClick={handleSave}
-              sx={{ height: "32px", minWidth: "100px" }}
+              sx={{ height: '32px', minWidth: '100px' }}
             >
               Salvar
             </Button>
@@ -338,7 +368,7 @@ export default function CrudUsersAdmTable() {
               size="small"
               variant="outlined"
               onClick={handleCancel}
-              sx={{ height: "32px", minWidth: "100px" }}
+              sx={{ height: '32px', minWidth: '100px' }}
             >
               Cancelar
             </Button>
