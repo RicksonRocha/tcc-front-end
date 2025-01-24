@@ -38,18 +38,21 @@ export default function MyTeamForm({ teamId }) {
   const { push } = useRouter();
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.debug('Debug: Dados dos estudantes carregados:', students);
-      console.debug('Debug: Status do carregamento de estudantes:', isLoadingStudents);
-      if (isError) {
-        console.error('Erro ao carregar estudantes:', error);
+    if (isError) {
+      console.error('Erro ao carregar estudantes:', error);
+      if (error.status === 403) {
+        console.log('Você não tem permissão para acessar os dados dos estudantes.');
       }
+    } else if (!isLoadingStudents && students.length === 0) {
+      console.warn('Nenhum estudante encontrado.');
+    } else {
+      console.log('Estudantes carregados:', students);
     }
   }, [students, isLoadingStudents, isError, error]);
 
   // Ordena os nomes dos estudantes
   const sortedStudents = students
-    .filter((student) => student?.name) 
+    .filter((student) => student?.name)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const userEmail = useSelector((state) => state.auth.auth.email);
