@@ -6,17 +6,22 @@ export const teamApi = createApi({
   tagTypes: ['Teams'],
   baseQuery: baseQueryApi,
   endpoints: (build) => ({
-    
     // Endpoint para obter todas as equipes
     getTeams: build.query({
-      query: () => '/university/tcc', 
+      query: () => '/university/tcc',
       providesTags: ['Teams'],
     }),
 
     // Endpoint para obter uma equipe específica por ID
     getTeamById: build.query({
-      query: (id) => `/university/tcc/${id}`, 
+      query: (id) => `/university/tcc/${id}`,
       providesTags: (result, error, id) => [{ type: 'Teams', id }],
+    }),
+
+    // Endpoint para obter a equipe do usuário logado
+    getTeamByStudent: build.query({
+      query: () => '/university/tcc/student',
+      providesTags: ['Teams'],
     }),
 
     // Endpoint para criar uma nova equipe
@@ -53,7 +58,9 @@ export const teamApi = createApi({
 export const { 
   useGetTeamsQuery, 
   useGetTeamByIdQuery, 
+  useGetTeamByStudentQuery, 
   useCreateTeamMutation, 
   useUpdateTeamMutation, 
   useDeleteTeamMutation 
 } = teamApi;
+

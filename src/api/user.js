@@ -1,4 +1,4 @@
-import { createApi } from '@reduxjs/toolkit/query';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import baseQueryApi from './base-query';
 
 // Definição dos endpoints relacionados a usuários
@@ -17,6 +17,11 @@ export const userApi = createApi({
     getUsers: build.query({
       query: () => '/user/all',
     }),
+
+    getStudents: build.query({
+      query: () => '/users/students',
+      providesTags: ['Users'],
+    }),
   }),
 });
 
@@ -24,7 +29,8 @@ export const userApi = createApi({
 export const {
   useRegisterUserMutation,
   useLoginUserMutation,
-  useResetPasswordMutation, 
+  useResetPasswordMutation,
   useGetUserQuery,
   useGetUsersQuery,
+  useGetStudentsQuery
 } = userApi;

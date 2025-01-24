@@ -12,7 +12,8 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ name, email, password, role }, { rejectWithValue }) => {
     try {
-      await axios.post(`${backendURL}/auth/register`, { name, email, password, role }, config);
+      const { data } = await axios.post(`${backendURL}/auth/register`, { name, email, password, role }, config);
+      return data; // Retorna os dados do usuário registrado
     } catch (error) {
       if (error.response.data.error) {
         return rejectWithValue(error.response.data.error);
@@ -85,47 +86,6 @@ export const resetPassword = createAsyncThunk(
       // Tratamento de erro e rejeição com mensagem específica do backend ou mensagem padrão
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data.error || 'Erro ao redefinir a senha.');
-      }
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const preferenciasUserAluno = createAsyncThunk(
-  'auth/preferencias-aluno',
-  async (
-    {
-      turno,
-      linguagemProgramacao,
-      bancoDeDados,
-      nivelDeExperiencia,
-      habilidadesPessoais,
-      temasDeInteresse,
-      disponibilidade,
-      modalidadeTrabalho,
-      frameworkFront,
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      await axios.post(
-        `${backendURL}/auth/preferencias-aluno`,
-        {
-          turno,
-          linguagemProgramacao,
-          bancoDeDados,
-          nivelDeExperiencia,
-          habilidadesPessoais,
-          temasDeInteresse,
-          disponibilidade,
-          modalidadeTrabalho,
-          frameworkFront,
-        },
-        config
-      );
-    } catch (error) {
-      if (error.response.data.error) {
-        return rejectWithValue(error.response.data.error);
       }
       return rejectWithValue(error.message);
     }

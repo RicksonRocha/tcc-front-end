@@ -18,9 +18,12 @@ import Alert from '@mui/material/Alert';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
-import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation } from 'src/api/team';
+import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation, useDeleteTeamMutation } from 'src/api/team';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
+import { useGetStudentsQuery } from 'src/api/user';
+import { useSelector } from 'react-redux';
+import { Button } from '@mui/material';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
@@ -30,9 +33,36 @@ export default function MyTeamForm({ teamId }) {
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
+  const [deleteTeam] = useDeleteTeamMutation();
+  const { data: students = [], isLoading: isLoadingStudents, isError, error } = useGetStudentsQuery();
   const { push } = useRouter();
 
-  const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm({
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('Debug: Dados dos estudantes carregados:', students);
+      console.debug('Debug: Status do carregamento de estudantes:', isLoadingStudents);
+      if (isError) {
+        console.error('Erro ao carregar estudantes:', error);
+      }
+    }
+  }, [students, isLoadingStudents, isError, error]);
+
+  // Ordena os nomes dos estudantes
+  const sortedStudents = students
+    .filter((student) => student?.name) 
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const userEmail = useSelector((state) => state.auth.auth.email);
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    reset,
+  } = useForm({
     resolver: yupResolver(schemaTeamForm),
     defaultValues: {
       tccTitle: '',
@@ -51,12 +81,12 @@ export default function MyTeamForm({ teamId }) {
       reset({
         tccTitle: teamData.name || '',
         tccDescription: teamData.description || '',
-        members: teamData.integrantes || [],
-        advisor: teamData.orientador || '',
-        temasDeInteresse: teamData.temas || [],
+        members: teamData.members || [],
+        advisor: teamData.teacherTcc || '',
+        temasDeInteresse: teamData.themes || [],
       });
       setIsClosed(teamData.isActive || false);
-      setAdvisorValue(teamData.orientador || '');
+      setAdvisorValue(teamData.teacherTcc || '');
     }
   }, [teamData, reset]);
 
@@ -68,6 +98,7 @@ export default function MyTeamForm({ teamId }) {
       teacherTcc: advisorValue,
       members: data.members,
       themes: data.temasDeInteresse,
+      createdBy: userEmail,
     };
 
     try {
@@ -78,18 +109,24 @@ export default function MyTeamForm({ teamId }) {
         await createTeam(formData).unwrap();
         setSuccessMessage('Equipe criada com sucesso!');
       }
-
-      // Aguarda 2 segundos antes de redirecionar
-      setTimeout(() => {
-        push('/equipes');
-      }, 3000);
-      
-    } catch (error) {
-      console.error('Erro ao salvar equipe:', error);
-      setSuccessMessage(`Erro ao salvar equipe: ${error.message}`);
+      setTimeout(() => push('/equipes'), 3000);
+    } catch (err) {
+      console.error('Erro ao salvar equipe:', err);
+      setSuccessMessage(`Erro ao salvar equipe: ${err.message}`);
     }
+  };
 
-    setTimeout(() => setSuccessMessage(''), 3000);
+  const handleDelete = async () => {
+    try {
+      if (teamId) {
+        await deleteTeam(teamId).unwrap();
+        setSuccessMessage('Equipe excluída com sucesso!');
+        setTimeout(() => push('/equipes'), 3000);
+      }
+    } catch (err) {
+      console.error('Erro ao excluir equipe:', err);
+      setSuccessMessage(`Erro ao excluir equipe: ${err.message}`);
+    }
   };
 
   return (
@@ -112,6 +149,7 @@ export default function MyTeamForm({ teamId }) {
                 label="Título do TCC"
                 fullWidth
                 {...register('tccTitle')}
+                InputLabelProps={{ shrink: true }}
                 error={!!errors.tccTitle}
                 helperText={errors.tccTitle?.message}
               />
@@ -122,8 +160,9 @@ export default function MyTeamForm({ teamId }) {
                 label="Descrição da Proposta"
                 fullWidth
                 multiline
-                rows={4}
+                rows={3}
                 {...register('tccDescription')}
+                InputLabelProps={{ shrink: true }}
                 error={!!errors.tccDescription}
                 helperText={errors.tccDescription?.message}
               />
@@ -136,16 +175,18 @@ export default function MyTeamForm({ teamId }) {
                 render={({ field }) => (
                   <Autocomplete
                     multiple
-                    options={[]}
-                    freeSolo
+                    options={sortedStudents.map((student) => student.name)}
+                    loading={isLoadingStudents}
+                    freeSolo={false}
                     value={field.value}
                     onChange={(event, newValue) => field.onChange(newValue)}
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         label="Nomes dos Integrantes"
+                        InputLabelProps={{ shrink: true }}
                         error={!!errors.members}
-                        helperText={errors.members?.message}
+                        helperText={errors.members?.message || (isLoadingStudents ? 'Carregando...' : '')}
                       />
                     )}
                   />
@@ -159,6 +200,7 @@ export default function MyTeamForm({ teamId }) {
                 fullWidth
                 value={advisorValue}
                 onChange={(event) => setAdvisorValue(event.target.value)}
+                InputLabelProps={{ shrink: true }}
                 error={!!errors.advisor}
                 helperText={errors.advisor?.message}
               />
@@ -166,7 +208,7 @@ export default function MyTeamForm({ teamId }) {
 
             <Grid item xs={12}>
               <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40, width: '100%' }}>
-                <InputLabel>Temas de Interesse</InputLabel>
+                <InputLabel shrink>Temas de Interesse</InputLabel>
                 <Select
                   label="Temas de Interesse"
                   multiple
@@ -174,11 +216,10 @@ export default function MyTeamForm({ teamId }) {
                   onChange={(e) => {
                     const selected = e.target.value;
                     if (selected.length <= 3) {
-                      setValue('temasDeInteresse', selected);
+                      setValue('temasDeInteresse', selected, { shouldValidate: true });
                     }
                   }}
                   renderValue={(selected) => selected.join(', ')}
-                  error={!!errors.temasDeInteresse}
                 >
                   {TEMAS_TCC_OPTIONS.map((tema) => (
                     <MenuItem key={tema} value={tema}>
@@ -188,9 +229,9 @@ export default function MyTeamForm({ teamId }) {
                   ))}
                 </Select>
               </FormControl>
-              {temasDeInteresse.length === 3 && (
-                <Typography variant="body1" color="#6c7b88" sx={{ mt: 2, fontSize: '0.875rem', ml: 1.5 }}>
-                  Limite de 3 temas atingido.
+              {errors.temasDeInteresse && (
+                <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                  {errors.temasDeInteresse?.message}
                 </Typography>
               )}
             </Grid>
@@ -209,17 +250,39 @@ export default function MyTeamForm({ teamId }) {
             </Grid>
           </Grid>
 
-          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mt: 4 }}>
+          <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+            <Button
+              fullWidth
+              size="large"
+              variant="contained"
+              color="primary"
+              sx={{ maxWidth: 150, fontSize: '16px' }}
+              onClick={() => push('/equipes')}
+            >
+              Voltar
+            </Button>
             <LoadingButton
               fullWidth
               size="large"
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ maxWidth: 300, fontSize: '16px' }}
+              sx={{ maxWidth: 150, fontSize: '16px' }}
             >
               Salvar
             </LoadingButton>
+            {teamId && (
+              <Button
+                fullWidth
+                size="large"
+                variant="contained"
+                color="error"
+                sx={{ maxWidth: 150, fontSize: '16px' }}
+                onClick={handleDelete}
+              >
+                Excluir
+              </Button>
+            )}
           </Stack>
         </form>
       </Card>
@@ -230,6 +293,7 @@ export default function MyTeamForm({ teamId }) {
 MyTeamForm.propTypes = {
   teamId: PropTypes.number,
 };
+
 
 
 
