@@ -45,7 +45,7 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
     dispatch(logout());
-    push('/');
+    push('/login');
   };
 
   return (

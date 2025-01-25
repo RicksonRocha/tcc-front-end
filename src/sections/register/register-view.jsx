@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm, Controller } from 'react-hook-form';
 import schemaRegister from 'src/hooks/form/register';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { registerUser } from 'src/features/auth/auth-actions';
 
 export default function RegisterView() {
@@ -39,11 +39,6 @@ export default function RegisterView() {
   };
 
   const {
-    auth: { user },
-    loading,
-  } = useSelector((state) => state.auth);
-
-  const {
     register,
     handleSubmit,
     control,
@@ -57,8 +52,7 @@ export default function RegisterView() {
   const onSubmit = async (data) => {
     try {
       const response = await dispatch(registerUser(data)).unwrap(); // Garante que os dados sejam acessados
-      console.log('Response:', response); // Debug para verificar a resposta correta
-  
+
       if (response) {
         setSuccessMessage('Cadastro realizado com sucesso!');
         reset(); // Limpa os campos do formulário
@@ -70,7 +64,7 @@ export default function RegisterView() {
     } catch (error) {
       console.error('Erro ao cadastrar usuário:', error); // Mensagem clara para debug
     }
-  };  
+  };
 
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -191,6 +185,3 @@ export default function RegisterView() {
     </Box>
   );
 }
-
-
-

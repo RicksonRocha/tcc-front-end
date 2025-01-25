@@ -15,8 +15,9 @@ import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import schemaLogin from 'src/hooks/form/login';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { userLogin } from 'src/features/auth/auth-actions';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -32,11 +33,6 @@ export default function LoginView() {
   };
 
   const {
-    auth: { user },
-    loading,
-  } = useSelector((state) => state.auth);
-
-  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -48,11 +44,17 @@ export default function LoginView() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(userLogin(data));
+      const response = await dispatch(userLogin(data));
+
+      if (response.payload.error) {
+        enqueueSnackbar(response.payload.message, { variant: 'error' });
+        return;
+      }
+
       reset();
       push('/');
     } catch (e) {
-      console.log(e);
+      console.log('error', e);
     }
   };
 
