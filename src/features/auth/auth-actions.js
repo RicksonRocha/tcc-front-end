@@ -12,7 +12,11 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ name, email, password, role }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${backendURL}/auth/register`, { name, email, password, role }, config);
+      const { data } = await axios.post(
+        `${backendURL}/auth/register`,
+        { name, email, password, role },
+        config
+      );
       return data; // Retorna os dados do usuário registrado
     } catch (error) {
       if (error.response.data.error) {
@@ -30,52 +34,20 @@ export const userLogin = createAsyncThunk(
       const { data } = await axios.post(`${backendURL}/auth/login`, { email, password }, config);
       return data;
     } catch (error) {
-      if (error.response.data.error) {
-        return rejectWithValue(error.response.data.error);
+      if (error.response.data) {
+        return rejectWithValue(error.response.data);
       }
       return rejectWithValue(error.message);
     }
   }
 );
 
-// // Endpoints base para a recuperação de senha
-// export const recoveryPassword = createAsyncThunk(
-//   'auth/reset-password',
-//   async ({ email }, { rejectWithValue }) => {
-//     try {
-//       await axios.post(`${backendURL}/auth/reset-password`, { email }, config);
-//     } catch (error) {
-//       if (error.response.data.error) {
-//         return rejectWithValue(error.response.data.error);
-//       }
-//       return rejectWithValue(error.message);
-//     }
-//   }
-// );
-
-// // Endpoint para definir uma nova senha com token
-// export const resetPassword = createAsyncThunk(
-//   'auth/resetPassword',
-//   async ({ token, password }, { rejectWithValue }) => {
-//     try {
-//       await axios.post(`${backendURL}/auth/reset-password`, { token, password }, config);
-//     } catch (error) {
-//       if (error.response.data.error) {
-//         return rejectWithValue(error.response.data.error);
-//       }
-//       return rejectWithValue(error.message);
-//     }
-//   }
-// );
-
-// Thunk para resetar a senha
 export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
+  'auth/reset-password',
   async ({ email, newsenha }, { rejectWithValue }) => {
     try {
-      // Faz a requisição para o endpoint reset-password
       const response = await axios.post(
-        `http://localhost:3000/auth/reset-password`, // usar ${backendURL} não estava dando certo, constava como undefined, tive que colocar o endereço direto
+        `${backendURL}/auth/reset-password`,
         { email, newsenha },
         config
       );
