@@ -58,6 +58,7 @@ const authSlice = createSlice({
         state.token = payload.token;
         state.refreshToken = payload.refreshToken;
         saveTokens(payload.token, payload.refreshToken);
+        console.log('Token salvo:', payload.token);
       })
       .addCase(userLogin.rejected, (state, action) => {
         state.loading = false;
