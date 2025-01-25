@@ -21,10 +21,10 @@ import {
 } from '@mui/material';
 
 // Endpoints
-const GET_USERS_URL = '/user/all';
+const GET_USERS_URL = '/auth/listarTodosUsuarios';
 const CREATE_USER_URL = '/auth/register';
-// Rota base para atualizar/excluir
-const USER_URL = '/user';
+const UPDATE_USER_URL = '/auth/atualizarUsuario';
+const DELETE_USER_URL = '/auth/deletarUsuario';
 
 export default function CrudUsersAdmTable() {
   const [users, setUsers] = useState([]);
@@ -45,7 +45,7 @@ export default function CrudUsersAdmTable() {
     fetchUsers();
   }, []);
 
-  // 1) Buscar todos os usuários usando GET /user/all
+  // Buscar todos os usuários
   const fetchUsers = async () => {
     try {
       const response = await api.get(GET_USERS_URL);
@@ -66,33 +66,29 @@ export default function CrudUsersAdmTable() {
     setErrors({});
   };
 
-  // 2) Criar ou Atualizar usuário
+  // Criar ou Atualizar usuário
   const handleSave = async () => {
-    // Se for criar um usuário, a senha é obrigatória
-    if (!newUser.password && selectedUserId === null) {
-      setErrors((prev) => ({ ...prev, password: 'Senha é obrigatória.' }));
-      return;
-    }
-    // Se tiver senha, valida se tem no mínimo 8 dígitos numéricos
-    if (newUser.password && !validatePassword(newUser.password)) {
-      setErrors((prev) => ({
-        ...prev,
-        password: 'A senha deve conter no mínimo 8 números.',
-      }));
-      return;
-    }
-
     try {
       if (selectedUserId) {
-        // Atualizar (PUT /user/{id})
-        await api.put(`${USER_URL}/${selectedUserId}`, {
-          email: newUser.email,
-          password: newUser.password, // se estiver vazio, não tem problema
-          role: newUser.role,
+        // Atualizar
+        await api.put(`${UPDATE_USER_URL}/${selectedUserId}`, {
           name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
         });
       } else {
-        // Criar (POST /auth/register)
+        // Criar
+        if (!newUser.password) {
+          setErrors((prev) => ({ ...prev, password: 'Senha é obrigatória.' }));
+          return;
+        }
+        if (!validatePassword(newUser.password)) {
+          setErrors((prev) => ({
+            ...prev,
+            password: 'A senha deve conter no mínimo 8 números.',
+          }));
+          return;
+        }
         await api.post(CREATE_USER_URL, {
           email: newUser.email,
           password: newUser.password,
@@ -110,7 +106,7 @@ export default function CrudUsersAdmTable() {
     }
   };
 
-  // Ao clicar em "Editar", carregamos os dados no formulário
+  // Editar usuário
   const handleEdit = () => {
     const user = users.find((u) => u.id === selectedUserId);
     if (user) {
@@ -124,11 +120,11 @@ export default function CrudUsersAdmTable() {
     }
   };
 
-  // 3) Excluir usuário (DELETE /user/{id})
+  // Excluir usuário
   const handleDelete = async () => {
     try {
       if (selectedUserId) {
-        await api.delete(`${USER_URL}/${selectedUserId}`);
+        await api.delete(`${DELETE_USER_URL}/${selectedUserId}`);
         setSelectedUserId(null);
         fetchUsers();
       }
@@ -156,7 +152,7 @@ export default function CrudUsersAdmTable() {
     setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
-  // 4) Lógica de filtros (Drawer)
+  // Lógica de filtros
   const applyFilters = () => {
     const filtered = users.filter(
       (user) =>
@@ -192,7 +188,7 @@ export default function CrudUsersAdmTable() {
         <Button
           size="small"
           variant="contained"
-          color="secondary"
+          color="primary"
           onClick={handleEdit}
           disabled={!selectedUserId}
           sx={{ height: '32px', minWidth: '100px' }}
@@ -226,7 +222,6 @@ export default function CrudUsersAdmTable() {
         </Button>
       </Stack>
 
-      {/* Drawer de Filtros */}
       <Drawer
         anchor="right"
         open={isFilterOpen}
@@ -286,7 +281,6 @@ export default function CrudUsersAdmTable() {
         </Stack>
       </Drawer>
 
-      {/* Tabela ou Form */}
       {!showForm ? (
         <TableContainer component={Paper}>
           <Table>
