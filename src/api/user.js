@@ -19,7 +19,7 @@ export const userApi = createApi({
     }),
 
     getStudents: build.query({
-      query: () => '/users/students',
+      query: () => '/auth/users/students',
       providesTags: ['Users'],
     }),
   }),
