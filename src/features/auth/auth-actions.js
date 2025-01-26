@@ -19,10 +19,10 @@ export const registerUser = createAsyncThunk(
       );
       return data; // Retorna os dados do usuário registrado
     } catch (error) {
-      if (error.response.data.error) {
-        return rejectWithValue(error.response.data.error);
+      if (error.response && error.response.data && error.response.data.message) {
+        return rejectWithValue(error.response.data.message);
       }
-      return rejectWithValue(error.message);
+      return rejectWithValue('Erro ao cadastrar usuário.');
     }
   }
 );
