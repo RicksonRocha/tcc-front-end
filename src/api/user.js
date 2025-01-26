@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import baseQueryApi from './base-query';
-// Definição dos endpoints relacionados a usuários
+
 export const userApi = createApi({
   reducerPath: 'userApi',
   tagTypes: ['Users'],
@@ -12,21 +12,37 @@ export const userApi = createApi({
     }),
     // Endpoint para listar todos os usuários
     getUsers: build.query({
-      query: () => '/users',
+      query: () => '/auth/users',
     }),
-
+    // Endpoint para listar estudantes
     getStudents: build.query({
       query: () => '/auth/users/students',
       providesTags: ['Users'],
     }),
+    // Endpoint para atualizar um usuário
+    updateUser: build.mutation({
+      query: ({ id, ...updatedUser }) => ({
+        url: `/auth/users/${id}`,
+        method: 'PUT',
+        body: updatedUser,
+      }),
+      invalidatesTags: ['Users'],
+    }),
+    // Endpoint para excluir um usuário
+    deleteUser: build.mutation({
+      query: (id) => ({
+        url: `/auth/users/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Users'],
+    }),
   }),
 });
-// Exportando os hooks gerados automaticamente pelo react toolkit query
+
 export const {
-  useRegisterUserMutation,
-  useLoginUserMutation,
-  useResetPasswordMutation,
   useGetUserQuery,
   useGetUsersQuery,
-  useGetStudentsQuery
+  useGetStudentsQuery,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
 } = userApi;
