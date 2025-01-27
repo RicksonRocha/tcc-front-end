@@ -89,7 +89,7 @@ export default function LoginView() {
         justifyContent="center"
         sx={{ my: 3, cursor: 'pointer' }}
       >
-        <Link variant="subtitle2" underline="hover" onClick={() => push('/reset-password')}>
+        <Link variant="subtitle2" underline="hover" onClick={() => push('/forgot-password')}>
           Esqueceu sua senha?
         </Link>
       </Stack>

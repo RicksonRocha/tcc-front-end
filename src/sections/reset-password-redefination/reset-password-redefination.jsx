@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -11,19 +10,32 @@ import { bgGradient } from 'src/theme/css';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import schemaResetPassword from 'src/hooks/form/reset-password';
+import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
-import { resetPassword } from 'src/features/auth/auth-actions';
+import { updatePassword } from 'src/features/auth/auth-actions';
+import { useSearchParams } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
-export default function ResetPasswordView() {
+export default function ResetPasswordRedefinationView() {
   const theme = useTheme();
-  const { push } = useRouter();
+  const [searchParams] = useSearchParams(); // Hook para capturar os parâmetros da URL
+  const token = searchParams.get('token'); // Obtém o valor do parâmetro "token" na URL
   const dispatch = useDispatch();
 
+  // Esquema de validação com Yup
+  const schema = Yup.object().shape({
+    password: Yup.string()
+      .min(8, 'A senha deve ter pelo menos 8 caracteres')
+      .required('A nova senha é obrigatória'),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password')], 'As senhas devem ser iguais')
+      .required('A confirmação da senha é obrigatória'),
+  });
+
   const defaultValues = {
-    email: '',
+    password: '',
+    confirmPassword: '',
   };
 
   const {
@@ -33,29 +45,33 @@ export default function ResetPasswordView() {
     reset,
   } = useForm({
     defaultValues,
+    resolver: yupResolver(schema),
   });
 
   const onSubmit = async (data) => {
     console.log('Formulário enviado:', data);
+    if (!token) {
+      alert('Token não encontrado na URL.');
+      return;
+    }
     try {
-      // Dispatch do thunk, enviando o email
+      // Dispatch do thunk para redefinir senha
       const result = await dispatch(
-        resetPassword({
-          email: data.email,
+        updatePassword({
+          token, // Passa o token capturado da URL
+          newPassword: data.password, // Passa a nova senha
         })
       );
 
-      if (resetPassword.fulfilled.match(result)) {
-        // Se for sucesso, exibe a mensagem e reseta o formulário
+      if (updatePassword.fulfilled.match(result)) {
         reset();
-        alert('Solicitação de redefinição de senha enviada com sucesso!');
+        alert('Senha redefinida com sucesso!');
       } else {
-        // Se houver erro, exibe a mensagem de erro
-        alert(result.payload || 'Erro ao solicitar redefinição de senha.');
+        alert(result.payload || 'Erro ao redefinir senha.');
       }
     } catch (e) {
       console.log(e);
-      alert('Houve um erro ao solicitar redefinição de senha.');
+      alert('Houve um erro ao redefinir a senha.');
     }
   };
 
@@ -83,14 +99,24 @@ export default function ResetPasswordView() {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} sx={{ mt: 3 }}>
-              {/* Campo de email */}
+              {/* Campo de nova senha */}
               <TextField
-                label="Email"
-                type="email"
+                label="Nova Senha"
+                type="password"
                 fullWidth
-                {...register('email')}
-                error={!!errors.email}
-                helperText={errors.email?.message}
+                {...register('password')}
+                error={!!errors.password}
+                helperText={errors.password?.message}
+              />
+
+              {/* Campo de confirmar senha */}
+              <TextField
+                label="Confirmar Nova Senha"
+                type="password"
+                fullWidth
+                {...register('confirmPassword')}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword?.message}
               />
             </Stack>
 
@@ -102,7 +128,7 @@ export default function ResetPasswordView() {
                 variant="contained"
                 color="primary"
               >
-                Enviar
+                Redefinir Senha
               </LoadingButton>
             </Stack>
 
@@ -111,11 +137,7 @@ export default function ResetPasswordView() {
               alignItems="center"
               justifyContent="center"
               sx={{ my: 0, cursor: 'pointer' }}
-            >
-              <Link variant="subtitle2" underline="hover" onClick={() => push('/login')}>
-                Entrar
-              </Link>
-            </Stack>
+            ></Stack>
           </form>
         </Card>
       </Stack>

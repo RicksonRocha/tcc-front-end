@@ -5,6 +5,7 @@ const backendURL = import.meta.env.VITE_KEY_API;
 const config = {
   headers: {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
 };
 
@@ -67,22 +68,46 @@ export const userLogin = createAsyncThunk(
 //   }
 // );
 
-// Thunk para resetar a senha
+// Thunk para enviar solicitação de recuperação de senha
 export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
-  async ({ email, newsenha }, { rejectWithValue }) => {
+  '/auth/resetPassword',
+  async ({ email }, { rejectWithValue }) => {
     try {
-      // Faz a requisição para o endpoint reset-password
+      // Faz a requisição para o endpoint forgot-password
       const response = await axios.post(
-        `http://localhost:3000/auth/reset-password`, // usar ${backendURL} não estava dando certo, constava como undefined, tive que colocar o endereço direto
-        { email, newsenha },
-        config
+        `${backendURL}/auth/forgot-password`,
+        { email } // Enviando apenas o email conforme esperado pelo backend
       );
 
       // Se a requisição for bem-sucedida, retorne a resposta
       return response.data;
     } catch (error) {
       // Tratamento de erro e rejeição com mensagem específica do backend ou mensagem padrão
+      if (error.response && error.response.data) {
+        return rejectWithValue(
+          error.response.data.error || 'Erro ao solicitar redefinição de senha.'
+        );
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  'auth/updatePassword', // Identificador do thunk
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      // Faz a requisição para o endpoint de atualização de senha
+      const response = await axios.post(
+        `${backendURL}/auth/reset-password`, // Endpoint do backend
+        { token, newPassword }, // Corpo da requisição (dados esperados pelo backend)
+        config // Configuração do cabeçalho HTTP
+      );
+
+      // Retorna os dados da resposta se a operação for bem-sucedida
+      return response.data;
+    } catch (error) {
+      // Tratamento de erro e rejeição com mensagem específica do backend ou mensagem genérica
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data.error || 'Erro ao redefinir a senha.');
       }

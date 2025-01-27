@@ -17,7 +17,12 @@ export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
 export const TeamsPage = lazy(() => import('src/pages/teams'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
+
 export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferencias-professor'));
+
+export const ResetPasswordRedefinationPage = lazy(() =>
+  import('src/pages/reset-password-redefination')
+);
 
 export default function Router() {
   const routes = useRoutes([
@@ -46,7 +51,7 @@ export default function Router() {
       element: <RegisterPage />,
     },
     {
-      path: 'reset-password',
+      path: 'forgot-password',
       element: <ResetPasswordPage />,
     },
     {
@@ -64,6 +69,10 @@ export default function Router() {
     {
       path: '*',
       element: <Navigate to="/404" replace />,
+    },
+    {
+      path: 'reset-password',
+      element: <ResetPasswordRedefinationPage />,
     },
   ]);
 
