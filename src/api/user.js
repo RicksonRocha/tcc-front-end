@@ -45,4 +45,6 @@ export const {
   useGetStudentsQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useResetPasswordMutation,
+  useRegisterUserMutation,
 } = userApi;
