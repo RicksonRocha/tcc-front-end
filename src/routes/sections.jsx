@@ -3,10 +3,10 @@ import { Navigate, useRoutes } from 'react-router-dom';
 
 import MyProfilePage from 'src/pages/my-profile';
 import MyTeamPage from 'src/pages/my-team-page';
-import PreferenciasAlunoPage from 'src/pages/preferencias-aluno';
 import StudentPage from 'src/pages/student';
 import TeacherPage from 'src/pages/teacher';
 import SupportMaterialPage from 'src/pages/support-material';
+import CrudUsersAdmPage from 'src/pages/crud-users-adm';
 import ProtectedRoute from './protected-route';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
@@ -37,8 +37,10 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
+        { path: 'minha-equipe/:teamId', element: <MyTeamPage /> },
         { path: 'orientadores', element: <TeacherPage /> },
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
+        { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
       ],
     },
 
@@ -53,10 +55,6 @@ export default function Router() {
     {
       path: 'forgot-password',
       element: <ResetPasswordPage />,
-    },
-    {
-      path: 'preferencias-aluno',
-      element: <PreferenciasAlunoPage />,
     },
     {
       path: 'preferencias-professor',

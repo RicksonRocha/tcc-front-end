@@ -16,12 +16,11 @@ import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import schemaRegister from 'src/hooks/form/register';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { registerUser } from 'src/features/auth/auth-actions';
-
-// ----------------------------------------------------------------------
+import { enqueueSnackbar } from 'notistack';
 
 export default function RegisterView() {
   const theme = useTheme();
@@ -30,7 +29,6 @@ export default function RegisterView() {
   const dispatch = useDispatch();
   const { push } = useRouter();
 
-  // Valores padrão para o formulário
   const defaultValues = {
     name: '',
     email: '',
@@ -40,13 +38,9 @@ export default function RegisterView() {
   };
 
   const {
-    auth: { user },
-    loading,
-  } = useSelector((state) => state.auth);
-
-  const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
   } = useForm({
@@ -54,15 +48,20 @@ export default function RegisterView() {
     defaultValues,
   });
 
-  console.log(errors);
-
   const onSubmit = async (data) => {
     try {
-      const response = await dispatch(registerUser(data));
-      console.log('response', response);
-      reset();
-    } catch (e) {
-      console.log(e);
+      const response = await dispatch(registerUser(data)).unwrap();
+  
+      // Se o cadastro for bem-sucedido
+      if (response) {
+        enqueueSnackbar('Cadastro realizado com sucesso!', { variant: 'success' });
+        reset(); // Limpa os campos do formulário
+        setTimeout(() => push('/login'), 3000); // Redireciona após sucesso
+      }
+    } catch (error) {
+      // Verifica se o erro retornado tem a mensagem enviada pelo backend
+      const errorMessage = error || 'Erro inesperado ao cadastrar.'; // Captura diretamente a mensagem
+      enqueueSnackbar(errorMessage, { variant: 'error' });
     }
   };
 
@@ -86,11 +85,16 @@ export default function RegisterView() {
           helperText={errors.email?.message}
         />
 
-        <RadioGroup aria-label="role" name="role" {...register('role')} row>
-          <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
-          <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
-        </RadioGroup>
-
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <RadioGroup row {...field}>
+              <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
+              <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
+            </RadioGroup>
+          )}
+        />
         {errors.role && <Typography color="error">{errors.role?.message}</Typography>}
 
         <TextField
@@ -172,3 +176,4 @@ export default function RegisterView() {
     </Box>
   );
 }
+
