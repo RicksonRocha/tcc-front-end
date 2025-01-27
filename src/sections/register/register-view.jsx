@@ -12,21 +12,20 @@ import { alpha, useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
-import Alert from '@mui/material/Alert';
 import { bgGradient } from 'src/theme/css';
 import Iconify from 'src/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm, Controller } from 'react-hook-form';
 import schemaRegister from 'src/hooks/form/register';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { registerUser } from 'src/features/auth/auth-actions';
+import { enqueueSnackbar } from 'notistack';
 
 export default function RegisterView() {
   const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(''); // Estado para mensagem de sucesso
   const dispatch = useDispatch();
   const { push } = useRouter();
 
@@ -37,11 +36,6 @@ export default function RegisterView() {
     password: '',
     confirmPassword: '',
   };
-
-  const {
-    auth: { user },
-    loading,
-  } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -56,21 +50,20 @@ export default function RegisterView() {
 
   const onSubmit = async (data) => {
     try {
-      const response = await dispatch(registerUser(data)).unwrap(); // Garante que os dados sejam acessados
-      console.log('Response:', response); // Debug para verificar a resposta correta
+      const response = await dispatch(registerUser(data)).unwrap();
   
+      // Se o cadastro for bem-sucedido
       if (response) {
-        setSuccessMessage('Cadastro realizado com sucesso!');
+        enqueueSnackbar('Cadastro realizado com sucesso!', { variant: 'success' });
         reset(); // Limpa os campos do formulário
-        setTimeout(() => {
-          setSuccessMessage('');
-          push('/login'); // Redireciona após sucesso
-        }, 3000);
+        setTimeout(() => push('/login'), 3000); // Redireciona após sucesso
       }
     } catch (error) {
-      console.error('Erro ao cadastrar usuário:', error); // Mensagem clara para debug
+      // Verifica se o erro retornado tem a mensagem enviada pelo backend
+      const errorMessage = error || 'Erro inesperado ao cadastrar.'; // Captura diretamente a mensagem
+      enqueueSnackbar(errorMessage, { variant: 'error' });
     }
-  };  
+  };
 
   const renderForm = () => (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -92,7 +85,6 @@ export default function RegisterView() {
           helperText={errors.email?.message}
         />
 
-        {/* Ajustado para usar Controller */}
         <Controller
           name="role"
           control={control}
@@ -168,13 +160,6 @@ export default function RegisterView() {
           Realize seu cadastro!
         </Typography>
 
-        {/* Renderiza mensagem de sucesso */}
-        {successMessage && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {successMessage}
-          </Alert>
-        )}
-
         {renderForm()}
 
         <Stack
@@ -191,6 +176,4 @@ export default function RegisterView() {
     </Box>
   );
 }
-
-
 
