@@ -5,6 +5,7 @@ const baseQueryApi = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_KEY_API,
   prepareHeaders: async (headers, { getState }) => {
     const { token } = getState().auth;
+    
     try {
       if (isTokenExpired(token)) {
         const newToken = await refreshAccessToken();
@@ -16,8 +17,8 @@ const baseQueryApi = fetchBaseQuery({
       headers.set('accept', 'application/json');
       return headers;
     } catch (error) {
-      localStorage.clear(); // Limpa storage e força logout
-      window.location.href = '/login'; // Redireciona para login
+      localStorage.clear();
+      window.location.href = '/login';
       throw error;
     }
   },

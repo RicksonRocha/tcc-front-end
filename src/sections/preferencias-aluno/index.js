@@ -1,1 +1,1 @@
-export { default as PreferenciasAlunoView } from './preferencias-aluno-view';
+// export { default as PreferenciasAlunoView } from './preferencias-aluno-view';
