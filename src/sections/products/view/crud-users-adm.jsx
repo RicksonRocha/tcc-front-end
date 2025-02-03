@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -22,13 +22,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from "@mui/material";
-import {
-  useGetUsersQuery,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-} from "src/api/user";
-import api from "src/api/api";
+  Snackbar,
+  Alert,
+} from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
+import { useGetUsersQuery, useUpdateUserMutation, useDeleteUserMutation } from 'src/api/user';
+import api from 'src/api/api';
 
 export default function CrudUsersAdmTable() {
   const { data: users = [], isLoading, isError, error, refetch } = useGetUsersQuery();
@@ -37,90 +36,128 @@ export default function CrudUsersAdmTable() {
 
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [newUser, setNewUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-    role: "ALUNO",
-  });
   const [showForm, setShowForm] = useState(false);
-  const [filters, setFilters] = useState({ email: "", role: "" });
+  const [filters, setFilters] = useState({ email: '', role: '' });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [errors, setErrors] = useState({});
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setError,
+    clearErrors,
+  } = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      role: 'ALUNO',
+    },
+  });
 
   useEffect(() => {
     setFilteredUsers(users);
-    document.title = "Manutenção de Usuários"; // Atualiza o título da guia
+    document.title = 'Manutenção de Usuários';
   }, [users]);
 
   const handleAddRow = () => {
-    setNewUser({ name: "", email: "", password: "", role: "ALUNO" });
+    reset({ name: '', email: '', password: '', role: 'ALUNO' });
     setSelectedUserId(null);
     setShowForm(true);
-    setErrors({});
+    clearErrors();
   };
 
   const handleEdit = () => {
     const user = users.find((u) => u.id === selectedUserId);
     if (user) {
-      setNewUser({
+      reset({
         name: user.name,
         email: user.email,
-        password: "",
+        password: '',
         role: user.role,
       });
       setShowForm(true);
+      clearErrors();
     }
   };
 
-  const handleSave = async () => {
+  const onSubmit = async (data) => {
     try {
-      if (selectedUserId) {
-        await updateUser({ id: selectedUserId, ...newUser }).unwrap();
-      } else {
-        if (!newUser.password) {
-          setErrors((prev) => ({ ...prev, password: "Senha é obrigatória." }));
-          return;
-        }
-        await api.post("/auth/register", newUser); // Criação de novo usuário
+      const isDuplicate = users.some(
+        (user) =>
+          (user.email === data.email || user.name === data.name) && user.id !== selectedUserId
+      );
+
+      if (isDuplicate) {
+        setError('email', { type: 'manual', message: 'E-mail já cadastrado.' });
+        setError('name', { type: 'manual', message: 'Nome já cadastrado.' });
+        return;
       }
-      refetch(); // Atualiza a lista de usuários
-      setNewUser({ name: "", email: "", password: "", role: "ALUNO" });
-      setSelectedUserId(null);
+
+      if (selectedUserId) {
+        await updateUser({ id: selectedUserId, ...data }).unwrap();
+        setSnackbarMessage('Usuário atualizado com sucesso!');
+      } else {
+        await api.post('/auth/register', data);
+        setSnackbarMessage('Usuário criado com sucesso!');
+      }
+
+      refetch();
       setShowForm(false);
-    } catch (saveError) {
-      console.error("Erro ao salvar usuário:", saveError.message);
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (err) {
+      setSnackbarMessage('Erro ao salvar usuário.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
+  };
+
+  const openConfirmDialog = (userId) => {
+    setSelectedUserId(userId);
+    setConfirmDialogOpen(true);
   };
 
   const handleDelete = async () => {
     try {
-      await deleteUser(selectedUserId).unwrap();
-      refetch(); // Atualiza a lista de usuários
-      setSelectedUserId(null);
+      await deleteUser(selectedUserId);
+
+      // Fecha diálogo de confirmação
       setConfirmDialogOpen(false);
-    } catch (deleteError) {
-      console.error("Erro ao excluir usuário:", deleteError.message);
+
+      setSnackbarMessage('Usuário excluído com sucesso!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+
+      // Atualiza a lista de usuários
+      refetch();
+
+      // Reseta a seleção
+      setSelectedUserId(null);
+    } catch (err) {
+      console.error('Erro durante a exclusão:', err);
+
+      setConfirmDialogOpen(false);
+
+      setSnackbarMessage('Erro ao excluir usuário.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
-  const handleCancel = () => {
-    setShowForm(false);
-    setSelectedUserId(null);
-    setNewUser({ name: "", email: "", password: "", role: "ALUNO" });
-    setErrors({});
-  };
-
-  const handleChange = (field, value) => {
-    setNewUser((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: "" }));
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   const applyFilters = () => {
     const filtered = users.filter(
       (user) =>
-        (!filters.email || user.email.includes(filters.email)) &&
+        (!filters.email || user.email.toLowerCase().includes(filters.email.toLowerCase())) &&
         (!filters.role || user.role === filters.role)
     );
     setFilteredUsers(filtered);
@@ -128,17 +165,27 @@ export default function CrudUsersAdmTable() {
   };
 
   const clearFilters = () => {
-    setFilters({ email: "", role: "" });
+    setFilters({ email: '', role: '' });
     setFilteredUsers(users);
     setIsFilterOpen(false);
   };
 
   if (isLoading) return <Typography>Carregando usuários...</Typography>;
-  if (isError)
-    return <Typography>Erro ao carregar usuários: {error.message}</Typography>;
+  if (isError) return <Typography>Erro ao carregar usuários: {error.message}</Typography>;
 
   return (
     <Container>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
       {!showForm ? (
         <>
           <Typography variant="h4" align="left" sx={{ mb: 3 }}>
@@ -161,25 +208,17 @@ export default function CrudUsersAdmTable() {
               size="small"
               variant="contained"
               color="error"
-              onClick={() => setConfirmDialogOpen(true)}
+              onClick={() => openConfirmDialog(selectedUserId)}
               disabled={!selectedUserId}
             >
               Excluir
             </Button>
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => setIsFilterOpen(true)}
-            >
+            <Button size="small" variant="outlined" onClick={() => setIsFilterOpen(true)}>
               Filtros
             </Button>
           </Stack>
 
-          <Drawer
-            anchor="right"
-            open={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-          >
+          <Drawer anchor="right" open={isFilterOpen} onClose={() => setIsFilterOpen(false)}>
             <Box sx={{ padding: 2 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Filtros
@@ -206,12 +245,7 @@ export default function CrudUsersAdmTable() {
                 <FormControlLabel value="ADMIN" control={<Radio />} label="Administrador" />
               </RadioGroup>
               <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  onClick={applyFilters}
-                >
+                <Button size="small" variant="contained" color="primary" onClick={applyFilters}>
                   Aplicar
                 </Button>
                 <Button size="small" variant="outlined" onClick={clearFilters}>
@@ -234,14 +268,12 @@ export default function CrudUsersAdmTable() {
                 {filteredUsers.map((user) => (
                   <TableRow
                     key={user.id}
-                    onClick={() =>
-                      setSelectedUserId((prev) => (prev === user.id ? null : user.id))
-                    }
+                    onClick={() => setSelectedUserId((prev) => (prev === user.id ? null : user.id))}
                     selected={selectedUserId === user.id}
                     sx={{
-                      cursor: "pointer",
+                      cursor: 'pointer',
                       backgroundColor:
-                        selectedUserId === user.id ? "rgba(0, 0, 255, 0.1)" : "inherit",
+                        selectedUserId === user.id ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
                     }}
                   >
                     <TableCell>{user.name}</TableCell>
@@ -253,15 +285,11 @@ export default function CrudUsersAdmTable() {
             </Table>
           </TableContainer>
 
-          <Dialog
-            open={confirmDialogOpen}
-            onClose={() => setConfirmDialogOpen(false)}
-          >
+          <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
             <DialogTitle>Confirmar Exclusão</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Tem certeza de que deseja excluir este usuário? Essa ação não pode ser
-                desfeita.
+                Tem certeza de que deseja excluir este usuário? Essa ação não pode ser desfeita.
               </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -275,51 +303,77 @@ export default function CrudUsersAdmTable() {
           </Dialog>
         </>
       ) : (
-        <Stack spacing={2} sx={{ mt: 3 }}>
-          <TextField
-            label="Nome"
-            value={newUser.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-            fullWidth
-          />
-          <TextField
-            label="E-mail"
-            value={newUser.email}
-            onChange={(e) => handleChange("email", e.target.value)}
-            fullWidth
-          />
-          {!selectedUserId && (
-            <TextField
-              label="Senha"
-              type="password"
-              value={newUser.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-              fullWidth
-              error={!!errors.password}
-              helperText={errors.password}
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2} sx={{ mt: 3 }}>
+            <Controller
+              name="name"
+              control={control}
+              rules={{ required: 'Nome é obrigatório.' }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Nome"
+                  fullWidth
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              )}
             />
-          )}
-          <Typography variant="subtitle2" sx={{ mt: 2 }}>
-            Tipo
-          </Typography>
-          <RadioGroup
-            value={newUser.role}
-            onChange={(e) => handleChange("role", e.target.value)}
-            row
-          >
-            <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
-            <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
-            <FormControlLabel value="ADMIN" control={<Radio />} label="Administrador" />
-          </RadioGroup>
-          <Stack direction="row" spacing={1}>
-            <Button size="small" variant="contained" onClick={handleSave}>
-              Salvar
-            </Button>
-            <Button size="small" variant="outlined" onClick={handleCancel}>
-              Cancelar
-            </Button>
+            <Controller
+              name="email"
+              control={control}
+              rules={{ required: 'E-mail é obrigatório.' }}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="E-mail"
+                  fullWidth
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
+                />
+              )}
+            />
+            {!selectedUserId && (
+              <Controller
+                name="password"
+                control={control}
+                rules={{ required: 'Senha é obrigatório.' }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Senha"
+                    type="password"
+                    fullWidth
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                  />
+                )}
+              />
+            )}
+            <Typography variant="subtitle2" sx={{ mt: 2 }}>
+              Tipo
+            </Typography>
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup {...field} row>
+                  <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
+                  <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
+                  <FormControlLabel value="ADMIN" control={<Radio />} label="Administrador" />
+                </RadioGroup>
+              )}
+            />
+            <Stack direction="row" spacing={1}>
+              <Button size="small" variant="contained" type="submit">
+                Salvar
+              </Button>
+              <Button size="small" variant="outlined" onClick={() => setShowForm(false)}>
+                Cancelar
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
+        </form>
       )}
     </Container>
   );
