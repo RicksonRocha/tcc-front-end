@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Unstable_Grid2';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -22,8 +24,6 @@ import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation, useD
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useGetStudentsQuery } from 'src/api/user';
-import { useSelector } from 'react-redux';
-import { Button } from '@mui/material';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
@@ -36,6 +36,9 @@ export default function MyTeamForm({ teamId }) {
   const [deleteTeam] = useDeleteTeamMutation();
   const { data: students = [], isLoading: isLoadingStudents, isError, error } = useGetStudentsQuery();
   const { push } = useRouter();
+
+  // Recupera o objeto do usuário autenticado (contendo id, email e nome)
+  const user = useSelector((state) => state.auth.auth.user);
 
   useEffect(() => {
     if (isError) {
@@ -54,8 +57,6 @@ export default function MyTeamForm({ teamId }) {
   const sortedStudents = students
     .filter((student) => student?.name)
     .sort((a, b) => a.name.localeCompare(b.name));
-
-  const userEmail = useSelector((state) => state.auth.auth.email);
 
   const {
     control,
@@ -79,6 +80,13 @@ export default function MyTeamForm({ teamId }) {
   const members = watch('members');
   const temasDeInteresse = watch('temasDeInteresse') || [];
 
+  // Se for criação (não há teamData) e o usuário estiver disponível, pré-popula o campo "members" com o nome do usuário
+  useEffect(() => {
+    if (!teamData && user && user.name) {
+      setValue('members', [user.name]);
+    }
+  }, [teamData, user, setValue]);
+
   useEffect(() => {
     if (teamData) {
       reset({
@@ -94,14 +102,21 @@ export default function MyTeamForm({ teamId }) {
   }, [teamData, reset]);
 
   const onSubmit = async (data) => {
+    // Garante que o nome do usuário esteja na lista de membros
+    let membersList = data.members || [];
+    if (!membersList.includes(user.name)) {
+      membersList = [...membersList, user.name];
+    }
+
     const formData = {
       name: data.tccTitle,
       description: data.tccDescription,
       isActive: isClosed,
       teacherTcc: advisorValue,
-      members: data.members,
+      members: membersList,
       themes: data.temasDeInteresse,
-      createdBy: userEmail,
+      createdById: user.id,
+      createdByEmail: user.email,
     };
 
     try {
@@ -133,8 +148,16 @@ export default function MyTeamForm({ teamId }) {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 2, px: 2 }}>
-      <Card sx={{ p: 3, width: '100%', maxWidth: '100%', overflow: 'auto' }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
+      <Card
+        sx={{
+          p: 3,
+          width: '50vw',
+          maxWidth: '50vw',
+          overflowX: 'hidden',
+          overflowY: 'visible',
+        }}
+      >
         <Typography variant="h5" align="center" sx={{ mb: 3 }}>
           Formulário
         </Typography>
@@ -222,7 +245,26 @@ export default function MyTeamForm({ teamId }) {
                       setValue('temasDeInteresse', selected, { shouldValidate: true });
                     }
                   }}
-                  renderValue={(selected) => selected.join(', ')}
+                  renderValue={(selected) => (
+                    <Box
+                      sx={{
+                        width: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {selected.join(', ')}
+                    </Box>
+                  )}
+                  sx={{
+                    width: '100%',
+                    '& .MuiSelect-select': {
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    },
+                  }}
                 >
                   {TEMAS_TCC_OPTIONS.map((tema) => (
                     <MenuItem key={tema} value={tema}>
@@ -255,32 +297,26 @@ export default function MyTeamForm({ teamId }) {
 
           <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
             <Button
-              fullWidth
-              size="large"
               variant="contained"
               color="primary"
-              sx={{ maxWidth: 150, fontSize: '16px' }}
+              sx={{ alignSelf: 'center', mt: 2, px: 3, fontSize: '16px' }}
               onClick={() => push('/equipes')}
             >
               Voltar
             </Button>
             <LoadingButton
-              fullWidth
-              size="large"
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ maxWidth: 150, fontSize: '16px' }}
+              sx={{ alignSelf: 'center', mt: 2, px: 3, fontSize: '16px' }}
             >
               Salvar
             </LoadingButton>
             {teamId && (
               <Button
-                fullWidth
-                size="large"
                 variant="contained"
                 color="error"
-                sx={{ maxWidth: 150, fontSize: '16px' }}
+                sx={{ alignSelf: 'center', mt: 2, px: 3, fontSize: '16px' }}
                 onClick={handleDelete}
               >
                 Excluir
@@ -296,6 +332,13 @@ export default function MyTeamForm({ teamId }) {
 MyTeamForm.propTypes = {
   teamId: PropTypes.number,
 };
+
+
+
+
+
+
+
 
 
 

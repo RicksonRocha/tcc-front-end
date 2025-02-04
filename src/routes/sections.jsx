@@ -24,6 +24,8 @@ export const ResetPasswordRedefinationPage = lazy(() =>
   import('src/pages/reset-password-redefination')
 );
 
+export const NewTeamPage = lazy(() => import('src/pages/new-team'));
+
 export default function Router() {
   const routes = useRoutes([
     {
@@ -38,6 +40,7 @@ export default function Router() {
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
         { path: 'minha-equipe/:teamId', element: <MyTeamPage /> },
+        {path: 'equipes/nova', element: <NewTeamPage />},
         { path: 'orientadores', element: <TeacherPage /> },
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
         { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
