@@ -5,6 +5,7 @@ const backendURL = import.meta.env.VITE_KEY_API;
 const config = {
   headers: {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
 };
 
@@ -56,6 +57,31 @@ export const resetPassword = createAsyncThunk(
       return response.data;
     } catch (error) {
       // Tratamento de erro e rejeição com mensagem específica do backend ou mensagem padrão
+      if (error.response && error.response.data) {
+        return rejectWithValue(
+          error.response.data.error || 'Erro ao solicitar redefinição de senha.'
+        );
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  'auth/updatePassword', // Identificador do thunk
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      // Faz a requisição para o endpoint de atualização de senha
+      const response = await axios.post(
+        `${backendURL}/auth/reset-password`, // Endpoint do backend
+        { token, newPassword }, // Corpo da requisição (dados esperados pelo backend)
+        config // Configuração do cabeçalho HTTP
+      );
+
+      // Retorna os dados da resposta se a operação for bem-sucedida
+      return response.data;
+    } catch (error) {
+      // Tratamento de erro e rejeição com mensagem específica do backend ou mensagem genérica
       if (error.response && error.response.data) {
         return rejectWithValue(error.response.data.error || 'Erro ao redefinir a senha.');
       }
