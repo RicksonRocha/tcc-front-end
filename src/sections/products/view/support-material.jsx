@@ -20,10 +20,18 @@ export default function SupportMaterialTable() {
   // Obtendo o token do usuário logado
   const token = useMemo(() => localStorage.getItem("token") || sessionStorage.getItem("token"), []);
 
-  // Função para buscar materiais
+  // Obter o e-mail do usuário logado a partir do token
+  useEffect(() => {
+    if (token) {
+      const tokenPayload = JSON.parse(atob(token.split(".")[1])); // Decodifica o payload do JWT
+      setUserEmail(tokenPayload.sub); // O email geralmente está no campo "sub" do token
+    }
+  }, [token]);
+
+  // Função para buscar materiais do usuário logado
   const fetchMaterials = useCallback(() => {
-    if (!token) {
-      console.error("Nenhum token encontrado. Usuário não autenticado.");
+    if (!token || !userEmail) {
+      console.error("Nenhum token ou email encontrado. Usuário não autenticado.");
       return;
     }
 
@@ -35,24 +43,20 @@ export default function SupportMaterialTable() {
     };
 
     api.get(API_URL, authHeaders)
-      .then(response => setMaterials(response.data))
+      .then(response => {
+        // Filtra apenas os materiais cadastrados pelo usuário logado
+        const userMaterials = response.data.filter(mat => mat.autor === userEmail);
+        setMaterials(userMaterials);
+      })
       .catch(() => setSnackbar({ open: true, message: "Erro ao carregar materiais", severity: "error" }));
-  }, [token]);
-
-  // Obter o e-mail do usuário logado
-  useEffect(() => {
-    if (token) {
-      const tokenPayload = JSON.parse(atob(token.split(".")[1])); // Decodifica o payload do JWT
-      setUserEmail(tokenPayload.sub); // O email geralmente está no campo "sub" do token
-    }
-  }, [token]);
+  }, [token, userEmail]);
 
   useEffect(() => {
     fetchMaterials();
   }, [fetchMaterials]);
 
   const handleAdd = () => {
-    setFormData({ name: "", autor: userEmail, link: "" }); // Preenche o autor com o email do usuário logado
+    setFormData({ name: "", autor: userEmail, link: "" }); // Preenche automaticamente com o usuário logado
     setSelectedMaterialId(null);
     setShowForm(true);
   };
@@ -135,7 +139,7 @@ export default function SupportMaterialTable() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Material</TableCell> {/* Alterado de "Nome" para "Material" */}
+              <TableCell sx={{ minWidth: 200 }}>Material</TableCell> {/* Aumenta a largura para evitar cortes */}
               <TableCell>Autor</TableCell>
               <TableCell>Link</TableCell>
             </TableRow>
@@ -151,7 +155,7 @@ export default function SupportMaterialTable() {
                   backgroundColor: selectedMaterialId === material.id ? "rgba(0, 0, 255, 0.1)" : "inherit",
                 }}
               >
-                <TableCell>{material.name}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{material.name}</TableCell> {/* Evita corte do nome */}
                 <TableCell>{material.autor}</TableCell>
                 <TableCell>
                   <a href={material.link} target="_blank" rel="noopener noreferrer">{material.link}</a>
@@ -175,7 +179,7 @@ export default function SupportMaterialTable() {
       </Dialog>
 
       {/* Formulário para Adicionar/Editar Material */}
-      <Dialog open={showForm} onClose={() => setShowForm(false)}>
+      <Dialog open={showForm} onClose={() => setShowForm(false)} fullWidth maxWidth="sm">
         <DialogTitle>{selectedMaterialId ? "Editar Material" : "Adicionar Novo Material"}</DialogTitle>
         <DialogContent>
           <TextField
@@ -183,13 +187,13 @@ export default function SupportMaterialTable() {
             fullWidth
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            sx={{ mb: 2 }}
+            sx={{ mb: 2, mt: 3 }}
           />
           <TextField
             label="Autor"
             fullWidth
             value={formData.autor}
-            InputProps={{ readOnly: true }} // Agora o autor não pode ser editado manualmente
+            InputProps={{ readOnly: true }}
             sx={{ mb: 2 }}
           />
           <TextField
