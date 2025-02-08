@@ -2,23 +2,46 @@ import React from 'react';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-
+import Box from '@mui/material/Box';
+import { useSelector } from 'react-redux';
+import { useGetTeamsQuery } from 'src/api/team';
 import AppOrderTimeline from '../app-order-timeline';
 import AppCalendar from '../app-calendar';
-
-// ----------------------------------------------------------------------
+import AppTeam from '../app-team';
 
 export default function AppView() {
+  // Obtém os dados do usuário logado
+  const user = useSelector((state) => state.auth.auth.user);
+
+  // Consulta todas as equipes 
+  const { data: teams = [], isLoading, isError } = useGetTeamsQuery();
+
+  // Filtra para encontrar a equipe que contenha o nome do usuário
+  const myTeam = teams.find((team) => team.members?.includes(user?.name));
+
+  const renderTeamContent = () => {
+    if (isLoading) {
+      return <Typography variant="body1">Carregando equipe...</Typography>;
+    }
+    if (isError) {
+      return (
+        <Typography variant="body1" color="error">
+          Erro ao carregar equipe.
+        </Typography>
+      );
+    }
+    return <AppTeam team={myTeam} />;
+  };
+
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="lg">
       <Typography variant="h4" sx={{ mb: 5 }}>
         Olá, bem vindo(a) 👋
       </Typography>
 
       <Grid container spacing={3}>
 
-        {/* Timeline Sobre o Sistema */}
-        <Grid xs={6} md={6} lg={6}>
+        <Grid item xs={12} md={6}>
           <AppOrderTimeline
             title="Sobre o Sistema"
             list={[...Array(6)].map((_, index) => ({
@@ -33,12 +56,11 @@ export default function AppView() {
               ][index],
               type: `order${index + 1}`,
             }))}
-            sx={{ width: '100%' }} 
+            sx={{ width: '100%' }}
           />
         </Grid>
 
-        {/* Timeline Fases do TCC */}
-        <Grid xs={6} md={6} lg={6}>
+        <Grid item xs={12} md={6}>
           <AppOrderTimeline
             title="Fases Gerais do Trabalho de Conclusão de Curso"
             list={[...Array(6)].map((_, index) => ({
@@ -53,16 +75,23 @@ export default function AppView() {
               ][index],
               type: `order${index + 1}`,
             }))}
-            sx={{ width: '100%' }} 
+            sx={{ width: '100%' }}
           />
         </Grid>
 
-        {/* Calendário com próximos eventos - Simulação */}
-        <Grid xs={12} md={12} lg={12}>
-          <AppCalendar />
+        <Grid item xs={12}>
+          <Box sx={{ mt: 3, width: '100%' }}>
+            {renderTeamContent()}
+          </Box>
         </Grid>
 
+        <Grid item xs={12}>
+          <AppCalendar />
+        </Grid>
       </Grid>
     </Container>
   );
 }
+
+
+
