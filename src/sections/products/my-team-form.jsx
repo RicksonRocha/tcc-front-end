@@ -106,12 +106,15 @@ export default function MyTeamForm({ teamId }) {
   const onSubmit = async (data) => {
 
     // Validação para verificar se algum membro já faz parte de outra equipe
-    if (!teamId && teams && data.members.some(member =>
-      teams.some(team => team.members && team.members.includes(member))
+    if (teams && data.members.some(member =>
+      teamId
+        ? teams.some(team => team.id !== teamId && team.members && team.members.includes(member))
+        : teams.some(team => team.members && team.members.includes(member))
     )) {
       setSuccessMessage("Um ou mais membros já fazem parte de outra equipe de TCC!");
       return;
     }
+    
     // Garante que o nome do usuário esteja na lista de membros
     let membersList = data.members || [];
     if (!membersList.includes(user.name)) {
