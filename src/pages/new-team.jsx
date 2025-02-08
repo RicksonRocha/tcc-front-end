@@ -1,15 +1,22 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Dialog, DialogContent } from '@mui/material';
+import { useState, useEffect } from 'react';
 import MyTeamForm from 'src/sections/products/my-team-form';
 
 export default function NewTeamPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const [formKey, setFormKey] = useState(Date.now());
+
   const handleClose = () => {
     navigate(-1);
   };
+
+  // Gere uma nova key sempre que a página de criação for montada
+  useEffect(() => {
+    setFormKey(Date.now());
+  }, [location]);
 
   return (
     <>
@@ -17,7 +24,7 @@ export default function NewTeamPage() {
         <title>Criar Equipe</title>
       </Helmet>
       <Dialog
-        open={true}
+        open
         onClose={handleClose}
         fullWidth
         maxWidth={false}
@@ -33,12 +40,13 @@ export default function NewTeamPage() {
         }}
       >
         <DialogContent sx={{ p: 0, overflow: 'visible' }}>
-          <MyTeamForm />
+          <MyTeamForm key={formKey} />
         </DialogContent>
       </Dialog>
     </>
   );
 }
+
 
 
 

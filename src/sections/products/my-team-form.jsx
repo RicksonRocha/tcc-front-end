@@ -20,7 +20,7 @@ import Alert from '@mui/material/Alert';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
-import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation, useDeleteTeamMutation } from 'src/api/team';
+import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation, useDeleteTeamMutation, useGetTeamsQuery } from 'src/api/team';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useGetStudentsQuery } from 'src/api/user';
@@ -31,6 +31,7 @@ export default function MyTeamForm({ teamId }) {
   const [advisorValue, setAdvisorValue] = useState('');
 
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
+  const { data: teams = [] } = useGetTeamsQuery();
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
   const [deleteTeam] = useDeleteTeamMutation();
@@ -42,14 +43,16 @@ export default function MyTeamForm({ teamId }) {
 
   useEffect(() => {
     if (isError) {
-      console.error('Erro ao carregar estudantes:', error);
+      let msg = `Erro ao carregar estudantes: ${error?.message || 'Erro desconhecido.'}`;
       if (error.status === 403) {
-        console.log('Você não tem permissão para acessar os dados dos estudantes.');
+        msg = `${msg} Você não tem permissão para acessar os dados dos estudantes.`;
       }
+      setSuccessMessage(msg);
     } else if (!isLoadingStudents && students.length === 0) {
-      console.warn('Nenhum estudante encontrado.');
+      setSuccessMessage('Nenhum estudante encontrado.');
     } else {
-      console.log('Estudantes carregados:', students);
+      // Limpa a mensagem se os estudantes forem carregados com sucesso
+      setSuccessMessage('');
     }
   }, [students, isLoadingStudents, isError, error]);
 
@@ -80,7 +83,6 @@ export default function MyTeamForm({ teamId }) {
   const members = watch('members');
   const temasDeInteresse = watch('temasDeInteresse') || [];
 
-  // Se for criação (não há teamData) e o usuário estiver disponível, pré-popula o campo "members" com o nome do usuário
   useEffect(() => {
     if (!teamData && user && user.name) {
       setValue('members', [user.name]);
@@ -102,6 +104,14 @@ export default function MyTeamForm({ teamId }) {
   }, [teamData, reset]);
 
   const onSubmit = async (data) => {
+
+    // Validação para verificar se algum membro já faz parte de outra equipe
+    if (!teamId && teams && data.members.some(member =>
+      teams.some(team => team.members && team.members.includes(member))
+    )) {
+      setSuccessMessage("Um ou mais membros já fazem parte de outra equipe de TCC!");
+      return;
+    }
     // Garante que o nome do usuário esteja na lista de membros
     let membersList = data.members || [];
     if (!membersList.includes(user.name)) {
@@ -129,7 +139,6 @@ export default function MyTeamForm({ teamId }) {
       }
       setTimeout(() => push('/equipes'), 3000);
     } catch (err) {
-      console.error('Erro ao salvar equipe:', err);
       setSuccessMessage(`Erro ao salvar equipe: ${err.message}`);
     }
   };
@@ -142,7 +151,6 @@ export default function MyTeamForm({ teamId }) {
         setTimeout(() => push('/equipes'), 3000);
       }
     } catch (err) {
-      console.error('Erro ao excluir equipe:', err);
       setSuccessMessage(`Erro ao excluir equipe: ${err.message}`);
     }
   };
