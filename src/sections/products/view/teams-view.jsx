@@ -19,9 +19,7 @@ export default function TeamsView() {
   const user = useSelector((state) => state.auth.auth.user);
 
   // Filtra as equipes para que a equipe criada pelo usuário não seja exibida
-  const filteredTeams = teams.filter((team) => {
-    return user ? team.createdById !== user.id : true;
-  });
+  const filteredTeams = teams.filter(team => user ? team.createdById !== user.id : true);
 
   const [openFilter, setOpenFilter] = useState(false);
   const [filteredTeam, setFilteredTeam] = useState({

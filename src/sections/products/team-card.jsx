@@ -49,7 +49,7 @@ export default function TeamCard({ team }) {
         px: 2,
       }}
     >
-      <Typography variant="h7" sx={{ textAlign: 'center' }}>
+      <Typography variant="h7" sx={{ textAlign: 'center', mt: 2 }}>
         Nome: {team.name || 'Nome não disponível'}
       </Typography>
       {team.themes && team.themes.length > 0 && (

@@ -137,7 +137,7 @@ export default function MyTeamForm({ teamId }) {
         await createTeam(formData).unwrap();
         setSuccessMessage('Equipe criada com sucesso!');
       }
-      setTimeout(() => push('/equipes'), 3000);
+      setTimeout(() => push(teamId ? '/' : '/equipes'), 3000);
     } catch (err) {
       setSuccessMessage(`Erro ao salvar equipe: ${err.message}`);
     }
@@ -148,7 +148,7 @@ export default function MyTeamForm({ teamId }) {
       if (teamId) {
         await deleteTeam(teamId).unwrap();
         setSuccessMessage('Equipe excluída com sucesso!');
-        setTimeout(() => push('/equipes'), 3000);
+        setTimeout(() => push('/'), 3000);
       }
     } catch (err) {
       setSuccessMessage(`Erro ao excluir equipe: ${err.message}`);
@@ -308,7 +308,7 @@ export default function MyTeamForm({ teamId }) {
               variant="contained"
               color="primary"
               sx={{ alignSelf: 'center', mt: 2, px: 3, fontSize: '16px' }}
-              onClick={() => push('/equipes')}
+              onClick={() => push(teamId ? '/' : '/equipes')}
             >
               Voltar
             </Button>

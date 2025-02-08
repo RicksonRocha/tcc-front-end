@@ -7,6 +7,7 @@ import StudentPage from 'src/pages/student';
 import TeacherPage from 'src/pages/teacher';
 import SupportMaterialPage from 'src/pages/support-material';
 import CrudUsersAdmPage from 'src/pages/crud-users-adm';
+import EditTeamPage from 'src/pages/edit-team-page';
 import ProtectedRoute from './protected-route';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
@@ -41,6 +42,7 @@ export default function Router() {
         { path: 'minha-equipe', element: <MyTeamPage /> },
         { path: 'minha-equipe/:teamId', element: <MyTeamPage /> },
         {path: 'equipes/nova', element: <NewTeamPage />},
+        { path: 'equipes/editar/:teamId', element: <EditTeamPage /> },
         { path: 'orientadores', element: <TeacherPage /> },
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
         { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
