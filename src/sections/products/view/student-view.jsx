@@ -5,49 +5,53 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import { useSnackbar } from 'notistack';
-import { useGetStudentsQuery } from 'src/api/student'; 
+// Utiliza o hook de preferências para obter os dados dos alunos (preferências)
+import { useGetPreferencesQuery } from 'src/api/preference'; 
 import StudentCard from '../student-card';
 import StudentFilters from '../student-filters';
 
 export default function StudentView() {
   const { enqueueSnackbar } = useSnackbar();
   
-  // Usando o hook 
-  const { data: students = [], isLoading, error } = useGetStudentsQuery();
+  // Usa o hook de preferências – supondo que esse endpoint retorne as informações dos alunos
+  const { data: preferences = [], isLoading, error } = useGetPreferencesQuery();
   
   const [openFilter, setOpenFilter] = useState(false);
   const [filterState, setFilterState] = useState({
     studentTeam: '',
     turno: '',
-    linguagem: [],
-    techBD: [],
+    linguagemProgramacao: [],
+    bancoDeDados: [],
     habilidadesPessoais: [],
-    temasTCC: [],
-    modalidadeAgendas: [],
+    temasDeInteresse: [],
+    modalidadeTrabalho: '',
   });
 
   if (error) {
-    enqueueSnackbar("Erro ao carregar alunos.", {
+    enqueueSnackbar("Erro ao carregar as preferências dos alunos.", {
       variant: 'error',
       anchorOrigin: { vertical: 'top', horizontal: 'center' },
     });
   }
 
-  // Filtra alunos com base nos critérios de `filterState`
-  const filteredStudents = students.filter((student) => {
+  // Filtra as preferências com base nos critérios definidos
+  const filteredPreferences = preferences.filter((pref) => {
     const {
-      studentTeam, turno, linguagem, techBD, habilidadesPessoais,
-      temasTCC, modalidadeAgendas,
+      turno,
+      linguagemProgramacao,
+      bancoDeDados,
+      habilidadesPessoais,
+      temasDeInteresse,
+      modalidadeTrabalho,
     } = filterState;
-
-    if (studentTeam && student.status !== studentTeam) return false;
-    if (turno && student.turno !== turno) return false;
-    if (linguagem.length > 0 && !linguagem.some((lang) => student.linguagem?.includes(lang))) return false;
-    if (techBD.length > 0 && !techBD.some((tech) => student.techBD?.includes(tech))) return false;
-    if (habilidadesPessoais.length > 0 && !habilidadesPessoais.some((habilidade) => student.habilidadesPessoais?.includes(habilidade))) return false;
-    if (temasTCC.length > 0 && !temasTCC.some((tema) => student.temasTCC?.includes(tema))) return false;
-    if (modalidadeAgendas.length > 0 && !modalidadeAgendas.some((modalidade) => student.modalidadeAgendas?.includes(modalidade))) return false;
-
+    
+    if (turno && pref.turno !== turno) return false;
+    if (linguagemProgramacao.length > 0 && !linguagemProgramacao.some(lang => pref.linguagemProgramacao?.includes(lang))) return false;
+    if (bancoDeDados.length > 0 && !bancoDeDados.some(bd => pref.bancoDeDados?.includes(bd))) return false;
+    if (habilidadesPessoais.length > 0 && !habilidadesPessoais.some(hab => pref.habilidadesPessoais?.includes(hab))) return false;
+    if (temasDeInteresse.length > 0 && !temasDeInteresse.some(tema => pref.temasDeInteresse?.includes(tema))) return false;
+    if (modalidadeTrabalho && pref.modalidadeTrabalho !== modalidadeTrabalho) return false;
+    
     return true;
   });
 
@@ -62,19 +66,19 @@ export default function StudentView() {
       ));
     }
 
-    if (filteredStudents.length === 0) {
+    if (filteredPreferences.length === 0) {
       return (
         <Grid item xs={12}>
-          <Typography variant="body1" align="center">
+          <Typography variant="body1" align="left">
             Nenhum aluno encontrado.
           </Typography>
         </Grid>
       );
     }
 
-    return filteredStudents.map((student) => (
-      <Grid key={student.id} xs={12} sm={6} md={3}>
-        <StudentCard student={student} />
+    return filteredPreferences.map((pref) => (
+      <Grid key={pref.id} xs={12} sm={6} md={3}>
+        <StudentCard student={pref} />
       </Grid>
     ));
   };
@@ -109,6 +113,8 @@ export default function StudentView() {
     </Container>
   );
 }
+
+
 
 
 
