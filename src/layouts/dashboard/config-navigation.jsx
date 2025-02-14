@@ -38,11 +38,6 @@ const navConfig = [
     path: '/materiais-apoio',
     icon: <Iconify icon="ic:round-library-books" />,
   },
-  {
-    title: 'Login',
-    path: '/login',
-    icon: <Iconify icon="ic:round-login" />,
-  },
 ];
 
 export default navConfig;
