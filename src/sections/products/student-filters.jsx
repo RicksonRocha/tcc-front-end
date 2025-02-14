@@ -47,7 +47,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
 
   const handleClearAll = () => {
     setFilterState({
-      studentTeam: '',
+      teamStatus: '',
       turno: '',
       linguagemProgramacao: [],
       bancoDeDados: [],
@@ -63,8 +63,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
         <b>Situação do(a) aluno(a)</b>
       </Typography>
       <RadioGroup
-        value={filterState.studentTeam}
-        onChange={(e) => handleRadioChange('studentTeam', e.target.value)}
+        value={filterState.teamStatus}
+        onChange={(e) => handleRadioChange('teamStatus', e.target.value)}
       >
         {STUDENT_TEAM_OPTIONS.map((item) => (
           <FormControlLabel key={item} value={item} control={<Radio />} label={item} />

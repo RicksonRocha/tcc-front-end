@@ -7,10 +7,12 @@ import Label from 'src/components/label';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { primary } from 'src/theme/palette';
-import { useGetUserQuery } from 'src/api/user';
+import { useGetTeamsQuery } from 'src/api/team';
 
 export default function StudentCard({ student }) {
-  // Se o objeto student não estiver disponível, exibe mensagem de erro
+
+  const { data: teams, isLoading: isTeamsLoading } = useGetTeamsQuery();
+
   if (!student) {
     return (
       <Card sx={{ p: 2 }}>
@@ -20,26 +22,24 @@ export default function StudentCard({ student }) {
       </Card>
     );
   }
-  
-  // Executa a query para buscar o usuário pelo id, se student.name não estiver definido.
-  const { data: userDetails, isLoading: isUserLoading } = useGetUserQuery(student.user_id, {
-    skip: !!student.name,
-  });
 
-  // Define o nome a ser exibido: se não houver student.name, usa o nome retornado ou fallback
-  const displayedName =
-    student.name || (isUserLoading ? 'Carregando...' : userDetails?.name || `Aluno: ${student.user_id}`);
+  const displayedName = student.name || `ID aluno: ${student.user_id}`;
 
-  // Define o status com base no nível de experiência (exemplo)
-  const status = student.nivelDeExperiencia 
-    ? `Nível: ${student.nivelDeExperiencia}` 
-    : 'Sem nível definido';
-  const statusColor = 'info';
+  const isInTeam = student.user_id 
+    ? teams?.some(team => team.createdById === student.user_id)
+    : false;
+
+  let teamStatus = 'Sem equipe';
+  if (isTeamsLoading) {
+    teamStatus = 'Carregando...';
+  } else if (isInTeam) {
+    teamStatus = 'Com equipe';
+  }
 
   const renderStatus = (
     <Label
       variant="filled"
-      color={statusColor}
+      color={isInTeam ? 'success' : 'danger'}
       sx={{
         zIndex: 9,
         top: 16,
@@ -48,11 +48,10 @@ export default function StudentCard({ student }) {
         textTransform: 'uppercase',
       }}
     >
-      {status}
+      {teamStatus}
     </Label>
   );
 
-  // Cabeçalho: exibe o nome do aluno.
   const renderHeader = (
     <Box
       sx={{
@@ -67,13 +66,13 @@ export default function StudentCard({ student }) {
         p: 2,
       }}
     >
-      <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold', mt:3 }}>
+      <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold', mt: 3}}>
         {displayedName}
       </Typography>
     </Box>
   );
 
-  // Exibe o turno e a disponibilidade do aluno
+  // Render dos demais dados (turno, disponibilidade, linguagens, etc.) que vêm das preferências
   const renderTurnoDisponibilidade = (
     <Box sx={{ textAlign: 'center' }}>
       <Typography variant="body2">
@@ -93,7 +92,6 @@ export default function StudentCard({ student }) {
     </Box>
   );
 
-  // Exibe as linguagens de programação, se houver
   const renderLinguagens =
     student.linguagemProgramacao && student.linguagemProgramacao.length > 0 && (
       <Typography variant="body2" sx={{ textAlign: 'center' }}>
@@ -101,7 +99,6 @@ export default function StudentCard({ student }) {
       </Typography>
     );
 
-  // Exibe as habilidades pessoais, se houver
   const renderHabilidades =
     student.habilidadesPessoais && student.habilidadesPessoais.length > 0 && (
       <Typography variant="body2" sx={{ textAlign: 'center' }}>
@@ -109,7 +106,6 @@ export default function StudentCard({ student }) {
       </Typography>
     );
 
-  // Exibe os temas de interesse, se houver
   const renderTemas =
     student.temasDeInteresse && student.temasDeInteresse.length > 0 && (
       <Typography variant="body2" sx={{ textAlign: 'center' }}>
@@ -117,7 +113,6 @@ export default function StudentCard({ student }) {
       </Typography>
     );
 
-  // Exibe a modalidade de trabalho, se houver
   const renderModalidade =
     student.modalidadeTrabalho && (
       <Typography variant="body2" sx={{ textAlign: 'center' }}>
@@ -131,7 +126,7 @@ export default function StudentCard({ student }) {
         {renderStatus}
         {renderHeader}
       </Box>
-      <Stack spacing={2} sx={{ p: 2 }}>
+      <Stack spacing={1} sx={{ p: 2 }}>
         {renderTurnoDisponibilidade}
         <Divider sx={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.7)', my: 1 }} />
         {renderLinguagens}
@@ -165,10 +160,12 @@ StudentCard.propTypes = {
     habilidadesPessoais: PropTypes.arrayOf(PropTypes.string),
     temasDeInteresse: PropTypes.arrayOf(PropTypes.string),
     modalidadeTrabalho: PropTypes.string,
-    nivelDeExperiencia: PropTypes.string,
     user_id: PropTypes.number,
   }),
 };
+
+
+
 
 
 
