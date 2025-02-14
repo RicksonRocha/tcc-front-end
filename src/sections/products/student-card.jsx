@@ -23,7 +23,7 @@ export default function StudentCard({ student }) {
     );
   }
 
-  const displayedName = student.name || `ID aluno: ${student.user_id}`;
+  const displayedName = student.userName || `Aluno: ${student.user_id}`;
 
   const isInTeam = student.user_id 
     ? teams?.some(team => team.createdById === student.user_id)
@@ -39,7 +39,7 @@ export default function StudentCard({ student }) {
   const renderStatus = (
     <Label
       variant="filled"
-      color={isInTeam ? 'success' : 'danger'}
+      color={isInTeam ? 'success' : 'error'}
       sx={{
         zIndex: 9,
         top: 16,
@@ -72,7 +72,6 @@ export default function StudentCard({ student }) {
     </Box>
   );
 
-  // Render dos demais dados (turno, disponibilidade, linguagens, etc.) que vêm das preferências
   const renderTurnoDisponibilidade = (
     <Box sx={{ textAlign: 'center' }}>
       <Typography variant="body2">
@@ -153,7 +152,7 @@ export default function StudentCard({ student }) {
 
 StudentCard.propTypes = {
   student: PropTypes.shape({
-    name: PropTypes.string,
+    userName: PropTypes.string,
     turno: PropTypes.string,
     disponibilidade: PropTypes.string,
     linguagemProgramacao: PropTypes.arrayOf(PropTypes.string),
