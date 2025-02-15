@@ -17,6 +17,7 @@ import { useResponsive } from 'src/hooks/use-responsive';
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
+import { useAuth } from 'src/routes/hooks/use-auth';
 import { NAV } from './config-layout';
 import navConfig from './config-navigation';
 
@@ -24,7 +25,7 @@ import navConfig from './config-navigation';
 
 export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
-
+  const { auth } = useAuth();
   const upLg = useResponsive('up', 'lg');
 
   useEffect(() => {
@@ -59,9 +60,11 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const renderMenu = (
     <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
-        <NavItem key={item.title} item={item} />
-      ))}
+      {navConfig
+        .filter((nav) => nav.roles.some((role) => role === auth?.user?.role))
+        .map((item) => (
+          <NavItem key={item.title} item={item} />
+        ))}
     </Stack>
   );
 
@@ -82,7 +85,6 @@ export default function Nav({ openNav, onCloseNav }) {
       {renderMenu}
 
       <Box sx={{ flexGrow: 1 }} />
-
     </Scrollbar>
   );
 
