@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useRouter } from 'src/routes/hooks';
+import { useSelector } from 'react-redux';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -11,10 +13,14 @@ import TeamFilters from '../team-filters';
 
 export default function TeamsView() {
   const { enqueueSnackbar } = useSnackbar();
-  
-  // Usando o hook 
+  const router = useRouter();
   const { data: teams = [], isLoading, error } = useGetTeamsQuery();
-  
+
+  const user = useSelector((state) => state.auth.auth.user);
+
+  // Filtra as equipes para que a equipe criada pelo usuário não seja exibida
+  const filteredTeams = teams.filter(team => user ? team.createdById !== user.id : true);
+
   const [openFilter, setOpenFilter] = useState(false);
   const [filteredTeam, setFilteredTeam] = useState({
     teamStatus: '',
@@ -29,16 +35,15 @@ export default function TeamsView() {
     });
   }
 
-  const filteredTeams = teams.filter((team) => {
+  // Aplica filtros adicionais, se houver
+  const finalTeams = filteredTeams.filter((team) => {
     const { teamStatus, themes, teacherTcc } = filteredTeam;
-
     const statusMatch = !teamStatus || (teamStatus === 'Completa' ? team.isActive : !team.isActive);
     const themesMatch = themes.length === 0 || themes.some((tema) => team.themes?.includes(tema));
     const teacherTccMatch =
       teacherTcc.length === 0 ||
       (teacherTcc.includes('Com orientador(a)') && team.teacherTcc) ||
       (teacherTcc.includes('Sem orientador(a)') && !team.teacherTcc);
-
     return statusMatch && themesMatch && teacherTccMatch;
   });
 
@@ -53,17 +58,17 @@ export default function TeamsView() {
       ));
     }
 
-    if (filteredTeams.length === 0) {
+    if (finalTeams.length === 0) {
       return (
         <Grid item xs={12}>
-          <Typography variant="body1" align="left" sx={{ ml: 3 }}>
+          <Typography variant="body1" align="left" sx={{ ml: 1 }}>
             Nenhuma equipe encontrada.
           </Typography>
         </Grid>
       );
     }
 
-    return filteredTeams.map((team) => (
+    return finalTeams.map((team) => (
       <Grid key={team.id} xs={12} sm={6} md={3}>
         <TeamCard team={team} />
       </Grid>
@@ -72,9 +77,9 @@ export default function TeamsView() {
 
   return (
     <Container>
-      <Typography variant="h4" sx={{ mb: 5 }}>
-        Equipes
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 5 }}>
+        <Typography variant="h4">Equipes</Typography>
+      </Stack>
 
       <Stack
         direction="row"
@@ -99,6 +104,10 @@ export default function TeamsView() {
     </Container>
   );
 }
+
+
+
+
 
 
 

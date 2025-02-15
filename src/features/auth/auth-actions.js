@@ -33,6 +33,12 @@ export const userLogin = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const { data } = await axios.post(`${backendURL}/auth/login`, { email, password }, config);
+
+      // Salva os tokens e os dados do usuário no localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data)); // Persistindo os dados do usuário
+
       return data;
     } catch (error) {
       if (error.response.data) {
