@@ -30,7 +30,7 @@ const navConfig = [
   },
   {
     title: 'Cronograma',
-    path: '/404',
+    path: '/events',
     icon: <Iconify icon="ic:round-calendar-today" />,
   },
   {
