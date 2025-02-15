@@ -7,7 +7,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import { useSnackbar } from 'notistack';
-import { useGetTeamsQuery } from 'src/api/team'; 
+import { useGetTeamsQuery } from 'src/api/team';
 import TeamCard from '../team-card';
 import TeamFilters from '../team-filters';
 
@@ -19,7 +19,7 @@ export default function TeamsView() {
   const user = useSelector((state) => state.auth.auth.user);
 
   // Filtra as equipes para que a equipe criada pelo usuário não seja exibida
-  const filteredTeams = teams.filter(team => user ? team.createdById !== user.id : true);
+  const filteredTeams = teams.filter((team) => (user ? team.createdById !== user.id : true));
 
   const [openFilter, setOpenFilter] = useState(false);
   const [filteredTeam, setFilteredTeam] = useState({
@@ -29,7 +29,7 @@ export default function TeamsView() {
   });
 
   if (error) {
-    enqueueSnackbar("Erro ao carregar equipes.", {
+    enqueueSnackbar('Erro ao carregar equipes.', {
       variant: 'error',
       anchorOrigin: { vertical: 'top', horizontal: 'center' },
     });
@@ -104,11 +104,3 @@ export default function TeamsView() {
     </Container>
   );
 }
-
-
-
-
-
-
-
-
