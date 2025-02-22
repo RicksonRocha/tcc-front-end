@@ -219,7 +219,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
         </Button>
       </Box>
 
-      <Button
+      {/* <Button
         disableRipple
         color="inherit"
         endIcon={<Iconify icon="ic:baseline-bubble-chart" />}
@@ -229,7 +229,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
         sx={{ fontSize: '16px' }}
       >
         Perfis Sugeridos
-      </Button>
+      </Button> */}
 
       <Drawer
         anchor="right"
