@@ -20,23 +20,17 @@ export const STUDENT_TEAM_OPTIONS = ['Com equipe', 'Sem equipe'];
 export const TURNO_OPTIONS = ['Vespertino', 'Noturno'];
 export const LINGUAGEM_OPTIONS = ['Python', 'SQL', 'Java', 'C++', 'R', 'C#', 'C', 'PHP', 'TypeScript', 'JavaScript'];
 export const TECH_BD_OPTIONS = ['MySQL', 'PostgreSQL', 'MongoDB', 'Oracle', 'Cassandra', 'MariaDB', 'SQL Server'];
-
 export const HABILIDADES_PESSOAIS_OPTIONS = ['Comunicação', 'Organização', 'Proatividade', 'Pensamento estratégico', 'Liderança', 'Planejamento', 'Trabalho em equipe', 'Adaptabilidade', 'Atenção', 'Criatividade', 'Resiliência', 'Gerenciamento de tempo', 'Negociação', 'Resolução de problemas'];
-
 export const TEMAS_TCC_OPTIONS = ['Tecnologia e inovação', 'Educação', 'Meio ambiente e sustentabilidade', 'Inteligência artificial', 'Análise de dados', 'Metodologias ágeis', 'Economia e Finanças', 'Saúde e bem estar', 'Cidadania', 'Política'];
-
 export const MODALIDADE_AGENDAS_OPTIONS = ['Presencial', 'Remoto', 'Flexível'];
 
-// ----------------------------------------------------------------------
-
 export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter, filterState, setFilterState }) {
-
   const router = useRouter();
 
   const handleCheckboxChange = (category, value) => {
-    const updatedState = filterState[category].includes(value)
+    const updatedState = filterState[category]?.includes(value)
       ? filterState[category].filter((item) => item !== value)
-      : [...filterState[category], value];
+      : [...(filterState[category] || []), value];
 
     setFilterState((prev) => ({
       ...prev,
@@ -53,13 +47,13 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
 
   const handleClearAll = () => {
     setFilterState({
-      studentTeam: '',
+      teamStatus: '',
       turno: '',
-      linguagem: [],
-      techBD: [],
+      linguagemProgramacao: [],
+      bancoDeDados: [],
       habilidadesPessoais: [],
-      temasTCC: [],
-      modalidadeAgendas: [],
+      temasDeInteresse: [],
+      modalidadeTrabalho: '',
     });
   };
 
@@ -69,8 +63,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
         <b>Situação do(a) aluno(a)</b>
       </Typography>
       <RadioGroup
-        value={filterState.studentTeam}
-        onChange={(e) => handleRadioChange('studentTeam', e.target.value)}
+        value={filterState.teamStatus}
+        onChange={(e) => handleRadioChange('teamStatus', e.target.value)}
       >
         {STUDENT_TEAM_OPTIONS.map((item) => (
           <FormControlLabel key={item} value={item} control={<Radio />} label={item} />
@@ -108,8 +102,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             key={item}
             control={
               <Checkbox
-                checked={filterState.linguagem.includes(item)}
-                onChange={() => handleCheckboxChange('linguagem', item)}
+                checked={filterState.linguagemProgramacao?.includes(item)}
+                onChange={() => handleCheckboxChange('linguagemProgramacao', item)}
               />
             }
             label={item}
@@ -131,8 +125,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             key={item}
             control={
               <Checkbox
-                checked={filterState.techBD.includes(item)}
-                onChange={() => handleCheckboxChange('techBD', item)}
+                checked={filterState.bancoDeDados?.includes(item)}
+                onChange={() => handleCheckboxChange('bancoDeDados', item)}
               />
             }
             label={item}
@@ -154,7 +148,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             key={item}
             control={
               <Checkbox
-                checked={filterState.habilidadesPessoais.includes(item)}
+                checked={filterState.habilidadesPessoais?.includes(item)}
                 onChange={() => handleCheckboxChange('habilidadesPessoais', item)}
               />
             }
@@ -177,8 +171,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             key={item}
             control={
               <Checkbox
-                checked={filterState.temasTCC.includes(item)}
-                onChange={() => handleCheckboxChange('temasTCC', item)}
+                checked={filterState.temasDeInteresse?.includes(item)}
+                onChange={() => handleCheckboxChange('temasDeInteresse', item)}
               />
             }
             label={item}
@@ -192,7 +186,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
     <Stack spacing={1}>
       <Divider />
       <Typography variant="subtitle3">
-        <b>Modalidade de agendas</b>
+        <b>Modalidade de Trabalho</b>
       </Typography>
       <FormGroup>
         {MODALIDADE_AGENDAS_OPTIONS.map((item) => (
@@ -200,8 +194,8 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
             key={item}
             control={
               <Checkbox
-                checked={filterState.modalidadeAgendas.includes(item)}
-                onChange={() => handleCheckboxChange('modalidadeAgendas', item)}
+                checked={filterState.modalidadeTrabalho?.includes(item)}
+                onChange={() => handleCheckboxChange('modalidadeTrabalho', item)}
               />
             }
             label={item}
@@ -219,7 +213,7 @@ export default function StudentFilters({ openFilter, onOpenFilter, onCloseFilter
           color="inherit"
           endIcon={<Iconify icon="ic:round-filter-list" />}
           onClick={onOpenFilter}
-          sx={{ fontSize: '16px' }}
+          sx={{ fontSize: '16px', justifyContent: 'flex-start', ml: -2.2, mr: 2 }}
         >
           Filtros&nbsp;
         </Button>
@@ -292,7 +286,7 @@ StudentFilters.propTypes = {
   openFilter: PropTypes.bool,
   onOpenFilter: PropTypes.func,
   onCloseFilter: PropTypes.func,
-  filterState: PropTypes.object, // Recebe o estado dos filtros
-  setFilterState: PropTypes.func, // Função para atualizar o estado dos filtros
+  filterState: PropTypes.object,
+  setFilterState: PropTypes.func,
 };
 

@@ -11,7 +11,7 @@ const schemaTeamForm = yup.object().shape({
     .string()
     .required('A descrição da proposta é obrigatória!')
     .min(180, 'A descrição da proposta deve ter no mínimo 180 caracteres.')
-    .max(500, 'A descrição da proposta deve ter no máximo 500 caracteres.'),
+    .max(255, 'A descrição da proposta deve ter no máximo 255 caracteres.'),
   members: yup
     .array()
     .of(yup.string().required('Cada integrante precisa ter um nome.'))
