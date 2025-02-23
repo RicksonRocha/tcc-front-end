@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
+import Divider from '@mui/material/Divider';
 
 export default function TeamCard({ team }) {
   const [successMessage, setSuccessMessage] = useState('');
@@ -36,18 +37,34 @@ export default function TeamCard({ team }) {
     <Box
       sx={{
         top: 0,
-        width: 1,
-        height: 1,
+        width: '100%',
+        height: '100%',
         backgroundColor: '#EDEFF1',
         position: 'absolute',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: 2, // espaço uniforme entre os itens
+        px: 2,
       }}
     >
-      <Typography variant="h7" sx={{ textAlign: 'center', px: 2 }}>
-        {team.name || 'Nome não disponível'}
+      <Typography variant="h7" sx={{ textAlign: 'center', mt: 2 }}>
+        Nome: {team.name || 'Nome não disponível'}
       </Typography>
+      {team.themes && team.themes.length > 0 && (
+        <>
+          <Divider
+            sx={{
+              width: '80%',
+              backgroundColor: 'rgba(255,255,255,0.7)',
+            }}
+          />
+          <Typography variant="body1" sx={{ textAlign: 'center' }}>
+            Temas: {team.themes.join(', ')}
+          </Typography>
+        </>
+      )}
     </Box>
   );
 
@@ -76,7 +93,6 @@ export default function TeamCard({ team }) {
 
       <Stack spacing={2} sx={{ p: 3 }}>
         {renderQtdeIntegrantes}
-
         <Button
           variant="contained"
           disabled={teamStatus === 'Completa'}
@@ -108,5 +124,8 @@ TeamCard.propTypes = {
     name: PropTypes.string,
     isActive: PropTypes.bool,
     members: PropTypes.arrayOf(PropTypes.string), // Array de membros como strings
+    themes: PropTypes.arrayOf(PropTypes.string),  // Lista de temas
   }).isRequired,
 };
+
+

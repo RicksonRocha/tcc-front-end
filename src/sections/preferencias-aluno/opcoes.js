@@ -29,7 +29,7 @@ export const disponibilidades = [
   'Dias úteis', 'Final de semana', 'Flexível'
 ]
 
-export const modalidade_trabalho = [
+export const modalidades_trabalho = [
   'Presencial', 'Remoto', 'Flexível'
 ]
 

@@ -8,7 +8,7 @@ export const userApi = createApi({
   endpoints: (build) => ({
     // Endpoint para obter informações de um usuário
     getUser: build.query({
-      query: (userId) => `/users/${userId}`,
+      query: (userId) => `/auth/users/${userId}`,
     }),
     // Endpoint para listar todos os usuários
     getUsers: build.query({

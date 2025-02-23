@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useRouter } from 'src/routes/hooks/use-router';
-import { useRegisterUserMutation } from 'src/api/user'; // Importa o hook para registrar usuário
 
 // Esquema de validação com Yup
 const schemaRegister = yup.object().shape({
