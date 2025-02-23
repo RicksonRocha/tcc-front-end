@@ -44,13 +44,9 @@ export const userLogin = createAsyncThunk(
 
 export const resetPassword = createAsyncThunk(
   'auth/reset-password',
-  async ({ email, newsenha }, { rejectWithValue }) => {
+  async ({ email }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${backendURL}/auth/reset-password`,
-        { email, newsenha },
-        config
-      );
+      const response = await axios.post(`${backendURL}/auth/forgot-password`, { email }, config);
 
       // Se a requisição for bem-sucedida, retorne a resposta
       return response.data;

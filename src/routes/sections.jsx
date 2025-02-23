@@ -8,6 +8,7 @@ import TeacherPage from 'src/pages/teacher';
 import SupportMaterialPage from 'src/pages/support-material';
 import CrudUsersAdmPage from 'src/pages/crud-users-adm';
 import ProtectedRoute from './protected-route';
+import TeacherInitPage from 'src/pages/teacher-init-page';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -41,6 +42,7 @@ export default function Router() {
         { path: 'orientadores', element: <TeacherPage /> },
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
         { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
+        { path: 'init-page-teacher', element: <TeacherInitPage /> },
       ],
     },
 
