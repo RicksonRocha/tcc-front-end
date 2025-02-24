@@ -8,17 +8,26 @@ export const userApi = createApi({
   endpoints: (build) => ({
     // Endpoint para obter informações de um usuário
     getUser: build.query({
-      query: (userId) => `/users/${userId}`,
+      query: (userId) => `/auth/users/${userId}`,
     }),
+
     // Endpoint para listar todos os usuários
     getUsers: build.query({
       query: () => '/auth/users',
     }),
+
     // Endpoint para listar estudantes
     getStudents: build.query({
       query: () => '/auth/users/students',
       providesTags: ['Users'],
     }),
+
+    // Endpoint para listar professores
+    getTeachers: build.query({
+      query: () => '/auth/users/teachers',
+      providesTags: ['Users'],
+    }),
+
     // Endpoint para atualizar um usuário
     updateUser: build.mutation({
       query: ({ id, ...updatedUser }) => ({
@@ -28,6 +37,7 @@ export const userApi = createApi({
       }),
       invalidatesTags: ['Users'],
     }),
+
     // Endpoint para excluir um usuário
     deleteUser: build.mutation({
       query: (id) => ({
@@ -43,6 +53,7 @@ export const {
   useGetUserQuery,
   useGetUsersQuery,
   useGetStudentsQuery,
+  useGetTeachersQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useResetPasswordMutation,

@@ -9,9 +9,14 @@ const refreshToken = localStorage.getItem('refreshToken')
   ? localStorage.getItem('refreshToken')
   : null;
 
+// Tenta recuperar os dados do usuário do localStorage
+const userFromStorage = localStorage.getItem('user')
+  ? JSON.parse(localStorage.getItem('user'))
+  : null;
+
 const initialState = {
   loading: false,
-  auth: {}, // for user object
+  auth: userFromStorage, 
   token, // for storing the JWT
   refreshToken, // for storing the JWT
   error: null,

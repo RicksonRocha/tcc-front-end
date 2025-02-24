@@ -16,15 +16,12 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { useRouter } from 'src/routes/hooks';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
-import { useGetTeamByStudentQuery } from 'src/api/team';
 
 export const TEAM_OPTIONS = ['Aberta', 'Completa'];
 export const TEACHER_TCC_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
 
 export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
   const router = useRouter();
-
-  const { data: teamData, error, isLoading } = useGetTeamByStudentQuery();
 
   const [filterState, setFilterState] = useState({
     teamStatus: '',
@@ -54,14 +51,14 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
     setFilteredTeam(newFilterState);
   };
 
+  // Redireciona para "Minha Equipe"
   const handleMyTeamClick = () => {
-    if (teamData) {
-      router.push(`/minha-equipe/${teamData.id}`); // Redireciona para edição da equipe
-    } else if (error?.status === 404) {
-      router.push('/minha-equipe'); // Redireciona para criação de nova equipe
-    } else {
-      console.error('Erro ao buscar equipe:', error);
-    }
+    router.push('/minha-equipe');
+  };
+
+  // Redireciona para "Criar Equipe"
+  const handleCreateTeamClick = () => {
+    router.push('/equipes/nova');
   };
 
   const renderTeam = (
@@ -128,7 +125,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           color="inherit"
           endIcon={<Iconify icon="ic:round-filter-list" />}
           onClick={onOpenFilter}
-          sx={{ fontSize: '16px' }}
+          sx={{ fontSize: '16px', justifyContent: 'flex-start', ml: -2.2, mr: 2 }}
         >
           Filtros&nbsp;
         </Button>
@@ -136,12 +133,11 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
         <Button
           disableRipple
           color="inherit"
-          endIcon={<Iconify icon="ic:round-group" />}
-          onClick={handleMyTeamClick}
+          endIcon={<Iconify icon="ic:round-add-circle" />}
+          onClick={handleCreateTeamClick}
           sx={{ fontSize: '16px' }}
-          disabled={isLoading} // Desabilita enquanto carrega
         >
-          Minha Equipe
+          Criar equipe
         </Button>
       </Box>
 
@@ -201,4 +197,6 @@ TeamFilters.propTypes = {
   onCloseFilter: PropTypes.func,
   setFilteredTeam: PropTypes.func,
 };
+
+
 

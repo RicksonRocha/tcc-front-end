@@ -7,6 +7,8 @@ import StudentPage from 'src/pages/student';
 import TeacherPage from 'src/pages/teacher';
 import SupportMaterialPage from 'src/pages/support-material';
 import CrudUsersAdmPage from 'src/pages/crud-users-adm';
+import { EventPage } from 'src/pages/event';
+import EditTeamPage from 'src/pages/edit-team-page';
 import ProtectedRoute from './protected-route';
 import TeacherInitPage from 'src/pages/teacher-init-page';
 
@@ -25,6 +27,8 @@ export const ResetPasswordRedefinationPage = lazy(() =>
   import('src/pages/reset-password-redefination')
 );
 
+export const NewTeamPage = lazy(() => import('src/pages/new-team'));
+
 export default function Router() {
   const routes = useRoutes([
     {
@@ -39,9 +43,12 @@ export default function Router() {
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
         { path: 'minha-equipe/:teamId', element: <MyTeamPage /> },
+        { path: 'equipes/nova', element: <NewTeamPage /> },
+        { path: 'equipes/editar/:teamId', element: <EditTeamPage /> },
         { path: 'orientadores', element: <TeacherPage /> },
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
         { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
+        { path: 'events', element: <EventPage /> },
         { path: 'init-page-teacher', element: <TeacherInitPage /> },
       ],
     },
