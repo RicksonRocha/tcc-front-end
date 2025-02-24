@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -24,14 +24,10 @@ import {
   DialogActions,
   Snackbar,
   Alert,
-} from "@mui/material";
-import { useForm, Controller } from "react-hook-form";
-import {
-  useGetUsersQuery,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-} from "src/api/user";
-import api from "src/api/api";
+} from '@mui/material';
+import { useForm, Controller } from 'react-hook-form';
+import { useGetUsersQuery, useUpdateUserMutation, useDeleteUserMutation } from 'src/api/user';
+import api from 'src/api/api';
 
 export default function CrudUsersAdmTable() {
   const { data: users = [], isLoading, isError, error, refetch } = useGetUsersQuery();
@@ -41,29 +37,36 @@ export default function CrudUsersAdmTable() {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [filters, setFilters] = useState({ email: "", role: "" });
+  const [filters, setFilters] = useState({ email: '', role: '' });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
-  const { control, handleSubmit, reset, formState: { errors }, setError, clearErrors } = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setError,
+    clearErrors,
+  } = useForm({
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      role: "ALUNO",
+      name: '',
+      email: '',
+      password: '',
+      role: 'ALUNO',
     },
   });
 
   useEffect(() => {
     setFilteredUsers(users);
-    document.title = "Manutenção de Usuários";
+    document.title = 'Manutenção de Usuários';
   }, [users]);
 
   const handleAddRow = () => {
-    reset({ name: "", email: "", password: "", role: "ALUNO" });
+    reset({ name: '', email: '', password: '', role: 'ALUNO' });
     setSelectedUserId(null);
     setShowForm(true);
     clearErrors();
@@ -75,7 +78,7 @@ export default function CrudUsersAdmTable() {
       reset({
         name: user.name,
         email: user.email,
-        password: "",
+        password: '',
         role: user.role,
       });
       setShowForm(true);
@@ -87,31 +90,30 @@ export default function CrudUsersAdmTable() {
     try {
       const isDuplicate = users.some(
         (user) =>
-          (user.email === data.email || user.name === data.name) &&
-          user.id !== selectedUserId
+          (user.email === data.email || user.name === data.name) && user.id !== selectedUserId
       );
 
       if (isDuplicate) {
-        setError("email", { type: "manual", message: "E-mail já cadastrado." });
-        setError("name", { type: "manual", message: "Nome já cadastrado." });
+        setError('email', { type: 'manual', message: 'E-mail já cadastrado.' });
+        setError('name', { type: 'manual', message: 'Nome já cadastrado.' });
         return;
       }
 
       if (selectedUserId) {
         await updateUser({ id: selectedUserId, ...data }).unwrap();
-        setSnackbarMessage("Usuário atualizado com sucesso!");
+        setSnackbarMessage('Usuário atualizado com sucesso!');
       } else {
-        await api.post("/auth/register", data);
-        setSnackbarMessage("Usuário criado com sucesso!");
+        await api.post('/auth/register', data);
+        setSnackbarMessage('Usuário criado com sucesso!');
       }
 
       refetch();
       setShowForm(false);
-      setSnackbarSeverity("success");
+      setSnackbarSeverity('success');
       setSnackbarOpen(true);
     } catch (err) {
-      setSnackbarMessage("Erro ao salvar usuário.");
-      setSnackbarSeverity("error");
+      setSnackbarMessage('Erro ao salvar usuário.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
@@ -124,26 +126,26 @@ export default function CrudUsersAdmTable() {
   const handleDelete = async () => {
     try {
       await deleteUser(selectedUserId);
-      
+
       // Fecha diálogo de confirmação
       setConfirmDialogOpen(false);
-      
-      setSnackbarMessage("Usuário excluído com sucesso!");
-      setSnackbarSeverity("success");
+
+      setSnackbarMessage('Usuário excluído com sucesso!');
+      setSnackbarSeverity('success');
       setSnackbarOpen(true);
-  
+
       // Atualiza a lista de usuários
       refetch();
-      
+
       // Reseta a seleção
       setSelectedUserId(null);
     } catch (err) {
-      console.error("Erro durante a exclusão:", err);
-      
+      console.error('Erro durante a exclusão:', err);
+
       setConfirmDialogOpen(false);
-      
-      setSnackbarMessage("Erro ao excluir usuário.");
-      setSnackbarSeverity("error");
+
+      setSnackbarMessage('Erro ao excluir usuário.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
   };
@@ -163,14 +165,13 @@ export default function CrudUsersAdmTable() {
   };
 
   const clearFilters = () => {
-    setFilters({ email: "", role: "" });
+    setFilters({ email: '', role: '' });
     setFilteredUsers(users);
     setIsFilterOpen(false);
   };
 
   if (isLoading) return <Typography>Carregando usuários...</Typography>;
-  if (isError)
-    return <Typography>Erro ao carregar usuários: {error.message}</Typography>;
+  if (isError) return <Typography>Erro ao carregar usuários: {error.message}</Typography>;
 
   return (
     <Container>
@@ -178,7 +179,7 @@ export default function CrudUsersAdmTable() {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
           {snackbarMessage}
@@ -212,20 +213,12 @@ export default function CrudUsersAdmTable() {
             >
               Excluir
             </Button>
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => setIsFilterOpen(true)}
-            >
+            <Button size="small" variant="outlined" onClick={() => setIsFilterOpen(true)}>
               Filtros
             </Button>
           </Stack>
 
-          <Drawer
-            anchor="right"
-            open={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-          >
+          <Drawer anchor="right" open={isFilterOpen} onClose={() => setIsFilterOpen(false)}>
             <Box sx={{ padding: 2 }}>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Filtros
@@ -252,12 +245,7 @@ export default function CrudUsersAdmTable() {
                 <FormControlLabel value="ADMIN" control={<Radio />} label="Administrador" />
               </RadioGroup>
               <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  onClick={applyFilters}
-                >
+                <Button size="small" variant="contained" color="primary" onClick={applyFilters}>
                   Aplicar
                 </Button>
                 <Button size="small" variant="outlined" onClick={clearFilters}>
@@ -280,14 +268,12 @@ export default function CrudUsersAdmTable() {
                 {filteredUsers.map((user) => (
                   <TableRow
                     key={user.id}
-                    onClick={() =>
-                      setSelectedUserId((prev) => (prev === user.id ? null : user.id))
-                    }
+                    onClick={() => setSelectedUserId((prev) => (prev === user.id ? null : user.id))}
                     selected={selectedUserId === user.id}
                     sx={{
-                      cursor: "pointer",
+                      cursor: 'pointer',
                       backgroundColor:
-                        selectedUserId === user.id ? "rgba(0, 0, 255, 0.1)" : "inherit",
+                        selectedUserId === user.id ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
                     }}
                   >
                     <TableCell>{user.name}</TableCell>
@@ -299,10 +285,7 @@ export default function CrudUsersAdmTable() {
             </Table>
           </TableContainer>
 
-          <Dialog
-            open={confirmDialogOpen}
-            onClose={() => setConfirmDialogOpen(false)}
-          >
+          <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
             <DialogTitle>Confirmar Exclusão</DialogTitle>
             <DialogContent>
               <DialogContentText>
@@ -325,7 +308,7 @@ export default function CrudUsersAdmTable() {
             <Controller
               name="name"
               control={control}
-              rules={{ required: "Nome é obrigatório." }}
+              rules={{ required: 'Nome é obrigatório.' }}
               render={({ field }) => (
                 <TextField
                   {...field}
@@ -339,7 +322,7 @@ export default function CrudUsersAdmTable() {
             <Controller
               name="email"
               control={control}
-              rules={{ required: "E-mail é obrigatório." }}
+              rules={{ required: 'E-mail é obrigatório.' }}
               render={({ field }) => (
                 <TextField
                   {...field}
@@ -354,7 +337,7 @@ export default function CrudUsersAdmTable() {
               <Controller
                 name="password"
                 control={control}
-                rules={{ required: "Senha é obrigatório." }}
+                rules={{ required: 'Senha é obrigatório.' }}
                 render={({ field }) => (
                   <TextField
                     {...field}

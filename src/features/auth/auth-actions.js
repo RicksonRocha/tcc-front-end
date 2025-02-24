@@ -5,7 +5,6 @@ const backendURL = import.meta.env.VITE_KEY_API;
 const config = {
   headers: {
     'Content-Type': 'application/json',
-    Accept: 'application/json',
   },
 };
 
@@ -64,9 +63,7 @@ export const resetPassword = createAsyncThunk(
     } catch (error) {
       // Tratamento de erro e rejeição com mensagem específica do backend ou mensagem padrão
       if (error.response && error.response.data) {
-        return rejectWithValue(
-          error.response.data.error || 'Erro ao solicitar redefinição de senha.'
-        );
+        return rejectWithValue(error.response.data.error || 'Erro ao redefinir a senha.');
       }
       return rejectWithValue(error.message);
     }
