@@ -22,6 +22,7 @@ export default function ResetPasswordRedefinationView() {
   const [searchParams] = useSearchParams(); // Hook para capturar os parâmetros da URL
   const token = searchParams.get('token'); // Obtém o valor do parâmetro "token" na URL
   const dispatch = useDispatch();
+  const { push } = useRouter();
 
   // Esquema de validação com Yup
   const schema = Yup.object().shape({
@@ -66,6 +67,7 @@ export default function ResetPasswordRedefinationView() {
       if (updatePassword.fulfilled.match(result)) {
         reset();
         alert('Senha redefinida com sucesso!');
+        push('/login');
       } else {
         alert(result.payload || 'Erro ao redefinir senha.');
       }
