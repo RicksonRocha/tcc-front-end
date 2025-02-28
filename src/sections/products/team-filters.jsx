@@ -23,6 +23,11 @@ export const TEACHER_TCC_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
 export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
   const router = useRouter();
 
+  // Obter o usuário logado a partir do localStorage:
+  const storedData = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  const currentUser = storedData && storedData.user ? storedData.user : null;
+  const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
+
   const [filterState, setFilterState] = useState({
     teamStatus: '',
     themes: [],
@@ -58,6 +63,8 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
 
   // Redireciona para "Criar Equipe"
   const handleCreateTeamClick = () => {
+    // Se for professor, não permite criar equipe
+    if (isProfessor) return;
     router.push('/equipes/nova');
   };
 
@@ -135,6 +142,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           color="inherit"
           endIcon={<Iconify icon="ic:round-add-circle" />}
           onClick={handleCreateTeamClick}
+          disabled={isProfessor}  // Desabilita para professor
           sx={{ fontSize: '16px' }}
         >
           Criar equipe
@@ -197,6 +205,7 @@ TeamFilters.propTypes = {
   onCloseFilter: PropTypes.func,
   setFilteredTeam: PropTypes.func,
 };
+
 
 
 
