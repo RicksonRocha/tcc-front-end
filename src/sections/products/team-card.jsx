@@ -8,9 +8,15 @@ import Label from 'src/components/label';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
+import { primary } from 'src/theme/palette';
+import { useSelector } from 'react-redux';
 
 export default function TeamCard({ team }) {
   const [successMessage, setSuccessMessage] = useState('');
+
+  // Obter o usuário logado via Redux 
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+  const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
 
   // Define o status como "Completa" se isActive for true
   const teamStatus = team.isActive ? 'Completa' : 'Aberta';
@@ -45,7 +51,7 @@ export default function TeamCard({ team }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 2, // espaço uniforme entre os itens
+        gap: 2,
         px: 2,
       }}
     >
@@ -54,12 +60,7 @@ export default function TeamCard({ team }) {
       </Typography>
       {team.themes && team.themes.length > 0 && (
         <>
-          <Divider
-            sx={{
-              width: '80%',
-              backgroundColor: 'rgba(255,255,255,0.7)',
-            }}
-          />
+          <Divider sx={{ width: '80%', backgroundColor: 'rgba(255,255,255,0.7)' }} />
           <Typography variant="body1" sx={{ textAlign: 'center' }}>
             Temas: {team.themes.join(', ')}
           </Typography>
@@ -95,7 +96,7 @@ export default function TeamCard({ team }) {
         {renderQtdeIntegrantes}
         <Button
           variant="contained"
-          disabled={teamStatus === 'Completa'}
+          disabled={teamStatus === 'Completa' || isProfessor} 
           onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',
@@ -123,9 +124,10 @@ TeamCard.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string,
     isActive: PropTypes.bool,
-    members: PropTypes.arrayOf(PropTypes.string), // Array de membros como strings
-    themes: PropTypes.arrayOf(PropTypes.string),  // Lista de temas
+    members: PropTypes.arrayOf(PropTypes.string),
+    themes: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
 };
+
 
 

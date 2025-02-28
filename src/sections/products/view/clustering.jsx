@@ -14,18 +14,18 @@ import {
 } from '@mui/material';
 
 const Clustering = () => {
-  const user = useSelector((state) => state.auth?.auth?.user);
+  // Obtém o usuário via Redux
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const fetchSuggestions = async () => {
-    // Abre o modal para exibir o loading
     setOpen(true);
     setLoading(true);
     const startTime = Date.now();
     try {
-      const response = await api.get(`/cluster/clustering/sugeridos/${user.id}`);
+      const response = await api.get(`/cluster/clustering/sugeridos/${currentUser.id}`);
       setSuggestions(response.data.sugestoes);
     } catch (error) {
       console.error("Erro ao buscar perfis sugeridos:", error);
@@ -38,7 +38,6 @@ const Clustering = () => {
     }
   };
 
-  // Componente para exibir cada card de aluno compatível
   const CompatibleCard = ({ student }) => (
     <Card sx={{ width: 280, m: 1, boxShadow: 6 }}>
       <Box sx={{ p: 1 }}>
@@ -61,7 +60,6 @@ const Clustering = () => {
     </Card>
   );
 
-  // Define o conteúdo do modal
   let modalContent;
   if (loading) {
     modalContent = (
@@ -99,7 +97,11 @@ const Clustering = () => {
 
   return (
     <>
-      <Button variant="contained" onClick={fetchSuggestions}>
+      <Button
+        variant="contained"
+        onClick={fetchSuggestions}
+        disabled={currentUser && currentUser.role === 'PROFESSOR'} // Desabilita para professores
+      >
         Buscar perfis compatíveis
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -129,3 +131,4 @@ const Clustering = () => {
 };
 
 export default Clustering;
+
