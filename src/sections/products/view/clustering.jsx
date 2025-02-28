@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import api from "src/api/api";
 import { useSelector } from 'react-redux';
 import { 
@@ -12,23 +11,68 @@ import {
   Divider, 
   CircularProgress 
 } from '@mui/material';
+import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+
+// Componente separado, fora do Clustering
+const CompatibleCard = ({ student }) => (
+  <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
+    <BubbleChartIcon 
+      sx={{ position: 'absolute', top: 8, right: 8, fontSize: 24, color: 'gray' }} 
+    />
+    <Box sx={{ p: 1 }}>
+      <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
+        {student.userName || `Aluno: ${student.id}`}
+      </Typography>
+      
+      {/* Turno */}
+      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+        <strong>Turno:</strong> {student.turno || 'Não informado'}
+      </Typography>
+      <br />
+
+      {/* Disponibilidade */}
+      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+        <strong>Disponibilidade:</strong> {student.disponibilidade || 'N/D'}
+      </Typography>
+
+      <Divider sx={{ my: 1 }} />
+
+      {/* Temas de Interesse */}
+      <Typography variant="caption" display="block" sx={{ fontSize: '0.9rem' }}>
+        <strong>Temas:</strong> {student.temasDeInteresse ? student.temasDeInteresse.join(', ') : 'N/D'}
+      </Typography>
+    </Box>
+    <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
+      <Button variant="contained" color="primary" size="small">
+        Conectar
+      </Button>
+    </Stack>
+  </Card>
+);
 
 const Clustering = () => {
   const user = useSelector((state) => state.auth?.auth?.user);
+  const token = useSelector((state) => state.auth?.auth?.token);
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const fetchSuggestions = async () => {
-    // Abre o modal para exibir o loading
     setOpen(true);
     setLoading(true);
     const startTime = Date.now();
     try {
-      const response = await api.get(`/cluster/clustering/sugeridos/${user.id}`);
+      // Atualiza os clusters, enviando o token no header
+      await api.get(`/cluster/clustering/atualizar`, {
+        headers: { Authorization: token }
+      });
+      // Em seguida, busca os perfis compatíveis do aluno logado
+      const response = await api.get(`/cluster/clustering/sugeridos/${user.id}`, {
+        headers: { Authorization: token }
+      });
       setSuggestions(response.data.sugestoes);
     } catch (error) {
-      console.error("Erro ao buscar perfis sugeridos:", error);
+      console.error("Erro ao buscar perfis compatíveis:", error);
     } finally {
       const elapsed = Date.now() - startTime;
       const delay = Math.max(3000 - elapsed, 0);
@@ -38,30 +82,6 @@ const Clustering = () => {
     }
   };
 
-  // Componente para exibir cada card de aluno compatível
-  const CompatibleCard = ({ student }) => (
-    <Card sx={{ width: 280, m: 1, boxShadow: 6 }}>
-      <Box sx={{ p: 1 }}>
-        <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
-          {student.userName || `Aluno: ${student.id}`}
-        </Typography>
-        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-          {student.turno || 'Turno não informado'}
-        </Typography>
-        <Divider sx={{ my: 1 }} />
-        <Typography variant="caption" display="block" sx={{ fontSize: '0.9rem' }}>
-          Temas: {student.temasDeInteresse ? student.temasDeInteresse.join(', ') : 'N/D'}
-        </Typography>
-      </Box>
-      <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
-        <Button variant="contained" color="primary" size="small">
-          Conectar
-        </Button>
-      </Stack>
-    </Card>
-  );
-
-  // Define o conteúdo do modal
   let modalContent;
   if (loading) {
     modalContent = (
@@ -92,7 +112,7 @@ const Clustering = () => {
     modalContent = (
       <Typography variant="body1" sx={{ fontSize: '1.1rem', textAlign: 'center' }}>
         No momento não encontramos perfis compatíveis com o seu 😓<br/>
-        Você ainda pode conferir os perfis cadastrados na aba <strong><em>Alunos</em></strong>!
+        Você ainda pode conferir/filtrar os perfis cadastrados na aba <strong><em>Alunos</em></strong>!
       </Typography>
     );
   }
@@ -114,7 +134,7 @@ const Clustering = () => {
           }}
         >
           <Typography variant="h6" sx={{ mb: 2 }}>
-            Perfis Compatíveis ✨
+            Perfis Compatíveis 
           </Typography>
           {modalContent}
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
