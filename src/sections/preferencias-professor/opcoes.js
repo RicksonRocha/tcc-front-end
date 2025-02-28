@@ -2,7 +2,7 @@ export const turnos = ['Vespertino', 'Noturno'];
 
 export const disponivel_orientacao = ['Sim', 'Não'];
 
-export const linguagens_de_programacao = [
+export const linguagens_programacao = [
     'Python', 'SQL', 'Java', 'C++', 'R', 'C#', 'C', 
     'PHP','TypeScript', 'JavaScript'
 ];
@@ -24,7 +24,7 @@ export const habilidades_pessoais = [
   'Resolução de problemas'
 ];
 
-export const temas_de_interesse = [
+export const temas_interesse = [
   'Tecnologia e inovação', 'Educação', 'Meio ambiente e sustentabilidade',
   'Inteligência artificial', 'Análise de dados', 'Metodologias ágeis',
   'Economia e Finanças', 'Saúde e bem estar', 'Cidadania', 'Política'
