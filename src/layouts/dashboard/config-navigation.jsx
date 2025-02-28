@@ -2,6 +2,13 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
+// Recupera o objeto salvo no localStorage
+const storedData = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+const currentUser = storedData && storedData.user ? storedData.user : null;
+
+// Se o usuário for professor, define o path para o perfil de professor
+const perfilPath = currentUser && currentUser.role === 'PROFESSOR' ? '/meu-perfil-professor' : '/my-profile';
+
 const navConfig = [
   {
     title: 'Visão Geral',
@@ -11,7 +18,7 @@ const navConfig = [
   },
   {
     title: 'Meu Perfil',
-    path: '/my-profile',
+    path: perfilPath,
     icon: <Iconify icon="ic:round-account-circle" />,
     roles: ['ALUNO', 'PROFESSOR', 'ADMIN'],
   },

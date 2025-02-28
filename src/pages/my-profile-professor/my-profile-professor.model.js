@@ -8,12 +8,13 @@ import schemaPreferenciasProfessor from 'src/hooks/form/preferencias-professor';
 // Função auxiliar para extrair o e-mail do token (para identificar o usuário logado)
 function getUserEmailFromToken() {
   const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.sub;
   } catch (error) {
-    console.error("Erro ao decodificar o token:", error);
+    console.error("Erro ao decodificar o token:", error);          
     return null;
   }
 }

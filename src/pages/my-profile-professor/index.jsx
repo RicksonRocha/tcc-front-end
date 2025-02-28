@@ -1,5 +1,5 @@
-import useMyProfileProfessorModel from './my-profile-professor.model';
-import MyProfileProfessorView from './my-profile-professor.view';
+import useMyProfileProfessorModel from 'src/pages/my-profile-professor/my-profile-professor.model';
+import MyProfileProfessorView from 'src/pages/my-profile-professor/my-profile-professor.view';
 
 export default function MyProfileProfessorPage() {
   const methods = useMyProfileProfessorModel();

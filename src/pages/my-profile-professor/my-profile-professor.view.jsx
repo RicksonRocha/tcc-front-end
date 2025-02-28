@@ -389,20 +389,20 @@ export default function MyProfileProfessorView(props) {
   return (
     <>
       <Helmet>
-        <title>Meu Perfil - Professor</title>
+        <title>Meu Perfil</title>
       </Helmet>
 
       <Container sx={{ mt: 4 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Stack>
             <Typography variant="h4" mb={1}>
-              Meu Perfil - Professor
+              Meu Perfil
             </Typography>
             <Breadcrumbs aria-label="breadcrumb">
               <Link underline="hover" color="text.primary" href="/">
                 Início
               </Link>
-              <Typography color="inherit">Meu Perfil - Professor</Typography>
+              <Typography color="inherit">Meu Perfil</Typography>
             </Breadcrumbs>
           </Stack>
         </Stack>
