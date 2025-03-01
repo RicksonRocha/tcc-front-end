@@ -66,10 +66,11 @@ const Clustering = () => {
       await api.get(`/cluster/clustering/atualizar`, {
         headers: { Authorization: token }
       });
-      // Em seguida, busca os perfis compatíveis do aluno logado
+      // Em seguida, busca os perfis compatíveis do usuário logado
       const response = await api.get(`/cluster/clustering/sugeridos/${currentUser.id}`, {
         headers: { Authorization: token }
       });
+      // Back envia apenas perfis de alunos
       setSuggestions(response.data.sugestoes);
     } catch (error) {
       console.error("Erro ao buscar perfis compatíveis:", error);
@@ -132,7 +133,7 @@ const Clustering = () => {
             p: 4, 
             maxWidth: 800, 
             margin: 'auto', 
-            mt: 10, 
+            mt: 15, 
             bgcolor: 'background.paper',
             borderRadius: 2  
           }}
