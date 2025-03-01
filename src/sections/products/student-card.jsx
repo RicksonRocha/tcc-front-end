@@ -5,13 +5,18 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { primary } from 'src/theme/palette';
 import { useGetTeamsQuery } from 'src/api/team';
+import { useSelector } from 'react-redux';
 
 export default function StudentCard({ student }) {
-
   const { data: teams, isLoading: isTeamsLoading } = useGetTeamsQuery();
+
+  // Obtém os dados do usuário logado via Redux
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+  const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
 
   if (!student) {
     return (
@@ -66,7 +71,7 @@ export default function StudentCard({ student }) {
         p: 2,
       }}
     >
-      <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold', mt: 3}}>
+      <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold', mt: 3 }}>
         {displayedName}
       </Typography>
     </Box>
@@ -135,6 +140,7 @@ export default function StudentCard({ student }) {
         {renderModalidade}
         <Button
           variant="contained"
+          disabled={isProfessor}  // Desabilita se o usuário for professor
           sx={{
             backgroundColor: '#EDEFF1',
             color: '#212B36',
@@ -162,6 +168,8 @@ StudentCard.propTypes = {
     user_id: PropTypes.number,
   }),
 };
+
+
 
 
 
