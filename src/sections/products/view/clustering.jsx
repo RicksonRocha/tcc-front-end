@@ -51,7 +51,7 @@ const CompatibleCard = ({ student }) => (
 );
 
 const Clustering = () => {
-  const user = useSelector((state) => state.auth?.auth?.user);
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
   const token = useSelector((state) => state.auth?.auth?.token);
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
@@ -67,7 +67,7 @@ const Clustering = () => {
         headers: { Authorization: token }
       });
       // Em seguida, busca os perfis compatíveis do aluno logado
-      const response = await api.get(`/cluster/clustering/sugeridos/${user.id}`, {
+      const response = await api.get(`/cluster/clustering/sugeridos/${currentUser.id}`, {
         headers: { Authorization: token }
       });
       setSuggestions(response.data.sugestoes);
@@ -119,7 +119,11 @@ const Clustering = () => {
 
   return (
     <>
-      <Button variant="contained" onClick={fetchSuggestions}>
+      <Button
+        variant="contained"
+        onClick={fetchSuggestions}
+        disabled={currentUser && currentUser.role === 'PROFESSOR'} // Desabilita para professores
+      >
         Buscar perfis compatíveis
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -128,7 +132,7 @@ const Clustering = () => {
             p: 4, 
             maxWidth: 800, 
             margin: 'auto', 
-            mt: 30, 
+            mt: 10, 
             bgcolor: 'background.paper',
             borderRadius: 2  
           }}
