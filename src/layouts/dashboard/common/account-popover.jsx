@@ -13,6 +13,7 @@ import { account } from 'src/_mock/account';
 import { useDispatch } from 'react-redux';
 import { logout } from 'src/features/auth/auth-slice';
 import { useRouter } from 'src/routes/hooks';
+import { useAuth } from 'src/routes/hooks/use-auth';
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const dispatch = useDispatch();
   const { push } = useRouter();
+  const { auth }= useAuth()
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -44,9 +46,12 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+  
+  const handleLogout = () => {
     dispatch(logout());
     push('/login');
-  };
+  }
 
   return (
     <>
@@ -63,15 +68,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src="/assets/images/avatars/avatar_20.jpg"
+          alt={auth?.user?.name}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {auth?.user?.name}
         </Avatar>
       </IconButton>
 
@@ -92,10 +97,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {auth?.user?.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {auth?.user?.email}
           </Typography>
         </Box>
 
@@ -112,7 +117,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

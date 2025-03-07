@@ -52,7 +52,7 @@ export default function LoginView() {
       }
 
       reset();
-      push('/');
+      push('/my-profile');
     } catch (e) {
       console.log('error', e);
     }
