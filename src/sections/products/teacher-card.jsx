@@ -6,16 +6,35 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Label from 'src/components/label';
 import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert'; // Para exibir mensagem estilizada
+import Alert from '@mui/material/Alert';
+import Divider from '@mui/material/Divider';
 import { primary } from 'src/theme/palette';
-
-// ----------------------------------------------------------------------
+import { useSelector } from 'react-redux';
 
 export default function TeacherCard({ teacher }) {
   const [successMessage, setSuccessMessage] = useState('');
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+  const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
 
-  // Cor do status com base no valor de teacher.status
-  const statusColor = teacher.status === 'Indisponível para Orientação' ? 'error' : 'success';
+  if (!teacher) {
+    return (
+      <Card sx={{ p: 2 }}>
+        <Typography variant="body1" color="error">
+          Dados do professor não disponíveis.
+        </Typography>
+      </Card>
+    );
+  }
+
+  // Nome do professor conforme o campo userName; se não existir, usa "Professor: {user_id}"
+  const displayedName = teacher.userName || `Professor: ${teacher.user_id}`;
+
+  // Normaliza o campo disponivelOrientacao ("Sim" ou "Não")
+  const availabilityRaw = teacher.disponivelOrientacao || '';
+  const availabilityNormalized = availabilityRaw.trim().toLowerCase();
+  const isAvailable = availabilityNormalized === 'sim';
+  const statusText = isAvailable ? 'Disponível para Orientação' : 'Indisponível para Orientação';
+  const statusColor = isAvailable ? 'success' : 'error';
 
   const renderStatus = (
     <Label
@@ -23,55 +42,64 @@ export default function TeacherCard({ teacher }) {
       color={statusColor}
       sx={{
         zIndex: 9,
+        top: 16,
+        right: 16,
         position: 'absolute',
-        top: '30%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)', // Centraliza horizontal e verticalmente
         textTransform: 'uppercase',
       }}
     >
-      {teacher.status}
+      {statusText}
     </Label>
   );
 
-  // Área de fundo com centralização do nome
-  const renderName = (
+  const renderHeader = (
     <Box
       sx={{
         top: 0,
-        width: 1,
+        width: '100%',
         height: '100%',
         backgroundColor: '#EDEFF1',
         position: 'absolute',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        p: 2,
       }}
     >
-      <Typography variant="h7" sx={{ textAlign: 'center', px: 2, mt: 4 }}>
-        {teacher.name}
+      <Typography variant="body1" sx={{ textAlign: 'center', fontWeight: 'bold', mt: 3 }}>
+        {displayedName}
       </Typography>
     </Box>
   );
 
-  // Exibe o turno do(a) prof
-  const renderTurno = (
-    <Typography
-      variant="body2"
-      sx={{ textAlign: 'center', mt: 2 }}
-    >
-      {`Turno: `}
-      <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
-        {teacher.turno}
-      </Box>
-    </Typography>
+  // Exibe apenas as informações: Turno, Disponibilidade, Temas e Modalidade
+  const renderInfo = (
+    <Stack spacing={1} sx={{ p: 2, textAlign: 'center' }}>
+      <Typography variant="body2">
+        Turno: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>{teacher.turno || 'Não informado'}</Box>
+      </Typography>
+      <Typography variant="body2">
+        Disponibilidade: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+          {teacher.disponibilidade || 'Não informado'}
+        </Box>
+      </Typography>
+      <Typography variant="body2">
+        Temas: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+          {teacher.temasInteresse 
+            ? teacher.temasInteresse.split(',').map(s => s.trim()).filter(Boolean).join(', ')
+            : 'Não informado'}
+        </Box>
+      </Typography>
+      <Typography variant="body2">
+        Modalidade: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+          {teacher.modalidadeTrabalho || 'Não informado'}
+        </Box>
+      </Typography>
+    </Stack>
   );
 
   const handleClick = () => {
-    // Exibir a mensagem de sucesso ao solicitar orientação
     setSuccessMessage('Solicitação de orientação enviada!');
-
-    // Oculta a mensagem após alguns segundos
     setTimeout(() => {
       setSuccessMessage('');
     }, 1000);
@@ -80,16 +108,15 @@ export default function TeacherCard({ teacher }) {
   return (
     <Card>
       <Box sx={{ pt: '40%', position: 'relative' }}>
-        {teacher.status && renderStatus}
-        {renderName}
+        {renderStatus}
+        {renderHeader}
       </Box>
-
-      <Stack spacing={2} sx={{ p: 2 }}>
-        {renderTurno}
-
+      {renderInfo}
+      <Divider sx={{ width: '100%', backgroundColor: 'rgba(255,255,255,0.7)', my: 1 }} />
+      <Stack spacing={1} sx={{ p: 2, textAlign: 'center' }}>
         <Button
           variant="contained"
-          disabled={teacher.status === 'Indisponível para Orientação'}
+          disabled={!isAvailable}
           onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',
@@ -101,8 +128,6 @@ export default function TeacherCard({ teacher }) {
         >
           Solicitar Orientação
         </Button>
-
-        {/* Mensagem de sucesso */}
         {successMessage && (
           <Alert severity="success" sx={{ mt: 2 }}>
             {successMessage}
@@ -114,5 +139,13 @@ export default function TeacherCard({ teacher }) {
 }
 
 TeacherCard.propTypes = {
-  teacher: PropTypes.object,
+  teacher: PropTypes.shape({
+    userName: PropTypes.string,
+    turno: PropTypes.string,
+    disponivelOrientacao: PropTypes.string,
+    disponibilidade: PropTypes.string,
+    temasInteresse: PropTypes.string,
+    modalidadeTrabalho: PropTypes.string,
+    user_id: PropTypes.number,
+  }),
 };

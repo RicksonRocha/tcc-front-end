@@ -289,4 +289,3 @@ StudentFilters.propTypes = {
   filterState: PropTypes.object,
   setFilterState: PropTypes.func,
 };
-

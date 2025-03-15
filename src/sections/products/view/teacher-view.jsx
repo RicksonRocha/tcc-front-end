@@ -1,13 +1,12 @@
 import { useState } from 'react';
+import { useGetProfessorPreferencesQuery } from 'src/api/preference-prof';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
-import { teachers } from 'src/_mock/teachers'; 
-import TeacherCard from '../teacher-card';
 import TeacherFilters from '../teacher-filters';
-
-// ----------------------------------------------------------------------
+import Clustering from './clustering';
+import TeacherCard from '../teacher-card';
 
 export default function TeacherView() {
   const [openFilter, setOpenFilter] = useState(false);
@@ -17,29 +16,49 @@ export default function TeacherView() {
     temasTCC: [],
   });
 
-  const handleOpenFilter = () => {
-    setOpenFilter(true);
-  };
+  const handleOpenFilter = () => setOpenFilter(true);
+  const handleCloseFilter = () => setOpenFilter(false);
 
-  const handleCloseFilter = () => {
-    setOpenFilter(false);
-  };
+  // Busca os dados reais das preferências de professor
+  const { data: professorPreferences = [], isLoading, error } = useGetProfessorPreferencesQuery();
 
-  // Filtros nos professores
-  const filteredTeachers = teachers.filter((teacher) => {
+  // Converte o valor real de disponivelOrientacao para o label usado no filtro
+  const getOrientationStatus = teacher =>
+    teacher.disponivelOrientacao === 'Sim'
+      ? 'Disponível para Orientação'
+      : 'Indisponível para Orientação';
 
-    // Por equipe
-    if (filterState.teacherDisp && teacher.status !== filterState.teacherDisp) {
+  // Filtra os professores com base nos filtros aplicados
+  const filteredTeachers = professorPreferences.filter((teacher) => {
+    if (filterState.teacherDisp && getOrientationStatus(teacher) !== filterState.teacherDisp) {
       return false;
     }
-
-    // Por turno
     if (filterState.turno && teacher.turno !== filterState.turno) {
       return false;
     }
-
-    return true; 
+    if (filterState.temasTCC.length > 0) {
+      const temas = teacher.temasInteresse
+        ? teacher.temasInteresse.split(',').map((t) => t.trim())
+        : [];
+      if (!filterState.temasTCC.some((tema) => temas.includes(tema))) {
+        return false;
+      }
+    }
+    return true;
   });
+
+  let content;
+  if (isLoading) {
+    content = <Typography>Carregando...</Typography>;
+  } else if (error) {
+    content = <Typography>Erro ao carregar orientadores.</Typography>;
+  } else {
+    content = filteredTeachers.map((teacher) => (
+      <Grid key={teacher.id} xs={12} sm={6} md={3}>
+        <TeacherCard teacher={teacher} />
+      </Grid>
+    ));
+  }
 
   return (
     <Container>
@@ -59,18 +78,15 @@ export default function TeacherView() {
             openFilter={openFilter}
             onOpenFilter={handleOpenFilter}
             onCloseFilter={handleCloseFilter}
-            filterState={filterState} // Passa o estado de filtros
-            setFilterState={setFilterState} // Passa a função para atualizar os filtros
+            filterState={filterState}
+            setFilterState={setFilterState}
           />
+          <Clustering targetRole="professor" />
         </Stack>
       </Stack>
 
       <Grid container spacing={3}>
-        {filteredTeachers.map((teacher) => (
-          <Grid key={teacher.id} xs={12} sm={6} md={3}>
-            <TeacherCard teacher={teacher} />
-          </Grid>
-        ))}
+        {content}
       </Grid>
     </Container>
   );

@@ -16,7 +16,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 export const DISPONIBILIDADE_OPTIONS = ['Disponível para Orientação', 'Indisponível para Orientação'];
-export const TURNO_OPTIONS = ['Vespertino', 'Noturno', 'Vespertino e Noturno'];
+export const TURNO_OPTIONS = ['Vespertino', 'Noturno'];
 export const TEMAS_TCC_OPTIONS = ['Tecnologia e inovação', 'Educação', 'Meio ambiente e sustentabilidade', 'Inteligência artificial', 'Análise de dados', 'Metodologias ágeis', 'Economia e Finanças', 'Saúde e bem estar', 'Cidadania', 'Política'];
 
 // ----------------------------------------------------------------------
@@ -118,18 +118,6 @@ export default function TeacherFilters({ openFilter, onOpenFilter, onCloseFilter
           Filtros&nbsp;
         </Button>
       </Box>
-
-      <Button
-        disableRipple
-        color="inherit"
-        endIcon={<Iconify icon="ic:baseline-bubble-chart" />}
-        onClick={() => {
-          window.alert("Aqui serão apresentados apenas os 3 perfis mais compatíveis com o aluno atual.");
-        }}
-        sx={{ fontSize: '16px' }}
-      >
-        Perfis Sugeridos
-      </Button>
 
       <Drawer
         anchor="right"
