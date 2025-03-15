@@ -19,7 +19,7 @@ import Scrollbar from 'src/components/scrollbar';
 
 import { useAuth } from 'src/routes/hooks/use-auth';
 import { NAV } from './config-layout';
-import navConfig from './config-navigation';
+import { useNavConfig } from './config-navigation'; // Alterado
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +34,9 @@ export default function Nav({ openNav, onCloseNav }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
+
+  // Chama o hook para obter a configuração de navegação
+  const navConfig = useNavConfig();
 
   const renderTagSistema = (
     <Box
@@ -128,8 +131,6 @@ Nav.propTypes = {
   onCloseNav: PropTypes.func,
 };
 
-// ----------------------------------------------------------------------
-
 function NavItem({ item }) {
   const pathname = usePathname();
 
@@ -168,3 +169,4 @@ function NavItem({ item }) {
 NavItem.propTypes = {
   item: PropTypes.object,
 };
+

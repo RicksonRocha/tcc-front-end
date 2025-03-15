@@ -6,6 +6,7 @@ import { studentApi } from './student';
 import { teamApi } from './team';
 import { preferenceApi } from './preference';
 import { eventApi } from './event';
+import { professorPreferenceApi } from './preference-prof';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     [teamApi.reducerPath]: teamApi.reducer,
     [preferenceApi.reducerPath]: preferenceApi.reducer,
     [eventApi.reducerPath]: eventApi.reducer,
+    [professorPreferenceApi.reducerPath]: professorPreferenceApi.reducer, // Adicionado
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -22,7 +24,8 @@ export const store = configureStore({
       studentApi.middleware,
       teamApi.middleware,
       preferenceApi.middleware,
-      eventApi.middleware
+      eventApi.middleware,
+      professorPreferenceApi.middleware // Adicionado
     ),
 });
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSelector } from 'react-redux'; // Certifique-se de que o estado do usuário está aqui
+import { useSelector } from 'react-redux';
 import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -10,6 +10,7 @@ import { useGetPreferencesQuery } from 'src/api/preference';
 import { useGetTeamsQuery } from 'src/api/team';
 import StudentCard from '../student-card';
 import StudentFilters from '../student-filters';
+import Clustering from './clustering';
 
 export default function StudentView() {
   const { enqueueSnackbar } = useSnackbar();
@@ -140,6 +141,7 @@ export default function StudentView() {
             filterState={filterState}
             setFilterState={setFilterState}
           />
+          <Clustering />
         </Stack>
       </Stack>
 
@@ -149,11 +151,3 @@ export default function StudentView() {
     </Container>
   );
 }
-
-
-
-
-
-
-
-

@@ -1,7 +1,9 @@
 import { lazy } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 
+import TeacherInitPage from 'src/pages/teacher-init-page';
 import MyProfilePage from 'src/pages/my-profile';
+import MyProfileProfessorPage from 'src/pages/my-profile-professor';
 import MyTeamPage from 'src/pages/my-team-page';
 import StudentPage from 'src/pages/student';
 import TeacherPage from 'src/pages/teacher';
@@ -20,7 +22,7 @@ export const ResetPasswordPage = lazy(() => import('src/pages/reset-password'));
 export const TeamsPage = lazy(() => import('src/pages/teams'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
-export const PreferenciasProfessorPage = lazy(() => import('src/pages/preferencias-professor'));
+export const PreferenciasProfessorPage = lazy(() => import('src/pages/my-profile-professor'));
 
 export const ResetPasswordRedefinationPage = lazy(() =>
   import('src/pages/reset-password-redefination')
@@ -38,6 +40,7 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'equipes', element: <TeamsPage /> },
         { path: 'my-profile', element: <MyProfilePage /> },
+        { path: 'meu-perfil-professor', element: <MyProfileProfessorPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
@@ -48,6 +51,7 @@ export default function Router() {
         { path: 'materiais-apoio', element: <SupportMaterialPage /> },
         { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
         { path: 'events', element: <EventPage /> },
+        { path: 'init-page-teacher', element: <TeacherInitPage /> },
       ],
     },
 
@@ -64,7 +68,7 @@ export default function Router() {
       element: <ResetPasswordPage />,
     },
     {
-      path: 'preferencias-professor',
+      path: 'meu-perfil-professor',
       element: <PreferenciasProfessorPage />,
     },
     {
