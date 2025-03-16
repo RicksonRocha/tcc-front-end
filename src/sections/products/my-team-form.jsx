@@ -20,10 +20,16 @@ import Alert from '@mui/material/Alert';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
-import { useGetTeamByIdQuery, useCreateTeamMutation, useUpdateTeamMutation, useDeleteTeamMutation, useGetTeamsQuery } from 'src/api/team';
+import {
+  useGetTeamByIdQuery,
+  useCreateTeamMutation,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+  useGetTeamsQuery,
+} from 'src/api/team';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
-import { useGetStudentsQuery } from 'src/api/user';
+import { useGetStudentsQuery, useGetTeachersQuery } from 'src/api/user';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
@@ -35,7 +41,20 @@ export default function MyTeamForm({ teamId }) {
   const [createTeam] = useCreateTeamMutation();
   const [updateTeam] = useUpdateTeamMutation();
   const [deleteTeam] = useDeleteTeamMutation();
-  const { data: students = [], isLoading: isLoadingStudents, isError, error } = useGetStudentsQuery();
+  const {
+    data: students = [],
+    isLoading: isLoadingStudents,
+    isError,
+    error,
+  } = useGetStudentsQuery();
+
+  const {
+    data: teachers = [],
+    isLoading: isLoadingTeachers,
+    isError: isTeachersError,
+    error: teachersError,
+  } = useGetTeachersQuery();
+
   const { push } = useRouter();
 
   // Recupera o objeto do usuário autenticado (contendo id, email e nome)
@@ -56,9 +75,29 @@ export default function MyTeamForm({ teamId }) {
     }
   }, [students, isLoadingStudents, isError, error]);
 
+  useEffect(() => {
+    if (isTeachersError) {
+      let msg = `Erro ao carregar Professores: ${teachersError?.message || 'Erro desconhecido.'}`;
+      if (teachersError.status === 403) {
+        msg = `${msg} Você não tem permissão para acessar os dados dos Professores.`;
+      }
+      setSuccessMessage(msg);
+    } else if (!isLoadingTeachers && teachers.length === 0) {
+      setSuccessMessage('Nenhum Professor encontrado.');
+    } else {
+      // Limpa a mensagem se os professores forem carregados com sucesso
+      setSuccessMessage('');
+    }
+  }, [teachers, isLoadingTeachers, isTeachersError, teachersError]);
+
   // Ordena os nomes dos estudantes
   const sortedStudents = students
     .filter((student) => student?.name)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  //ordena os professores
+  const sortedTeachers = teachers
+    .filter((teacher) => teacher?.name)
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const {
@@ -99,22 +138,25 @@ export default function MyTeamForm({ teamId }) {
         temasDeInteresse: teamData.themes || [],
       });
       setIsClosed(teamData.isActive || false);
-      setAdvisorValue(teamData.teacherTcc || '');
     }
   }, [teamData, reset]);
 
   const onSubmit = async (data) => {
-
     // Validação para verificar se algum membro já faz parte de outra equipe
-    if (teams && data.members.some(member =>
-      teamId
-        ? teams.some(team => team.id !== teamId && team.members && team.members.includes(member))
-        : teams.some(team => team.members && team.members.includes(member))
-    )) {
-      setSuccessMessage("Um ou mais membros já fazem parte de outra equipe de TCC!");
+    if (
+      teams &&
+      data.members.some((member) =>
+        teamId
+          ? teams.some(
+              (team) => team.id !== teamId && team.members && team.members.includes(member)
+            )
+          : teams.some((team) => team.members && team.members.includes(member))
+      )
+    ) {
+      setSuccessMessage('Um ou mais membros já fazem parte de outra equipe de TCC!');
       return;
     }
-    
+
     // Garante que o nome do usuário esteja na lista de membros
     let membersList = data.members || [];
     if (!membersList.includes(user.name)) {
@@ -125,7 +167,7 @@ export default function MyTeamForm({ teamId }) {
       name: data.tccTitle,
       description: data.tccDescription,
       isActive: isClosed,
-      teacherTcc: advisorValue,
+      teacherTcc: data.advisor,
       members: membersList,
       themes: data.temasDeInteresse,
       createdById: user.id,
@@ -223,7 +265,9 @@ export default function MyTeamForm({ teamId }) {
                         label="Nomes dos Integrantes"
                         InputLabelProps={{ shrink: true }}
                         error={!!errors.members}
-                        helperText={errors.members?.message || (isLoadingStudents ? 'Carregando...' : '')}
+                        helperText={
+                          errors.members?.message || (isLoadingStudents ? 'Carregando...' : '')
+                        }
                       />
                     )}
                   />
@@ -232,19 +276,39 @@ export default function MyTeamForm({ teamId }) {
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
-                label="Orientador(a)"
-                fullWidth
-                value={advisorValue}
-                onChange={(event) => setAdvisorValue(event.target.value)}
-                InputLabelProps={{ shrink: true }}
-                error={!!errors.advisor}
-                helperText={errors.advisor?.message}
+              <Controller
+                name="advisor"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    options={sortedTeachers} // Lista completa de professores (objetos)
+                    getOptionLabel={(teacher) => teacher.name} // Exibe apenas o nome do professor no campo
+                    loading={isLoadingTeachers}
+                    value={sortedTeachers.find((teacher) => teacher.id === field.value) || null} // Converte ID salvo em objeto professor
+                    onChange={(event, newValue) => field.onChange(newValue ? newValue.id : null)} // Salva o ID do professor
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Orientador(a)"
+                        InputLabelProps={{ shrink: true }}
+                        error={!!errors.advisor}
+                        helperText={
+                          errors.advisor?.message ||
+                          (isLoadingTeachers ? 'Carregando professores...' : '')
+                        }
+                      />
+                    )}
+                  />
+                )}
               />
             </Grid>
 
             <Grid item xs={12}>
-              <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40, width: '100%' }}>
+              <FormControl
+                fullWidth
+                error={!!errors.temasDeInteresse}
+                sx={{ minHeight: 40, width: '100%' }}
+              >
                 <InputLabel shrink>Temas de Interesse</InputLabel>
                 <Select
                   label="Temas de Interesse"
@@ -343,15 +407,3 @@ export default function MyTeamForm({ teamId }) {
 MyTeamForm.propTypes = {
   teamId: PropTypes.number,
 };
-
-
-
-
-
-
-
-
-
-
-
-
