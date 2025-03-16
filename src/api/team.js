@@ -18,6 +18,11 @@ export const teamApi = createApi({
       providesTags: (result, error, id) => [{ type: 'Teams', id }],
     }),
 
+    getTeamByidTeacher: build.query({
+      query: (id) => `/university/tcc/teacher/${id}`,
+      providesTags: ['TeamsPerTeacher'],
+    }),
+
     // Endpoint para criar uma nova equipe
     createTeam: build.mutation({
       query: (newTeam) => ({
@@ -49,11 +54,11 @@ export const teamApi = createApi({
   }),
 });
 
-export const { 
-  useGetTeamsQuery, 
+export const {
+  useGetTeamsQuery,
   useGetTeamByIdQuery,
-  useCreateTeamMutation, 
-  useUpdateTeamMutation, 
-  useDeleteTeamMutation 
+  useGetTeamByidTeacherQuery,
+  useCreateTeamMutation,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
 } = teamApi;
-

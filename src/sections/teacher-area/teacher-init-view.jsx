@@ -13,11 +13,15 @@ import {
   Skeleton,
   Grid,
 } from '@mui/material';
-import { useGetTeamsQuery } from 'src/api/team';
+import { useGetTeamByidTeacherQuery } from 'src/api/team';
+import { useSelector } from 'react-redux';
 
 export default function TeacherInitView() {
+  // Recupera o objeto do usuário autenticado (contendo id, email e nome)
+  const user = useSelector((state) => state.auth.auth.user);
+
   // Chamada à API usando Redux Toolkit Query
-  const { data: tccs = [], isLoading, error } = useGetTeamsQuery();
+  const { data: tccs = [], isLoading, error } = useGetTeamByidTeacherQuery(user.id);
 
   return (
     <Container
