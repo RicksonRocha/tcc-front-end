@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardContent, Typography, Button, Box, Divider } from '@mui/material';
 import { useRouter } from 'src/routes/hooks';
+import { useGetTeachersQuery } from 'src/api/user';
 
 export default function AppTeam({
   team,
@@ -11,6 +12,18 @@ export default function AppTeam({
   ...other
 }) {
   const { push } = useRouter();
+
+  // Busca todos os professores
+  const { data: teachers = [] } = useGetTeachersQuery();
+
+  // Procura o professor cujo id bate com team.teacherTcc
+  const teacher = teachers.find(
+    (t) => Number(t.id) === Number(team?.teacherTcc)
+  );
+
+  const displayedTeacherName = teacher 
+    ? (teacher.userName || teacher.name || `Professor: ${teacher.id}`)
+    : `Professor: ${team.teacherTcc}`
 
   // Função para redirecionar para o formulário de edição, passando o ID da equipe
   const handleEditTeam = () => {
@@ -76,7 +89,7 @@ export default function AppTeam({
                 Orientador(a):
               </Typography>
               <Typography variant="body1">
-                {team.teacherTcc}
+                {displayedTeacherName}
               </Typography>
             </Box>
           ) : (
@@ -103,7 +116,14 @@ AppTeam.propTypes = {
     name: PropTypes.string,
     description: PropTypes.string,
     members: PropTypes.arrayOf(PropTypes.string),
-    teacherTcc: PropTypes.string,
+    teacherTcc: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+    ]),
+  }),
+  teacher: PropTypes.shape({
+    user_id: PropTypes.number,
+    userName: PropTypes.string,
   }),
   message: PropTypes.string,
   buttonText: PropTypes.string,
