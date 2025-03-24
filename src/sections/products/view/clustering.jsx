@@ -11,7 +11,7 @@ import {
   Divider, 
   CircularProgress 
 } from '@mui/material';
-import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+// import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 
 const CompatibleCard = ({ profile }) => (
   <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
