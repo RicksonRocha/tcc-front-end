@@ -15,9 +15,9 @@ import {
 
 const CompatibleCard = ({ profile }) => (
   <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
-    <BubbleChartIcon 
+    {/* <BubbleChartIcon 
       sx={{ position: 'absolute', top: 8, right: 8, fontSize: 24, color: 'gray' }} 
-    />
+    /> */}
     <Box sx={{ p: 1 }}>
       <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
         {profile.userName || `Perfil: ${profile.id}`}
