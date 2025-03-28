@@ -21,9 +21,15 @@ export default function AppTeam({
     (t) => Number(t.id) === Number(team?.teacherTcc)
   );
 
-  const displayedTeacherName = teacher 
-    ? (teacher.userName || teacher.name || `Professor: ${teacher.id}`)
-    : `Professor: ${team.teacherTcc}`
+  let displayedTeacherName = '';
+
+  if (teacher) {
+    displayedTeacherName = teacher.userName || teacher.name || `Professor: ${teacher.id}`;
+  } else if (team && team.teacherTcc) {
+    displayedTeacherName = `Professor: ${team.teacherTcc}`;
+  } else {
+    displayedTeacherName = 'Professor não definido';
+  }
 
   // Função para redirecionar para o formulário de edição, passando o ID da equipe
   const handleEditTeam = () => {
