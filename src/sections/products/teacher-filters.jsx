@@ -113,7 +113,7 @@ export default function TeacherFilters({ openFilter, onOpenFilter, onCloseFilter
           color="inherit"
           endIcon={<Iconify icon="ic:round-filter-list" />}
           onClick={onOpenFilter}
-          sx={{ fontSize: '16px' }}
+          sx={{ fontSize: '16px', justifyContent: 'flex-start', ml: -2.2, mr: 2 }}
         >
           Filtros&nbsp;
         </Button>
