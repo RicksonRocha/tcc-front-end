@@ -30,11 +30,11 @@ import {
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useGetStudentsQuery, useGetTeachersQuery } from 'src/api/user';
+import { useGetProfessorPreferencesQuery } from 'src/api/preference-prof';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [advisorValue, setAdvisorValue] = useState('');
 
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
   const { data: teams = [] } = useGetTeamsQuery();
@@ -55,22 +55,26 @@ export default function MyTeamForm({ teamId }) {
     error: teachersError,
   } = useGetTeachersQuery();
 
+  const {
+    data: professorPreferences = [],
+    isLoading: isLoadingPreferences,
+    isError: isPrefError,
+  } = useGetProfessorPreferencesQuery();
+
   const { push } = useRouter();
 
-  // Recupera o objeto do usuário autenticado (contendo id, email e nome)
   const user = useSelector((state) => state.auth.auth.user);
 
   useEffect(() => {
     if (isError) {
       let msg = `Erro ao carregar estudantes: ${error?.message || 'Erro desconhecido.'}`;
       if (error.status === 403) {
-        msg = `${msg} Você não tem permissão para acessar os dados dos estudantes.`;
+        msg = `${msg} Você não tem permissão para acessar os conteúdo.`;
       }
       setSuccessMessage(msg);
     } else if (!isLoadingStudents && students.length === 0) {
       setSuccessMessage('Nenhum estudante encontrado.');
     } else {
-      // Limpa a mensagem se os estudantes forem carregados com sucesso
       setSuccessMessage('');
     }
   }, [students, isLoadingStudents, isError, error]);
@@ -85,18 +89,25 @@ export default function MyTeamForm({ teamId }) {
     } else if (!isLoadingTeachers && teachers.length === 0) {
       setSuccessMessage('Nenhum Professor encontrado.');
     } else {
-      // Limpa a mensagem se os professores forem carregados com sucesso
       setSuccessMessage('');
     }
   }, [teachers, isLoadingTeachers, isTeachersError, teachersError]);
 
-  // Ordena os nomes dos estudantes
   const sortedStudents = students
     .filter((student) => student?.name)
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  //ordena os professores
-  const sortedTeachers = teachers
+  const preferenceMap = professorPreferences.reduce((map, pref) => {
+    map[pref.user_id] = pref;
+    return map;
+  }, {});
+
+  const availableTeachers = teachers.filter((teacher) => {
+    const preference = preferenceMap[teacher.id];
+    return preference && preference.disponivelOrientacao?.toLowerCase() === 'sim';
+  });
+
+  const sortedTeachers = availableTeachers
     .filter((teacher) => teacher?.name)
     .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -142,7 +153,6 @@ export default function MyTeamForm({ teamId }) {
   }, [teamData, reset]);
 
   const onSubmit = async (data) => {
-    // Validação para verificar se algum membro já faz parte de outra equipe
     if (
       teams &&
       data.members.some((member) =>
@@ -153,11 +163,10 @@ export default function MyTeamForm({ teamId }) {
           : teams.some((team) => team.members && team.members.includes(member))
       )
     ) {
-      setSuccessMessage('Um ou mais membros já fazem parte de outra equipe de TCC!');
+      setSuccessMessage('1 ou mais membros já fazem parte de outra equipe de TCC!');
       return;
     }
 
-    // Garante que o nome do usuário esteja na lista de membros
     let membersList = data.members || [];
     if (!membersList.includes(user.name)) {
       membersList = [...membersList, user.name];
@@ -202,15 +211,7 @@ export default function MyTeamForm({ teamId }) {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
-      <Card
-        sx={{
-          p: 3,
-          width: '50vw',
-          maxWidth: '50vw',
-          overflowX: 'hidden',
-          overflowY: 'visible',
-        }}
-      >
+      <Card sx={{ p: 3, width: '50vw', maxWidth: '50vw', overflowX: 'hidden', overflowY: 'visible' }}>
         <Typography variant="h5" align="center" sx={{ mb: 3 }}>
           Formulário
         </Typography>
@@ -281,11 +282,11 @@ export default function MyTeamForm({ teamId }) {
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
-                    options={sortedTeachers} // Lista completa de professores (objetos)
-                    getOptionLabel={(teacher) => teacher.name} // Exibe apenas o nome do professor no campo
-                    loading={isLoadingTeachers}
-                    value={sortedTeachers.find((teacher) => teacher.id === field.value) || null} // Converte ID salvo em objeto professor
-                    onChange={(event, newValue) => field.onChange(newValue ? newValue.id : null)} // Salva o ID do professor
+                    options={sortedTeachers}
+                    getOptionLabel={(teacher) => teacher.name}
+                    loading={isLoadingTeachers || isLoadingPreferences}
+                    value={sortedTeachers.find((teacher) => teacher.id === field.value) || null}
+                    onChange={(event, newValue) => field.onChange(newValue ? newValue.id : null)}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -294,7 +295,11 @@ export default function MyTeamForm({ teamId }) {
                         error={!!errors.advisor}
                         helperText={
                           errors.advisor?.message ||
-                          (isLoadingTeachers ? 'Carregando professores...' : '')
+                          (isLoadingTeachers || isLoadingPreferences
+                            ? 'Carregando professores...'
+                            : sortedTeachers.length === 0
+                            ? 'Nenhum(a) professor(a) disponível.'
+                            : '')
                         }
                       />
                     )}
@@ -304,11 +309,7 @@ export default function MyTeamForm({ teamId }) {
             </Grid>
 
             <Grid item xs={12}>
-              <FormControl
-                fullWidth
-                error={!!errors.temasDeInteresse}
-                sx={{ minHeight: 40, width: '100%' }}
-              >
+              <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40, width: '100%' }}>
                 <InputLabel shrink>Temas de Interesse</InputLabel>
                 <Select
                   label="Temas de Interesse"
@@ -321,14 +322,7 @@ export default function MyTeamForm({ teamId }) {
                     }
                   }}
                   renderValue={(selected) => (
-                    <Box
-                      sx={{
-                        width: '100%',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
+                    <Box sx={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {selected.join(', ')}
                     </Box>
                   )}
