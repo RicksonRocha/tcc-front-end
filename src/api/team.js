@@ -51,6 +51,16 @@ export const teamApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Teams', id }],
     }),
+
+    addMember: build.mutation({
+      query: ({ id, member }) => ({
+        url: `/university/tcc/${id}/addMember`,
+        method: 'PUT',
+        body: { member },
+      }),
+      // Invalida a tag da equipe para atualizar o cache com a nova lista de membros
+      invalidatesTags: (result, error, { id }) => [{ type: 'Teams', id }],
+    }),
   }),
 });
 
@@ -61,4 +71,5 @@ export const {
   useCreateTeamMutation,
   useUpdateTeamMutation,
   useDeleteTeamMutation,
+  useAddMemberMutation,
 } = teamApi;

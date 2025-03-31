@@ -1,8 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { set, sub } from 'date-fns';
-import { faker } from '@faker-js/faker';
-
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Badge from '@mui/material/Badge';
@@ -17,97 +14,98 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
-
+import { useSelector } from 'react-redux';
+import {
+  useGetUserNotificationsQuery,
+  useDeleteNotificationMutation,
+  useMarkAllNotificationsAsReadMutation,
+  useGetUnreadNotificationCountQuery,
+} from 'src/api/notifications';
 import { fToNow } from 'src/utils/format-time';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
-// ----------------------------------------------------------------------
-
-const NOTIFICATIONS = [
-  {
-    id: faker.string.uuid(),
-    title: faker.person.fullName(),
-    description: 'solicitou entrada na sua equipe',
-    avatar: '/assets/images/avatars/avatar_1.jpg',
-    type: 'chat_message',
-    createdAt: sub(new Date(), { hours: 3, minutes: 30 }),
-    isUnRead: true,
-  },
-  {
-    id: faker.string.uuid(),
-    title: faker.person.fullName(),
-    description: 'aceitou orientar sua equipe',
-    avatar: '/assets/images/avatars/avatar_1.jpg',
-    type: 'chat_message',
-    createdAt: sub(new Date(), { hours: 3, minutes: 30 }),
-    isUnRead: true,
-  },
-  
-];
-
 export default function NotificationsPopover() {
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [localNotifications, setLocalNotifications] = useState([]);
+  const [markAllAsReadBackend] = useMarkAllNotificationsAsReadMutation();
 
-  const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
+  const { data: fetchedNotifications = [], refetch: refetchNotifications } =
+    useGetUserNotificationsQuery(currentUser?.id, {
+      skip: !currentUser,
+    });
 
-  const [open, setOpen] = useState(null);
+  const {
+    data: unreadCount,
+    isFetching: loadingUnread,
+    refetch: refetchUnreadCount,
+  } = useGetUnreadNotificationCountQuery(currentUser?.id, {
+    skip: !currentUser,
+  });
 
-  const handleOpen = (event) => {
-    setOpen(event.currentTarget);
+  useEffect(() => {
+    if (fetchedNotifications.length) {
+      setLocalNotifications(fetchedNotifications);
+    }
+  }, [fetchedNotifications]);
+
+  useEffect(() => {
+    if (currentUser) {
+      refetchUnreadCount();
+    }
+  }, [currentUser]);
+
+  const handleOpen = async (event) => {
+    setAnchorEl(event.currentTarget);
+
+    try {
+      await markAllAsReadBackend(currentUser.id).unwrap();
+      setLocalNotifications((prev) => prev.map((n) => ({ ...n, isUnRead: false })));
+      await refetchUnreadCount();
+      await refetchNotifications();
+    } catch (error) {
+      console.error('Erro ao marcar todas como lidas:', error);
+    }
   };
 
   const handleClose = () => {
-    setOpen(null);
+    setAnchorEl(null);
   };
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
+  const handleLocalDelete = (id) => {
+    setLocalNotifications((prev) => prev.filter((n) => n.id !== id));
+    refetchUnreadCount();
   };
 
   return (
     <>
-      <IconButton color={open ? 'primary' : 'default'} onClick={handleOpen}>
-        <Badge badgeContent={totalUnRead} color="error">
+      <IconButton color={anchorEl ? 'primary' : 'default'} onClick={handleOpen}>
+        <Badge
+          badgeContent={
+            loadingUnread || unreadCount === undefined || unreadCount === 0 ? null : unreadCount
+          }
+          color="error"
+        >
           <Iconify width={24} icon="solar:bell-bing-bold-duotone" />
         </Badge>
       </IconButton>
 
       <Popover
-        open={!!open}
-        anchorEl={open}
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            mt: 1.5,
-            ml: 0.75,
-            width: 360,
-          },
-        }}
+        PaperProps={{ sx: { mt: 1.5, ml: 0.75, width: 360 } }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', py: 2, px: 2.5 }}>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle1">Notificações</Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Você tem {totalUnRead} notificações
+              Você tem {unreadCount || 0} notificações não lidas
             </Typography>
           </Box>
-
-          {totalUnRead > 0 && (
-            <Tooltip title=" Marcar todos como lidas">
-              <IconButton color="primary" onClick={handleMarkAllAsRead}>
-                <Iconify icon="eva:done-all-fill" />
-              </IconButton>
-            </Tooltip>
-          )}
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -121,9 +119,19 @@ export default function NotificationsPopover() {
               </ListSubheader>
             }
           >
-            {notifications.slice(0, 2).map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
-            ))}
+            {localNotifications.length > 0 ? (
+              localNotifications.map((notification) => (
+                <NotificationItem
+                  key={notification.id}
+                  notification={notification}
+                  onDelete={handleLocalDelete}
+                />
+              ))
+            ) : (
+              <Typography variant="body2" sx={{ p: 2, textAlign: 'center' }}>
+                Nenhuma notificação encontrada.
+              </Typography>
+            )}
           </List>
         </Scrollbar>
 
@@ -143,18 +151,26 @@ export default function NotificationsPopover() {
 
 NotificationItem.propTypes = {
   notification: PropTypes.shape({
-    createdAt: PropTypes.instanceOf(Date),
-    id: PropTypes.string,
+    id: PropTypes.number,
+    createdAt: PropTypes.string,
+    message: PropTypes.string,
+    nomeRemetente: PropTypes.string,
     isUnRead: PropTypes.bool,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    type: PropTypes.string,
-    avatar: PropTypes.any,
-  }),
+  }).isRequired,
+  onDelete: PropTypes.func,
 };
 
-function NotificationItem({ notification }) {
-  const { avatar, title } = renderContent(notification);
+function NotificationItem({ notification, onDelete }) {
+  const [deleteNotification] = useDeleteNotificationMutation();
+
+  const handleDelete = async () => {
+    try {
+      await deleteNotification(notification.id).unwrap();
+      onDelete(notification.id);
+    } catch (error) {
+      console.error('Erro ao deletar notificação:', error);
+    }
+  };
 
   return (
     <ListItemButton
@@ -162,73 +178,48 @@ function NotificationItem({ notification }) {
         py: 1.5,
         px: 2.5,
         mt: '1px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
         ...(notification.isUnRead && {
           bgcolor: 'action.selected',
         }),
       }}
     >
-      <ListItemAvatar>
-        <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        primary={title}
-        secondary={
-          <Typography
-            variant="caption"
-            sx={{
-              mt: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              color: 'text.disabled',
-            }}
-          >
-            <Iconify icon="eva:clock-outline" sx={{ mr: 0.5, width: 16, height: 16 }} />
-            {fToNow(notification.createdAt)}
-          </Typography>
-        }
-      />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+        <ListItemAvatar>
+          <Avatar sx={{ bgcolor: '#1877F2', color: '#fff' }}>
+            {notification.nomeRemetente?.charAt(0).toUpperCase() || '?'}
+          </Avatar>
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            <Typography component="span" variant="body2" sx={{ color: 'text.secondary', ml: 0 }}>
+              {notification.message}
+            </Typography>
+          }
+          secondary={
+            <Typography
+              variant="caption"
+              sx={{
+                mt: 0.5,
+                display: 'flex',
+                alignItems: 'center',
+                color: 'text.disabled',
+              }}
+            >
+              <Iconify icon="eva:clock-outline" sx={{ mr: 0.5, width: 16, height: 16 }} />
+              {fToNow(new Date(notification.createdAt))}
+            </Typography>
+          }
+        />
+      </Box>
+
+      <Tooltip title="Excluir notificação">
+        <IconButton edge="end" onClick={handleDelete} size="small">
+          <Iconify icon="eva:close-fill" width={18} />
+        </IconButton>
+      </Tooltip>
     </ListItemButton>
   );
-}
-
-// ----------------------------------------------------------------------
-
-function renderContent(notification) {
-  const title = (
-    <Typography variant="subtitle2">
-      {notification.title}
-      <Typography component="span" variant="body2" sx={{ color: 'text.secondary' }}>
-        &nbsp; {notification.description}
-      </Typography>
-    </Typography>
-  );
-
-  if (notification.type === 'order_placed') {
-    return {
-      avatar: <img alt={notification.title} src="/assets/icons/ic_notification_package.svg" />,
-      title,
-    };
-  }
-  if (notification.type === 'order_shipped') {
-    return {
-      avatar: <img alt={notification.title} src="/assets/icons/ic_notification_shipping.svg" />,
-      title,
-    };
-  }
-  if (notification.type === 'mail') {
-    return {
-      avatar: <img alt={notification.title} src="/assets/icons/ic_notification_mail.svg" />,
-      title,
-    };
-  }
-  if (notification.type === 'chat_message') {
-    return {
-      avatar: <img alt={notification.title} src="/assets/icons/ic_notification_chat.svg" />,
-      title,
-    };
-  }
-  return {
-    avatar: notification.avatar ? <img alt={notification.title} src={notification.avatar} /> : null,
-    title,
-  };
 }
