@@ -5,15 +5,17 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useSelector } from 'react-redux';
 import { useGetTeamsQuery } from 'src/api/team';
+
 import AppOrderTimeline from '../app-order-timeline';
 import AppCalendar from '../app-calendar';
 import AppTeam from '../app-team';
+import AppRequestsCard from '../app-requests-card';
 
 export default function AppView() {
   // Obtém os dados do usuário logado
   const user = useSelector((state) => state.auth.auth.user);
 
-  // Consulta todas as equipes 
+  // Consulta todas as equipes
   const { data: teams = [], isLoading, isError } = useGetTeamsQuery();
 
   // Filtra para encontrar a equipe que contenha o nome do usuário
@@ -40,7 +42,6 @@ export default function AppView() {
       </Typography>
 
       <Grid container spacing={3}>
-
         <Grid item xs={12} md={6}>
           <AppOrderTimeline
             title="Sobre o Sistema"
@@ -59,7 +60,6 @@ export default function AppView() {
             sx={{ width: '100%' }}
           />
         </Grid>
-
         <Grid item xs={12} md={6}>
           <AppOrderTimeline
             title="Fases Gerais do Trabalho de Conclusão de Curso"
@@ -78,11 +78,12 @@ export default function AppView() {
             sx={{ width: '100%' }}
           />
         </Grid>
+        <Grid item xs={12}>
+          <Box sx={{ mt: 3, width: '100%' }}>{renderTeamContent()}</Box>
+        </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ mt: 3, width: '100%' }}>
-            {renderTeamContent()}
-          </Box>
+          <AppRequestsCard />
         </Grid>
 
         <Grid item xs={12}>
@@ -92,6 +93,3 @@ export default function AppView() {
     </Container>
   );
 }
-
-
-

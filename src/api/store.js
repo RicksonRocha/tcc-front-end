@@ -7,6 +7,8 @@ import { teamApi } from './team';
 import { preferenceApi } from './preference';
 import { eventApi } from './event';
 import { professorPreferenceApi } from './preference-prof';
+import { notificationApi } from './notifications';
+import { requestEntryTccApi } from './requestEntrytcc';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +19,8 @@ export const store = configureStore({
     [preferenceApi.reducerPath]: preferenceApi.reducer,
     [eventApi.reducerPath]: eventApi.reducer,
     [professorPreferenceApi.reducerPath]: professorPreferenceApi.reducer, // Adicionado
+    [notificationApi.reducerPath]: notificationApi.reducer,
+    [requestEntryTccApi.reducerPath]: requestEntryTccApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -25,7 +29,9 @@ export const store = configureStore({
       teamApi.middleware,
       preferenceApi.middleware,
       eventApi.middleware,
-      professorPreferenceApi.middleware // Adicionado
+      professorPreferenceApi.middleware, // Adicionado
+      notificationApi.middleware,
+      requestEntryTccApi.middleware
     ),
 });
 

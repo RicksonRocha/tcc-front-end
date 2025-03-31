@@ -11,12 +11,18 @@ import Divider from '@mui/material/Divider';
 import { primary } from 'src/theme/palette';
 import { useSelector } from 'react-redux';
 
+import { useCreateNotificationMutation } from 'src/api/notifications';
+import { useCreateRequestEntryMutation } from 'src/api/requestEntryTcc';
+
 export default function TeamCard({ team }) {
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Obter o usuário logado via Redux 
+  // Obter o usuário logado via Redux
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
+
+  const [createNotification] = useCreateNotificationMutation();
+  const [createRequestEntry] = useCreateRequestEntryMutation();
 
   // Define o status como "Completa" se isActive for true
   const teamStatus = team.isActive ? 'Completa' : 'Aberta';
@@ -78,11 +84,34 @@ export default function TeamCard({ team }) {
     </Typography>
   );
 
-  const handleClick = () => {
-    setSuccessMessage('Solicitação de entrada enviada!');
+  const handleClick = async () => {
+    const notificationData = {
+      senderId: currentUser.id,
+      nomeRemetente: currentUser.name,
+      receiverId: team.createdById, // dono da equipe
+      nomeDestinatario: team.createdByEmail || 'Responsável pela equipe',
+      message: `${currentUser.name} solicitou a entrada na sua equipe`,
+    };
+
+    const requestEntryData = {
+      tccid: team.id,
+      requesterId: currentUser.id,
+      requesterName: currentUser.name,
+      ownerId: team.createdById,
+      ownerEmail: team.createdByEmail || '',
+    };
+
+    try {
+      await createNotification(notificationData).unwrap();
+      await createRequestEntry(requestEntryData).unwrap();
+      setSuccessMessage('Solicitação de entrada enviada!');
+    } catch (error) {
+      setSuccessMessage('Erro ao enviar solicitação.');
+      console.error(error);
+    }
     setTimeout(() => {
       setSuccessMessage('');
-    }, 1000);
+    }, 2000);
   };
 
   return (
@@ -96,7 +125,7 @@ export default function TeamCard({ team }) {
         {renderQtdeIntegrantes}
         <Button
           variant="contained"
-          disabled={teamStatus === 'Completa' || isProfessor} 
+          disabled={teamStatus === 'Completa' || isProfessor}
           onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',
@@ -126,8 +155,7 @@ TeamCard.propTypes = {
     isActive: PropTypes.bool,
     members: PropTypes.arrayOf(PropTypes.string),
     themes: PropTypes.arrayOf(PropTypes.string),
+    createdById: PropTypes.number,
+    createdByEmail: PropTypes.string,
   }).isRequired,
 };
-
-
-
