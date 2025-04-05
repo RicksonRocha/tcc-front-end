@@ -12,6 +12,7 @@ import CrudUsersAdmPage from 'src/pages/crud-users-adm';
 import { EventPage } from 'src/pages/event';
 import EditTeamPage from 'src/pages/edit-team-page';
 import ProtectedRoute from './protected-route';
+import { DashboardPage } from 'src/pages/dashboard';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -52,6 +53,7 @@ export default function Router() {
         { path: 'crud-users-adm', element: <CrudUsersAdmPage /> },
         { path: 'events', element: <EventPage /> },
         { path: 'init-page-teacher', element: <TeacherInitPage /> },
+        { path: 'dashboard', element: <DashboardPage /> },
       ],
     },
 

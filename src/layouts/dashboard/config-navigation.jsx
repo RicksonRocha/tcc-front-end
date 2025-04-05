@@ -52,6 +52,12 @@ export function useNavConfig() {
       icon: <Iconify icon="ic:round-library-books" />,
       roles: ['ALUNO', 'ADMIN'],
     },
+    {
+      title: 'Admin',
+      path: '/dashboard',
+      icon: <Iconify icon="ic:round-library-books" />,
+      roles: ['ALUNO', 'ADMIN'],
+    },
   ];
 
   return navConfig;
