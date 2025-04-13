@@ -17,33 +17,33 @@ export default function AppCalendar() {
     setUpcomingEvents(simulatedEvents);
   }, []);
 
-  return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Próximos Eventos
-        </Typography>
+  // return (
+  //   <Card>
+  //     <CardContent>
+  //       <Typography variant="h6" gutterBottom>
+  //         Próximos Eventos
+  //       </Typography>
 
-        {upcomingEvents.length > 0 ? (
-          <Box>
-            {upcomingEvents.map((event, index) => (
-              <Box key={index} sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {event.date}
-                </Typography>
-                <Typography variant="body1">
-                  {event.description}
-                </Typography>
-                <Divider sx={{ my: 1 }} />
-              </Box>
-            ))}
-          </Box>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            Não há eventos futuros no momento.
-          </Typography>
-        )}
-      </CardContent>
-    </Card>
-  );
+  //       {upcomingEvents.length > 0 ? (
+  //         <Box>
+  //           {upcomingEvents.map((event, index) => (
+  //             <Box key={index} sx={{ mb: 2 }}>
+  //               <Typography variant="body2" color="text.secondary">
+  //                 {event.date}
+  //               </Typography>
+  //               <Typography variant="body1">
+  //                 {event.description}
+  //               </Typography>
+  //               <Divider sx={{ my: 1 }} />
+  //             </Box>
+  //           ))}
+  //         </Box>
+  //       ) : (
+  //         <Typography variant="body2" color="text.secondary">
+  //           Não há eventos futuros no momento.
+  //         </Typography>
+  //       )}
+  //     </CardContent>
+  //   </Card>
+  // );
 }
