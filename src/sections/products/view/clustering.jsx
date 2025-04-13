@@ -11,35 +11,27 @@ import {
   Divider, 
   CircularProgress 
 } from '@mui/material';
-import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+// import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 
-// Componente separado, fora do Clustering
-const CompatibleCard = ({ student }) => (
+const CompatibleCard = ({ profile }) => (
   <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
-    <BubbleChartIcon 
+    {/* <BubbleChartIcon 
       sx={{ position: 'absolute', top: 8, right: 8, fontSize: 24, color: 'gray' }} 
-    />
+    /> */}
     <Box sx={{ p: 1 }}>
       <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
-        {student.userName || `Aluno: ${student.id}`}
+        {profile.userName || `Perfil: ${profile.id}`}
       </Typography>
-      
-      {/* Turno */}
       <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-        <strong>Turno:</strong> {student.turno || 'Não informado'}
+        <strong>Turno:</strong> {profile.turno || 'N/D'}
       </Typography>
       <br />
-
-      {/* Disponibilidade */}
       <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-        <strong>Disponibilidade:</strong> {student.disponibilidade || 'N/D'}
+        <strong>Disponibilidade:</strong> {profile.disponibilidade || 'N/D'}
       </Typography>
-
       <Divider sx={{ my: 1 }} />
-
-      {/* Temas de Interesse */}
       <Typography variant="caption" display="block" sx={{ fontSize: '0.9rem' }}>
-        <strong>Temas:</strong> {student.temasDeInteresse ? student.temasDeInteresse.join(', ') : 'N/D'}
+        <strong>Temas:</strong> {profile.temasDeInteresse ? profile.temasDeInteresse.join(', ') : 'N/D'}
       </Typography>
     </Box>
     <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
@@ -50,7 +42,7 @@ const CompatibleCard = ({ student }) => (
   </Card>
 );
 
-const Clustering = () => {
+const Clustering = ({ targetRole = "aluno" }) => {
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const token = useSelector((state) => state.auth?.auth?.token);
   const [suggestions, setSuggestions] = useState([]);
@@ -62,15 +54,14 @@ const Clustering = () => {
     setLoading(true);
     const startTime = Date.now();
     try {
-      // Atualiza os clusters, enviando o token no header
-      await api.get(`/cluster/clustering/atualizar`, {
+      // Atualiza os clusters passando o targetRole
+      await api.get(`/cluster/clustering/atualizar?targetRole=${targetRole}`, {
         headers: { Authorization: token }
       });
-      // Em seguida, busca os perfis compatíveis do usuário logado
-      const response = await api.get(`/cluster/clustering/sugeridos/${currentUser.id}`, {
+      // Busca as sugestões para o usuário logado com o targetRole desejado
+      const response = await api.get(`/cluster/clustering/sugeridos/${currentUser.id}?targetRole=${targetRole}`, {
         headers: { Authorization: token }
       });
-      // Back envia apenas perfis de alunos
       setSuggestions(response.data.sugestoes);
     } catch (error) {
       console.error("Erro ao buscar perfis compatíveis:", error);
@@ -105,7 +96,7 @@ const Clustering = () => {
     modalContent = (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
         {suggestions.map((profile) => (
-          <CompatibleCard key={profile.id} student={profile} />
+          <CompatibleCard key={profile.id} profile={profile} />
         ))}
       </Box>
     );
@@ -113,7 +104,7 @@ const Clustering = () => {
     modalContent = (
       <Typography variant="body1" sx={{ fontSize: '1.1rem', textAlign: 'center' }}>
         No momento não encontramos perfis compatíveis com o seu 😓<br/>
-        Você ainda pode conferir/filtrar os perfis cadastrados na aba <strong><em>Alunos</em></strong>!
+        Você ainda pode conferir/filtrar os perfis cadastrados!
       </Typography>
     );
   }
@@ -123,7 +114,14 @@ const Clustering = () => {
       <Button
         variant="contained"
         onClick={fetchSuggestions}
-        disabled={currentUser && currentUser.role === 'PROFESSOR'} // Desabilita para professores
+        disabled={currentUser && currentUser.role === 'PROFESSOR'}
+        sx={{
+          backgroundColor: '#EDEFF1',
+          color: '#212B36',
+          '&:hover': {
+            backgroundColor: '#DDE0E2',
+          },
+        }}
       >
         Buscar perfis compatíveis
       </Button>
@@ -133,7 +131,7 @@ const Clustering = () => {
             p: 4, 
             maxWidth: 800, 
             margin: 'auto', 
-            mt: 15, 
+            mt: 10, 
             bgcolor: 'background.paper',
             borderRadius: 2  
           }}

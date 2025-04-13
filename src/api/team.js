@@ -18,6 +18,11 @@ export const teamApi = createApi({
       providesTags: (result, error, id) => [{ type: 'Teams', id }],
     }),
 
+    getTeamByidTeacher: build.query({
+      query: (id) => `/university/tcc/teacher/${id}`,
+      providesTags: ['TeamsPerTeacher'],
+    }),
+
     // Endpoint para criar uma nova equipe
     createTeam: build.mutation({
       query: (newTeam) => ({
@@ -46,14 +51,25 @@ export const teamApi = createApi({
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Teams', id }],
     }),
+
+    addMember: build.mutation({
+      query: ({ id, member }) => ({
+        url: `/university/tcc/${id}/addMember`,
+        method: 'PUT',
+        body: { member },
+      }),
+      // Invalida a tag da equipe para atualizar o cache com a nova lista de membros
+      invalidatesTags: (result, error, { id }) => [{ type: 'Teams', id }],
+    }),
   }),
 });
 
-export const { 
-  useGetTeamsQuery, 
+export const {
+  useGetTeamsQuery,
   useGetTeamByIdQuery,
-  useCreateTeamMutation, 
-  useUpdateTeamMutation, 
-  useDeleteTeamMutation 
+  useGetTeamByidTeacherQuery,
+  useCreateTeamMutation,
+  useUpdateTeamMutation,
+  useDeleteTeamMutation,
+  useAddMemberMutation,
 } = teamApi;
-
