@@ -61,7 +61,10 @@ export default function CrudUsersAdmTable() {
   });
 
   useEffect(() => {
-    setFilteredUsers(users);
+    const sortedUsers = [...users].sort((a, b) =>
+      a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' })
+    );
+    setFilteredUsers(sortedUsers);
     document.title = 'Manutenção de Usuários';
   }, [users]);
 
@@ -126,24 +129,15 @@ export default function CrudUsersAdmTable() {
   const handleDelete = async () => {
     try {
       await deleteUser(selectedUserId);
-
-      // Fecha diálogo de confirmação
       setConfirmDialogOpen(false);
-
       setSnackbarMessage('Usuário excluído com sucesso!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-
-      // Atualiza a lista de usuários
       refetch();
-
-      // Reseta a seleção
       setSelectedUserId(null);
     } catch (err) {
       console.error('Erro durante a exclusão:', err);
-
       setConfirmDialogOpen(false);
-
       setSnackbarMessage('Erro ao excluir usuário.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -159,14 +153,15 @@ export default function CrudUsersAdmTable() {
       (user) =>
         (!filters.email || user.email.toLowerCase().includes(filters.email.toLowerCase())) &&
         (!filters.role || user.role === filters.role)
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }));
     setFilteredUsers(filtered);
     setIsFilterOpen(false);
   };
 
   const clearFilters = () => {
     setFilters({ email: '', role: '' });
-    setFilteredUsers(users);
+    const sorted = [...users].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { sensitivity: 'base' }));
+    setFilteredUsers(sorted);
     setIsFilterOpen(false);
   };
 
@@ -177,7 +172,7 @@ export default function CrudUsersAdmTable() {
     <Container>
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={3000}
+        autoHideDuration={500}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
@@ -193,64 +188,26 @@ export default function CrudUsersAdmTable() {
           </Typography>
 
           <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-            <Button size="small" variant="contained" onClick={handleAddRow}>
-              Adicionar
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              onClick={handleEdit}
-              disabled={!selectedUserId}
-            >
-              Editar
-            </Button>
-            <Button
-              size="small"
-              variant="contained"
-              color="error"
-              onClick={() => openConfirmDialog(selectedUserId)}
-              disabled={!selectedUserId}
-            >
-              Excluir
-            </Button>
-            <Button size="small" variant="outlined" onClick={() => setIsFilterOpen(true)}>
-              Filtros
-            </Button>
+            <Button size="small" variant="contained" onClick={handleAddRow}>Adicionar</Button>
+            <Button size="small" variant="contained" onClick={handleEdit} disabled={!selectedUserId}>Editar</Button>
+            <Button size="small" variant="contained" color="error" onClick={() => openConfirmDialog(selectedUserId)} disabled={!selectedUserId}>Excluir</Button>
+            <Button size="small" variant="outlined" onClick={() => setIsFilterOpen(true)}>Filtros</Button>
           </Stack>
 
           <Drawer anchor="right" open={isFilterOpen} onClose={() => setIsFilterOpen(false)}>
             <Box sx={{ padding: 2 }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Filtros
-              </Typography>
-              <TextField
-                label="Email"
-                value={filters.email}
-                onChange={(e) => setFilters({ ...filters, email: e.target.value })}
-                fullWidth
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-              />
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Tipo de Usuário
-              </Typography>
-              <RadioGroup
-                value={filters.role}
-                onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-              >
+              <Typography variant="h6" sx={{ mb: 2 }}>Filtros</Typography>
+              <TextField label="Email" value={filters.email} onChange={(e) => setFilters({ ...filters, email: e.target.value })} fullWidth variant="outlined" size="small" sx={{ mb: 2 }} />
+              <Typography variant="subtitle2" sx={{ mb: 1 }}>Tipo de Usuário</Typography>
+              <RadioGroup value={filters.role} onChange={(e) => setFilters({ ...filters, role: e.target.value })}>
                 <FormControlLabel value="" control={<Radio />} label="Todos" />
                 <FormControlLabel value="ALUNO" control={<Radio />} label="Aluno" />
                 <FormControlLabel value="PROFESSOR" control={<Radio />} label="Professor" />
                 <FormControlLabel value="ADMIN" control={<Radio />} label="Administrador" />
               </RadioGroup>
               <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-                <Button size="small" variant="contained" color="primary" onClick={applyFilters}>
-                  Aplicar
-                </Button>
-                <Button size="small" variant="outlined" onClick={clearFilters}>
-                  Limpar
-                </Button>
+                <Button size="small" variant="contained" color="primary" onClick={applyFilters}>Aplicar</Button>
+                <Button size="small" variant="outlined" onClick={clearFilters}>Limpar</Button>
               </Stack>
             </Box>
           </Drawer>
@@ -270,11 +227,7 @@ export default function CrudUsersAdmTable() {
                     key={user.id}
                     onClick={() => setSelectedUserId((prev) => (prev === user.id ? null : user.id))}
                     selected={selectedUserId === user.id}
-                    sx={{
-                      cursor: 'pointer',
-                      backgroundColor:
-                        selectedUserId === user.id ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
-                    }}
+                    sx={{ cursor: 'pointer', backgroundColor: selectedUserId === user.id ? 'rgba(0, 0, 255, 0.1)' : 'inherit' }}
                   >
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
@@ -293,12 +246,8 @@ export default function CrudUsersAdmTable() {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
-                Cancelar
-              </Button>
-              <Button onClick={handleDelete} color="error" autoFocus>
-                Confirmar
-              </Button>
+              <Button onClick={() => setConfirmDialogOpen(false)} color="primary">Cancelar</Button>
+              <Button onClick={handleDelete} color="error" autoFocus>Confirmar</Button>
             </DialogActions>
           </Dialog>
         </>
@@ -310,13 +259,7 @@ export default function CrudUsersAdmTable() {
               control={control}
               rules={{ required: 'Nome é obrigatório.' }}
               render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Nome"
-                  fullWidth
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                />
+                <TextField {...field} label="Nome" fullWidth error={!!errors.name} helperText={errors.name?.message} />
               )}
             />
             <Controller
@@ -324,35 +267,20 @@ export default function CrudUsersAdmTable() {
               control={control}
               rules={{ required: 'E-mail é obrigatório.' }}
               render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="E-mail"
-                  fullWidth
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                />
+                <TextField {...field} label="E-mail" fullWidth error={!!errors.email} helperText={errors.email?.message} />
               )}
             />
             {!selectedUserId && (
               <Controller
                 name="password"
                 control={control}
-                rules={{ required: 'Senha é obrigatório.' }}
+                rules={{ required: 'Senha é obrigatória.' }}
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Senha"
-                    type="password"
-                    fullWidth
-                    error={!!errors.password}
-                    helperText={errors.password?.message}
-                  />
+                  <TextField {...field} label="Senha" type="password" fullWidth error={!!errors.password} helperText={errors.password?.message} />
                 )}
               />
             )}
-            <Typography variant="subtitle2" sx={{ mt: 2 }}>
-              Tipo
-            </Typography>
+            <Typography variant="subtitle2" sx={{ mt: 2 }}>Tipo</Typography>
             <Controller
               name="role"
               control={control}
@@ -365,12 +293,8 @@ export default function CrudUsersAdmTable() {
               )}
             />
             <Stack direction="row" spacing={1}>
-              <Button size="small" variant="contained" type="submit">
-                Salvar
-              </Button>
-              <Button size="small" variant="outlined" onClick={() => setShowForm(false)}>
-                Cancelar
-              </Button>
+              <Button size="small" variant="contained" type="submit">Salvar</Button>
+              <Button size="small" variant="outlined" onClick={() => setShowForm(false)}>Cancelar</Button>
             </Stack>
           </Stack>
         </form>
