@@ -7,16 +7,16 @@ export const professorPreferenceApi = createApi({
   baseQuery: baseQueryApi,
   endpoints: (build) => ({
     getProfessorPreferences: build.query({
-      query: () => '/cluster/preferencias-professor',
+      query: () => '/cluster/professor-preferences',
       providesTags: ['ProfessorPreference'],
     }),
     getProfessorPreferenceById: build.query({
-      query: (id) => `/cluster/preferencias-professor/${id}`,
+      query: (id) => `/cluster/professor-preferences/${id}`,
       providesTags: (result, error, id) => [{ type: 'ProfessorPreference', id }],
     }),
     createProfessorPreference: build.mutation({
       query: (payload) => ({
-        url: '/cluster/preferencias-professor',
+        url: '/cluster/professor-preferences',
         method: 'POST',
         body: payload,
       }),
@@ -24,7 +24,7 @@ export const professorPreferenceApi = createApi({
     }),
     updateProfessorPreference: build.mutation({
       query: ({ id, ...updatedData }) => ({
-        url: `/cluster/preferencias-professor/${id}`,
+        url: `/cluster/professor-preferences/${id}`,
         method: 'PUT',
         body: updatedData,
       }),
@@ -32,7 +32,7 @@ export const professorPreferenceApi = createApi({
     }),
     deleteProfessorPreference: build.mutation({
       query: (id) => ({
-        url: `/cluster/preferencias-professor/${id}`,
+        url: `/cluster/professor-preferences/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'ProfessorPreference', id }],

@@ -1,3 +1,6 @@
+// Arquivo ajustado: clustering.tsx
+// Apenas padroniza os campos esperados do backend para evitar conflitos de nomes
+
 import React, { useState } from 'react';
 import api from "src/api/api";
 import { useSelector } from 'react-redux';
@@ -11,27 +14,23 @@ import {
   Divider, 
   CircularProgress 
 } from '@mui/material';
-// import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 
 const CompatibleCard = ({ profile }) => (
   <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
-    {/* <BubbleChartIcon 
-      sx={{ position: 'absolute', top: 8, right: 8, fontSize: 24, color: 'gray' }} 
-    /> */}
     <Box sx={{ p: 1 }}>
       <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
         {profile.userName || `Perfil: ${profile.id}`}
       </Typography>
       <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-        <strong>Turno:</strong> {profile.turno || 'N/D'}
+        <strong>Turno:</strong> {profile.shift || 'N/D'}
       </Typography>
       <br />
       <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-        <strong>Disponibilidade:</strong> {profile.disponibilidade || 'N/D'}
+        <strong>Disponibilidade:</strong> {profile.availability || 'N/D'}
       </Typography>
       <Divider sx={{ my: 1 }} />
       <Typography variant="caption" display="block" sx={{ fontSize: '0.9rem' }}>
-        <strong>Temas:</strong> {profile.temasDeInteresse ? profile.temasDeInteresse.join(', ') : 'N/D'}
+        <strong>Temas:</strong> {profile.topicsOfInterest ? profile.topicsOfInterest.join(', ') : 'N/D'}
       </Typography>
     </Box>
     <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
@@ -54,12 +53,10 @@ const Clustering = ({ targetRole = "aluno" }) => {
     setLoading(true);
     const startTime = Date.now();
     try {
-      // Atualiza os clusters passando o targetRole
-      await api.get(`/cluster/clustering/atualizar?targetRole=${targetRole}`, {
+      await api.get(`/cluster/clustering/update?targetRole=${targetRole}`, {
         headers: { Authorization: token }
       });
-      // Busca as sugestões para o usuário logado com o targetRole desejado
-      const response = await api.get(`/cluster/clustering/sugeridos/${currentUser.id}?targetRole=${targetRole}`, {
+      const response = await api.get(`/cluster/clustering/suggestions/${currentUser.id}?targetRole=${targetRole}`, {
         headers: { Authorization: token }
       });
       setSuggestions(response.data.sugestoes);
