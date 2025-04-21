@@ -19,8 +19,7 @@ export default function AppView() {
   const { data: teams = [], isLoading, isError } = useGetTeamsQuery();
 
   // Filtra para encontrar a equipe que contenha o nome do usuário
-  const myTeam = teams.find((team) => team.members?.includes(user?.name));
-
+  const myTeam = teams.find((team) => team.members?.some((member) => member.userId === user?.id));
   const renderTeamContent = () => {
     if (isLoading) {
       return <Typography variant="body1">Carregando equipe...</Typography>;

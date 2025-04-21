@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { useGetTeamsQuery } from 'src/api/team';
 import TeamCard from '../team-card';
 import TeamFilters from '../team-filters';
+import { useGetUserTeamStatusQuery } from 'src/api/team';
 
 export default function TeamsView() {
   const { enqueueSnackbar } = useSnackbar();
@@ -17,6 +18,12 @@ export default function TeamsView() {
   const { data: teams = [], isLoading, error } = useGetTeamsQuery();
 
   const user = useSelector((state) => state.auth.auth.user);
+
+  const { data, isLoading: loadingUserStatus } = useGetUserTeamStatusQuery(user?.id, {
+    skip: !user?.id,
+  });
+
+  const userStatus = data?.status;
 
   // Filtra as equipes para que a equipe criada pelo usuário não seja exibida
   const filteredTeams = teams.filter((team) => (user ? team.createdById !== user.id : true));
@@ -70,7 +77,7 @@ export default function TeamsView() {
 
     return finalTeams.map((team) => (
       <Grid key={team.id} xs={12} sm={6} md={3}>
-        <TeamCard team={team} />
+        <TeamCard team={team} userStatus={userStatus} loadingStatus={loadingUserStatus} />
       </Grid>
     ));
   };
@@ -94,6 +101,8 @@ export default function TeamsView() {
             onOpenFilter={() => setOpenFilter(true)}
             onCloseFilter={() => setOpenFilter(false)}
             setFilteredTeam={setFilteredTeam}
+            userStatus={userStatus}
+            loadingUserStatus={loadingUserStatus}
           />
         </Stack>
       </Stack>

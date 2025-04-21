@@ -17,6 +17,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import Alert from '@mui/material/Alert';
+import Chip from '@mui/material/Chip';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import schemaTeamForm from 'src/hooks/form/my-team-form';
@@ -134,8 +135,13 @@ export default function MyTeamForm({ teamId }) {
   const temasDeInteresse = watch('temasDeInteresse') || [];
 
   useEffect(() => {
-    if (!teamData && user && user.name) {
-      setValue('members', [user.name]);
+    if (!teamData && user?.id && user?.name) {
+      setValue('members', [
+        {
+          userId: user.id,
+          userName: user.name,
+        },
+      ]);
     }
   }, [teamData, user, setValue]);
 
@@ -167,9 +173,21 @@ export default function MyTeamForm({ teamId }) {
       return;
     }
 
-    let membersList = data.members || [];
-    if (!membersList.includes(user.name)) {
-      membersList = [...membersList, user.name];
+    // Cria lista de membros como objetos { userId, userName }
+    let membersList = students
+      .filter((student) => data.members.includes(student.name))
+      .map((student) => ({
+        userId: student.id,
+        userName: student.name,
+      }));
+
+    // Garante que o criador (usuário atual) esteja incluso
+    const alreadyIncluded = membersList.some((m) => m.userId === user.id);
+    if (!alreadyIncluded) {
+      membersList.push({
+        userId: user.id,
+        userName: user.name,
+      });
     }
 
     const formData = {
@@ -211,7 +229,9 @@ export default function MyTeamForm({ teamId }) {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
-      <Card sx={{ p: 3, width: '50vw', maxWidth: '50vw', overflowX: 'hidden', overflowY: 'visible' }}>
+      <Card
+        sx={{ p: 3, width: '50vw', maxWidth: '50vw', overflowX: 'hidden', overflowY: 'visible' }}
+      >
         <Typography variant="h5" align="center" sx={{ mb: 3 }}>
           Formulário
         </Typography>
@@ -224,7 +244,7 @@ export default function MyTeamForm({ teamId }) {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <TextField
                 label="Título do TCC"
                 fullWidth
@@ -235,7 +255,7 @@ export default function MyTeamForm({ teamId }) {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <TextField
                 label="Descrição da Proposta"
                 fullWidth
@@ -248,18 +268,31 @@ export default function MyTeamForm({ teamId }) {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Controller
                 name="members"
                 control={control}
                 render={({ field }) => (
                   <Autocomplete
                     multiple
-                    options={sortedStudents.map((student) => student.name)}
+                    options={sortedStudents.map((student) => ({
+                      userId: student.id,
+                      userName: student.name,
+                    }))}
+                    getOptionLabel={(option) => option.userName}
+                    isOptionEqualToValue={(option, value) => option.userId === value.userId}
                     loading={isLoadingStudents}
-                    freeSolo={false}
                     value={field.value}
                     onChange={(event, newValue) => field.onChange(newValue)}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip
+                          key={option.userId}
+                          label={option.userName}
+                          {...getTagProps({ index })}
+                        />
+                      ))
+                    }
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -276,7 +309,7 @@ export default function MyTeamForm({ teamId }) {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Controller
                 name="advisor"
                 control={control}
@@ -308,8 +341,12 @@ export default function MyTeamForm({ teamId }) {
               />
             </Grid>
 
-            <Grid item xs={12}>
-              <FormControl fullWidth error={!!errors.temasDeInteresse} sx={{ minHeight: 40, width: '100%' }}>
+            <Grid xs={12}>
+              <FormControl
+                fullWidth
+                error={!!errors.temasDeInteresse}
+                sx={{ minHeight: 40, width: '100%' }}
+              >
                 <InputLabel shrink>Temas de Interesse</InputLabel>
                 <Select
                   label="Temas de Interesse"
@@ -322,7 +359,14 @@ export default function MyTeamForm({ teamId }) {
                     }
                   }}
                   renderValue={(selected) => (
-                    <Box sx={{ width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
                       {selected.join(', ')}
                     </Box>
                   )}
@@ -350,7 +394,7 @@ export default function MyTeamForm({ teamId }) {
               )}
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <Switch
                   checked={isClosed}
