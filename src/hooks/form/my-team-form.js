@@ -14,8 +14,14 @@ const schemaTeamForm = yup.object().shape({
     .max(255, 'A descrição da proposta deve ter no máximo 255 caracteres.'),
   members: yup
     .array()
-    .of(yup.string().required('Cada integrante precisa ter um nome.'))
-    .min(1, 'Pelo menos um integrante é obrigatório!'),
+    .of(
+      yup.object({
+        userId: yup.number().required('ID do integrante é obrigatório'),
+        userName: yup.string().required('Nome do integrante é obrigatório'),
+      })
+    )
+    .min(2, 'Pelo menos dois integrantes são obrigatórios!')
+    .required('A lista de integrantes é obrigatória!'),
   advisor: yup.string().notRequired(),
   temasDeInteresse: yup
     .array()
@@ -26,5 +32,3 @@ const schemaTeamForm = yup.object().shape({
 });
 
 export default schemaTeamForm;
-
-

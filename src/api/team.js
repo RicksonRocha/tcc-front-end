@@ -61,6 +61,9 @@ export const teamApi = createApi({
       // Invalida a tag da equipe para atualizar o cache com a nova lista de membros
       invalidatesTags: (result, error, { id }) => [{ type: 'Teams', id }],
     }),
+    getUserTeamStatus: build.query({
+      query: (userId) => `/university/tcc/status/${userId}`,
+    }),
   }),
 });
 
@@ -72,4 +75,5 @@ export const {
   useUpdateTeamMutation,
   useDeleteTeamMutation,
   useAddMemberMutation,
+  useGetUserTeamStatusQuery,
 } = teamApi;

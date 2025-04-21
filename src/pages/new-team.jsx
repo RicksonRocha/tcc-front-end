@@ -46,9 +46,3 @@ export default function NewTeamPage() {
     </>
   );
 }
-
-
-
-
-
-
