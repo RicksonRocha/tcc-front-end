@@ -12,6 +12,7 @@ import CrudUsersAdmPage from 'src/pages/crud-users-adm';
 import { EventPage } from 'src/pages/event';
 import EditTeamPage from 'src/pages/edit-team-page';
 import { DashboardPage } from 'src/pages/dashboard';
+import TccDetailPage from 'src/pages/tcc-detail-page';
 import ProtectedRoute from './protected-route';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
@@ -54,6 +55,10 @@ export default function Router() {
         { path: 'events', element: <EventPage /> },
         { path: 'init-page-teacher', element: <TeacherInitPage /> },
         { path: 'dashboard', element: <DashboardPage /> },
+        {
+          path: 'tcc/:teamId',
+          element: <TccDetailPage />,
+        },
       ],
     },
 

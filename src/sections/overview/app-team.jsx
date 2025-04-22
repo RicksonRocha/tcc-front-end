@@ -4,22 +4,14 @@ import { Card, CardContent, Typography, Button, Box, Divider } from '@mui/materi
 import { useRouter } from 'src/routes/hooks';
 import { useGetTeachersQuery } from 'src/api/user';
 
-export default function AppTeam({
-  team,
-  message,
-  buttonText,
-  onButtonClick,
-  ...other
-}) {
+export default function AppTeam({ team, message, buttonText, onButtonClick, ...other }) {
   const { push } = useRouter();
 
   // Busca todos os professores
   const { data: teachers = [] } = useGetTeachersQuery();
 
   // Procura o professor cujo id bate com team.teacherTcc
-  const teacher = teachers.find(
-    (t) => Number(t.id) === Number(team?.teacherTcc)
-  );
+  const teacher = teachers.find((t) => Number(t.id) === Number(team?.teacherTcc));
 
   let displayedTeacherName = '';
 
@@ -76,7 +68,11 @@ export default function AppTeam({
               <Typography variant="subtitle1" gutterBottom color="primary">
                 Descrição:
               </Typography>
-              <Typography variant="body1" paragraph sx={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}>
+              <Typography
+                variant="body1"
+                paragraph
+                sx={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}
+              >
                 {team.description}
               </Typography>
               <Divider sx={{ borderColor: 'grey.300', my: 1 }} />
@@ -86,7 +82,7 @@ export default function AppTeam({
                 Membros:
               </Typography>
               <Typography variant="body1" paragraph>
-                {team.members.join(', ')}
+                {team.members?.map((member) => member.userName).join(', ')}
               </Typography>
               <Divider sx={{ borderColor: 'grey.300', my: 1 }} />
 
@@ -94,17 +90,26 @@ export default function AppTeam({
               <Typography variant="subtitle1" gutterBottom color="primary">
                 Orientador(a):
               </Typography>
-              <Typography variant="body1">
-                {displayedTeacherName}
-              </Typography>
+              <Typography variant="body1">{displayedTeacherName}</Typography>
             </Box>
           ) : (
-            <Box display="flex" flexDirection="column" alignItems="flex-start" textAlign="left" sx={{ mt: 2 }}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="flex-start"
+              textAlign="left"
+              sx={{ mt: 2 }}
+            >
               <Typography variant="body1" gutterBottom>
                 {message}
               </Typography>
               <Box mt={2} width="fit-content">
-                <Button variant="contained" color="primary" onClick={() => push('/equipes')} fullWidth>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => push('/equipes')}
+                  fullWidth
+                >
                   {buttonText}
                 </Button>
               </Box>
@@ -122,10 +127,7 @@ AppTeam.propTypes = {
     name: PropTypes.string,
     description: PropTypes.string,
     members: PropTypes.arrayOf(PropTypes.string),
-    teacherTcc: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    teacherTcc: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   }),
   teacher: PropTypes.shape({
     user_id: PropTypes.number,
@@ -142,6 +144,3 @@ AppTeam.defaultProps = {
   buttonText: 'Equipes',
   team: null,
 };
-
-
-
