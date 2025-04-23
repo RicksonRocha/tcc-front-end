@@ -19,30 +19,28 @@ export default function TeacherView() {
   const handleOpenFilter = () => setOpenFilter(true);
   const handleCloseFilter = () => setOpenFilter(false);
 
-  // Busca os dados reais das preferências de professor
   const { data: professorPreferences = [], isLoading, error } = useGetProfessorPreferencesQuery();
 
-  // Converte o valor real de disponivelOrientacao para o label usado no filtro
-  const getOrientationStatus = teacher =>
-    teacher.disponivelOrientacao === 'Sim'
+  const getOrientationStatus = (teacher) => {
+    const value = teacher.disponivelOrientacao || teacher.availableForAdvising || '';
+    return value.toLowerCase() === 'sim'
       ? 'Disponível para Orientação'
       : 'Indisponível para Orientação';
+  };
 
-  // Filtra os professores com base nos filtros aplicados
   const filteredTeachers = professorPreferences.filter((teacher) => {
     if (filterState.teacherDisp && getOrientationStatus(teacher) !== filterState.teacherDisp) {
       return false;
     }
-    if (filterState.turno && teacher.turno !== filterState.turno) {
+    const turno = teacher.turno || teacher.shift;
+    if (filterState.turno && turno !== filterState.turno) {
       return false;
     }
-    if (filterState.temasTCC.length > 0) {
-      const temas = teacher.temasInteresse
-        ? teacher.temasInteresse.split(',').map((t) => t.trim())
-        : [];
-      if (!filterState.temasTCC.some((tema) => temas.includes(tema))) {
-        return false;
-      }
+    const temas = teacher.temasInteresse || teacher.interestTopics || [];
+    const temasList = typeof temas === 'string' ? temas.split(',').map(t => t.trim()) : temas;
+    if (filterState.temasTCC.length > 0 &&
+      !filterState.temasTCC.some((tema) => temasList.includes(tema))) {
+      return false;
     }
     return true;
   });
@@ -66,13 +64,7 @@ export default function TeacherView() {
         Orientadores
       </Typography>
 
-      <Stack
-        direction="row"
-        alignItems="center"
-        flexWrap="wrap-reverse"
-        justifyContent="flex-start"
-        sx={{ mb: 5 }}
-      >
+      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-start" sx={{ mb: 5 }}>
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
           <TeacherFilters
             openFilter={openFilter}

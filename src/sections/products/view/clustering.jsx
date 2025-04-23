@@ -1,6 +1,3 @@
-// Arquivo ajustado: clustering.tsx
-// Apenas padroniza os campos esperados do backend para evitar conflitos de nomes
-
 import React, { useState } from 'react';
 import api from "src/api/api";
 import { useSelector } from 'react-redux';
@@ -15,31 +12,34 @@ import {
   CircularProgress 
 } from '@mui/material';
 
-const CompatibleCard = ({ profile }) => (
-  <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
-    <Box sx={{ p: 1 }}>
-      <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
-        {profile.userName || `Perfil: ${profile.id}`}
-      </Typography>
-      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-        <strong>Turno:</strong> {profile.shift || 'N/D'}
-      </Typography>
-      <br />
-      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-        <strong>Disponibilidade:</strong> {profile.availability || 'N/D'}
-      </Typography>
-      <Divider sx={{ my: 1 }} />
-      <Typography variant="caption" display="block" sx={{ fontSize: '0.9rem' }}>
-        <strong>Temas:</strong> {profile.topicsOfInterest ? profile.topicsOfInterest.join(', ') : 'N/D'}
-      </Typography>
-    </Box>
-    <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
-      <Button variant="contained" color="primary" size="small">
-        Conectar
-      </Button>
-    </Stack>
-  </Card>
-);
+// Card de exibição do perfil compatível
+const CompatibleCard = ({ profile }) => {
+  return (
+    <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
+      <Box sx={{ p: 1 }}>
+        <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
+          {profile.userName || `Perfil: ${profile.id}`}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+          <strong>Turno:</strong> {profile.turno || 'N/D'}
+        </Typography>
+        <br />
+        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
+          <strong>Disponibilidade:</strong> {profile.disponibilidade || 'N/D'}
+        </Typography>
+        <Divider sx={{ my: 1 }} />
+        <Typography variant="caption" display="block" sx={{ fontSize: '0.9rem' }}>
+          <strong>Temas:</strong> {Array.isArray(profile.temasDeInteresse) && profile.temasDeInteresse.length > 0 ? profile.temasDeInteresse.join(', ') : 'N/D'}
+        </Typography>
+      </Box>
+      <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
+        <Button variant="contained" color="primary" size="small">
+          Conectar
+        </Button>
+      </Stack>
+    </Card>
+  );
+};
 
 const Clustering = ({ targetRole = "aluno" }) => {
   const currentUser = useSelector((state) => state.auth?.auth?.user);
@@ -53,12 +53,16 @@ const Clustering = ({ targetRole = "aluno" }) => {
     setLoading(true);
     const startTime = Date.now();
     try {
+      // Atualiza os clusters no backend
       await api.get(`/cluster/clustering/update?targetRole=${targetRole}`, {
         headers: { Authorization: token }
       });
+
+      // Busca sugestões com base no ID do usuário atual
       const response = await api.get(`/cluster/clustering/suggestions/${currentUser.id}?targetRole=${targetRole}`, {
         headers: { Authorization: token }
       });
+
       setSuggestions(response.data.sugestoes);
     } catch (error) {
       console.error("Erro ao buscar perfis compatíveis:", error);
