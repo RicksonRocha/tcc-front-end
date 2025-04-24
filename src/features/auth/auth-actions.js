@@ -90,7 +90,7 @@ export const updatePassword = createAsyncThunk(
 );
 
 export const preferenciasUserProfessor = createAsyncThunk(
-  'auth/preferencias-professor',
+  'auth/professor-preferences',
   async (
     {
       turno,
@@ -106,7 +106,7 @@ export const preferenciasUserProfessor = createAsyncThunk(
   ) => {
     try {
       await axios.post(
-        `${backendURL}/auth/preferencias-professor`,
+        `${backendURL}/auth/professor-preferences`,
         {
           turno,
           disponivelOrientacao,

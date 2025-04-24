@@ -74,10 +74,10 @@ export default function Router() {
       path: 'forgot-password',
       element: <ResetPasswordPage />,
     },
-    {
-      path: 'meu-perfil-professor',
-      element: <PreferenciasProfessorPage />,
-    },
+    // {
+    //   path: 'meu-perfil-professor',
+    //   element: <PreferenciasProfessorPage />,
+    // },
     {
       path: '404',
       element: <Page404 />,

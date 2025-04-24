@@ -34,7 +34,7 @@ import {
   temas_interesse,
   disponibilidades,
   modalidades_trabalho,
-} from 'src/sections/preferencias-professor/opcoes';
+} from 'src/sections/professor-preferences/opcoes';
 
 export default function MyProfileProfessorView(props) {
   const {
@@ -47,7 +47,7 @@ export default function MyProfileProfessorView(props) {
   } = props;
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     if (open && preferenceData) {
@@ -57,7 +57,7 @@ export default function MyProfileProfessorView(props) {
 
   useEffect(() => {
     if (preferenceData) {
-      setSnackbarMessage("Preferências carregadas com sucesso!");
+      setSnackbarMessage('Preferências carregadas com sucesso!');
       setSnackbarOpen(true);
     }
   }, [preferenceData]);
@@ -68,206 +68,100 @@ export default function MyProfileProfessorView(props) {
 
   const renderFormFields = () => (
     <Stack spacing={2} sx={{ mt: 2 }}>
-      {/* Turno */}
       <Controller
-        name="turno"
+        name="shift"
         control={control}
         render={({ field }) => (
-          <FormControl fullWidth error={!!errors.turno}>
+          <FormControl fullWidth error={!!errors.shift}>
             <InputLabel>Turno</InputLabel>
-            <Select {...field} label="Turno">
+            <Select {...field} label="Turno" value={field.value || ''}>
               {turnos.map((t) => (
                 <MenuItem key={t} value={t}>
                   {t}
                 </MenuItem>
               ))}
             </Select>
-            {errors.turno && (
-              <Typography variant="caption" color="error">
-                {errors.turno.message}
-              </Typography>
-            )}
+            {errors.shift && <Typography variant="caption" color="error">{errors.shift.message}</Typography>}
           </FormControl>
         )}
       />
 
-      {/* Disponível para Orientação */}
       <Controller
-        name="disponivelOrientacao"
+        name="availableForAdvising"
         control={control}
         render={({ field }) => (
-          <FormControl fullWidth error={!!errors.disponivelOrientacao}>
+          <FormControl fullWidth error={!!errors.availableForAdvising}>
             <InputLabel>Disponível para Orientação</InputLabel>
-            <Select {...field} label="Disponível para Orientação">
+            <Select {...field} label="Disponível para Orientação" value={field.value || ''}>
               {disponivel_orientacao.map((d) => (
                 <MenuItem key={d} value={d}>
                   {d}
                 </MenuItem>
               ))}
             </Select>
-            {errors.disponivelOrientacao && (
-              <Typography variant="caption" color="error">
-                {errors.disponivelOrientacao.message}
-              </Typography>
-            )}
+            {errors.availableForAdvising && <Typography variant="caption" color="error">{errors.availableForAdvising.message}</Typography>}
           </FormControl>
         )}
       />
 
-      {/* Linguagens de Programação */}
-      <FormControl fullWidth error={!!errors.linguagensProgramacao}>
-        <InputLabel>Linguagens de Programação</InputLabel>
-        <Select
-          fullWidth
-          label="Linguagens de Programação"
-          multiple
-          value={watch('linguagensProgramacao') || []}
-          onChange={(e) => {
-            const selected = e.target.value;
-            setValue('linguagensProgramacao', selected);
-          }}
-          renderValue={(selected) => selected.join(', ')}
-        >
-          {linguagens_programacao.map((lang) => (
-            <MenuItem key={lang} value={lang}>
-              <Checkbox checked={watch('linguagensProgramacao')?.includes(lang)} />
-              {lang}
-            </MenuItem>
-          ))}
-        </Select>
-        {errors.linguagensProgramacao && (
-          <Typography variant="caption" color="error">
-            {errors.linguagensProgramacao.message}
-          </Typography>
-        )}
-      </FormControl>
+      {[ 
+        { name: 'programmingLanguages', label: 'Linguagens de Programação', options: linguagens_programacao },
+        { name: 'taughtSubjects', label: 'Disciplinas Lecionadas', options: disciplinas_lecionadas },
+        { name: 'personalSkills', label: 'Habilidades Pessoais', options: habilidades_pessoais },
+        { name: 'interestTopics', label: 'Temas de Interesse', options: temas_interesse },
+      ].map(({ name, label, options }) => (
+        <FormControl fullWidth key={name} error={!!errors[name]}>
+          <InputLabel>{label}</InputLabel>
+          <Select
+            multiple
+            label={label}
+            value={watch(name) || []}
+            onChange={(e) => setValue(name, e.target.value)}
+            renderValue={(selected) => selected.join(', ')}
+          >
+            {options.map((opt) => (
+              <MenuItem key={opt} value={opt}>
+                <Checkbox checked={(watch(name) || []).includes(opt)} />
+                {opt}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors[name] && <Typography variant="caption" color="error">{errors[name].message}</Typography>}
+        </FormControl>
+      ))}
 
-      {/* Disciplinas Lecionadas */}
-      <FormControl fullWidth error={!!errors.disciplinasLecionadas}>
-        <InputLabel>Disciplinas Lecionadas</InputLabel>
-        <Select
-          fullWidth
-          label="Disciplinas Lecionadas"
-          multiple
-          value={watch('disciplinasLecionadas') || []}
-          onChange={(e) => {
-            const selected = e.target.value;
-            setValue('disciplinasLecionadas', selected);
-          }}
-          renderValue={(selected) => selected.join(', ')}
-        >
-          {disciplinas_lecionadas.map((disc) => (
-            <MenuItem key={disc} value={disc}>
-              <Checkbox checked={watch('disciplinasLecionadas')?.includes(disc)} />
-              {disc}
-            </MenuItem>
-          ))}
-        </Select>
-        {errors.disciplinasLecionadas && (
-          <Typography variant="caption" color="error">
-            {errors.disciplinasLecionadas.message}
-          </Typography>
-        )}
-      </FormControl>
-
-      {/* Habilidades Pessoais */}
-      <FormControl fullWidth error={!!errors.habilidadesPessoais}>
-        <InputLabel>Habilidades Pessoais</InputLabel>
-        <Select
-          fullWidth
-          label="Habilidades Pessoais"
-          multiple
-          value={watch('habilidadesPessoais') || []}
-          onChange={(e) => {
-            const selected = e.target.value;
-            setValue('habilidadesPessoais', selected);
-          }}
-          renderValue={(selected) => selected.join(', ')}
-        >
-          {habilidades_pessoais.map((hab) => (
-            <MenuItem key={hab} value={hab}>
-              <Checkbox checked={watch('habilidadesPessoais')?.includes(hab)} />
-              {hab}
-            </MenuItem>
-          ))}
-        </Select>
-        {errors.habilidadesPessoais && (
-          <Typography variant="caption" color="error">
-            {errors.habilidadesPessoais.message}
-          </Typography>
-        )}
-      </FormControl>
-
-      {/* Temas de Interesse */}
-      <FormControl fullWidth error={!!errors.temasInteresse}>
-        <InputLabel>Temas de Interesse</InputLabel>
-        <Select
-          fullWidth
-          label="Temas de Interesse"
-          multiple
-          value={watch('temasInteresse') || []}
-          onChange={(e) => {
-            const selected = e.target.value;
-            setValue('temasInteresse', selected);
-          }}
-          renderValue={(selected) => selected.join(', ')}
-        >
-          {temas_interesse.map((tema) => (
-            <MenuItem key={tema} value={tema}>
-              <Checkbox checked={watch('temasInteresse')?.includes(tema)} />
-              {tema}
-            </MenuItem>
-          ))}
-        </Select>
-        {errors.temasInteresse && (
-          <Typography variant="caption" color="error">
-            {errors.temasInteresse.message}
-          </Typography>
-        )}
-      </FormControl>
-
-      {/* Disponibilidade */}
       <Controller
-        name="disponibilidade"
+        name="availability"
         control={control}
         render={({ field }) => (
-          <FormControl fullWidth error={!!errors.disponibilidade}>
+          <FormControl fullWidth error={!!errors.availability}>
             <InputLabel>Disponibilidade</InputLabel>
-            <Select {...field} label="Disponibilidade">
+            <Select {...field} label="Disponibilidade" value={field.value || ''}>
               {disponibilidades.map((d) => (
                 <MenuItem key={d} value={d}>
                   {d}
                 </MenuItem>
               ))}
             </Select>
-            {errors.disponibilidade && (
-              <Typography variant="caption" color="error">
-                {errors.disponibilidade.message}
-              </Typography>
-            )}
+            {errors.availability && <Typography variant="caption" color="error">{errors.availability.message}</Typography>}
           </FormControl>
         )}
       />
 
-      {/* Modalidade de Trabalho */}
       <Controller
-        name="modalidadeTrabalho"
+        name="workModality"
         control={control}
         render={({ field }) => (
-          <FormControl fullWidth error={!!errors.modalidadeTrabalho}>
+          <FormControl fullWidth error={!!errors.workModality}>
             <InputLabel>Modalidade de Trabalho</InputLabel>
-            <Select {...field} label="Modalidade de Trabalho">
+            <Select {...field} label="Modalidade de Trabalho" value={field.value || ''}>
               {modalidades_trabalho.map((m) => (
                 <MenuItem key={m} value={m}>
                   {m}
                 </MenuItem>
               ))}
             </Select>
-            {errors.modalidadeTrabalho && (
-              <Typography variant="caption" color="error">
-                {errors.modalidadeTrabalho.message}
-              </Typography>
-            )}
+            {errors.workModality && <Typography variant="caption" color="error">{errors.workModality.message}</Typography>}
           </FormControl>
         )}
       />
@@ -295,72 +189,30 @@ export default function MyProfileProfessorView(props) {
             <Box sx={{ mt: 3 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Turno:
-                    </Typography>
-                    <Typography variant="body1">{preferenceData.turno}</Typography>
-                  </Box>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Disponível para Orientação:
-                    </Typography>
-                    <Typography variant="body1">{preferenceData.disponivelOrientacao}</Typography>
-                  </Box>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Linguagens de Programação:
-                    </Typography>
-                    <Typography variant="body1">
-                      {Array.isArray(preferenceData.linguagensProgramacao)
-                        ? preferenceData.linguagensProgramacao.join(', ')
-                        : preferenceData.linguagensProgramacao}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Disciplinas Lecionadas:
-                    </Typography>
-                    <Typography variant="body1">
-                      {Array.isArray(preferenceData.disciplinasLecionadas)
-                        ? preferenceData.disciplinasLecionadas.join(', ')
-                        : preferenceData.disciplinasLecionadas}
-                    </Typography>
-                  </Box>
+                  <Typography fontWeight="bold">Turno:</Typography>
+                  <Typography>{preferenceData.shift}</Typography>
+
+                  <Typography fontWeight="bold" mt={2}>Disponível para Orientação:</Typography>
+                  <Typography>{preferenceData.availableForAdvising}</Typography>
+
+                  <Typography fontWeight="bold" mt={2}>Linguagens de Programação:</Typography>
+                  <Typography>{(preferenceData.programmingLanguages || []).join(', ')}</Typography>
+
+                  <Typography fontWeight="bold" mt={2}>Disciplinas Lecionadas:</Typography>
+                  <Typography>{(preferenceData.taughtSubjects || []).join(', ')}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Habilidades Pessoais:
-                    </Typography>
-                    <Typography variant="body1">
-                      {Array.isArray(preferenceData.habilidadesPessoais)
-                        ? preferenceData.habilidadesPessoais.join(', ')
-                        : preferenceData.habilidadesPessoais}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Temas de Interesse:
-                    </Typography>
-                    <Typography variant="body1">
-                      {Array.isArray(preferenceData.temasInteresse)
-                        ? preferenceData.temasInteresse.join(', ')
-                        : preferenceData.temasInteresse}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Disponibilidade:
-                    </Typography>
-                    <Typography variant="body1">{preferenceData.disponibilidade}</Typography>
-                  </Box>
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
-                      Modalidade de Trabalho:
-                    </Typography>
-                    <Typography variant="body1">{preferenceData.modalidadeTrabalho}</Typography>
-                  </Box>
+                  <Typography fontWeight="bold">Habilidades Pessoais:</Typography>
+                  <Typography>{(preferenceData.personalSkills || []).join(', ')}</Typography>
+
+                  <Typography fontWeight="bold" mt={2}>Temas de Interesse:</Typography>
+                  <Typography>{(preferenceData.interestTopics || []).join(', ')}</Typography>
+
+                  <Typography fontWeight="bold" mt={2}>Disponibilidade:</Typography>
+                  <Typography>{preferenceData.availability}</Typography>
+
+                  <Typography fontWeight="bold" mt={2}>Modalidade de Trabalho:</Typography>
+                  <Typography>{preferenceData.workModality}</Typography>
                 </Grid>
               </Grid>
             </Box>
@@ -395,13 +247,9 @@ export default function MyProfileProfessorView(props) {
       <Container sx={{ mt: 4 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Stack>
-            <Typography variant="h4" mb={1}>
-              Meu Perfil
-            </Typography>
+            <Typography variant="h4" mb={1}>Meu Perfil</Typography>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link underline="hover" color="text.primary" href="/">
-                Início
-              </Link>
+              <Link underline="hover" color="text.primary" href="/">Início</Link>
               <Typography color="inherit">Meu Perfil</Typography>
             </Breadcrumbs>
           </Stack>
