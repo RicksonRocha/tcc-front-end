@@ -27,8 +27,10 @@ export default function TeacherCard({ teacher }) {
   }
 
   const displayedName = teacher.userName || `Professor: ${teacher.user_id || teacher.id}`;
-  const orientationRaw = teacher.availableForAdvising || teacher.disponivelOrientacao || '';
-  const isAvailable = orientationRaw.trim().toLowerCase() === 'sim';
+  const orientationRaw = teacher.availableForAdvising ?? teacher.disponivelOrientacao ?? '';
+  const isAvailable =
+    (typeof orientationRaw === 'string' && orientationRaw.trim().toLowerCase() === 'sim') ||
+    orientationRaw === true;
   const statusText = isAvailable ? 'Disponível para Orientação' : 'Indisponível para Orientação';
   const statusColor = isAvailable ? 'success' : 'error';
 
