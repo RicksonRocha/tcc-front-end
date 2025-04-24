@@ -5,126 +5,121 @@ import {
   Card,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
   Avatar,
-  ListItemButton,
+  ListItemText,
+  Button,
   Divider,
-  Skeleton,
-  Grid,
+  Box,
 } from '@mui/material';
-import { useGetTeamByidTeacherQuery } from 'src/api/team';
 import { useSelector } from 'react-redux';
+import { useGetTeamByidTeacherQuery } from 'src/api/team';
+import { useRouter } from 'src/routes/hooks';
+import { useNavigate } from 'react-router-dom';
 
 export default function TeacherInitView() {
-  // Recupera o objeto do usuário autenticado (contendo id, email e nome)
   const user = useSelector((state) => state.auth.auth.user);
-
-  // Chamada à API usando Redux Toolkit Query
-  const { data: tccs = [], isLoading, error } = useGetTeamByidTeacherQuery(user.id);
+  const { data: tccs = [], isLoading, error } = useGetTeamByidTeacherQuery(user?.id);
+  const { push } = useRouter();
+  const navigate = useNavigate();
 
   return (
-    <Container
-      sx={{ height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-    >
-      <Stack direction="column" alignItems="start">
+    <Container sx={{ height: 'auto', py: 4 }}>
+      <Stack direction="column" alignItems="start" mb={3}>
         <Typography variant="h4" mb={1}>
           Bem-Vindo Professor!
         </Typography>
-        <Typography variant="body1" textAlign="start" mb={3}>
-          Equipes que você esta gerenciando:
+        <Typography variant="body1" textAlign="start">
+          Equipes que você está gerenciando:
         </Typography>
       </Stack>
 
-      <Card sx={{ pl: 2.5, pr: 2.5, pt: 1.5, pb: 1.5, height: 'auto', width: '100%' }}>
+      <Card sx={{ width: '100%', px: 2, py: 2 }}>
         {isLoading ? (
-          // Skeletons durante o carregamento
-          <List>
-            {Array.from(new Array(5)).map((_, index) => (
-              <ListItem key={index}>
-                <ListItemAvatar>
-                  <Skeleton variant="circular" width={40} height={40} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={<Skeleton width="60%" />}
-                  secondary={<Skeleton width="80%" />}
-                />
-              </ListItem>
-            ))}
-          </List>
+          <Typography>Carregando...</Typography>
         ) : error ? (
-          // Mensagem de erro
-          <Typography variant="body1" color="error" textAlign="center">
-            Erro ao carregar TCCs.
-          </Typography>
-        ) : tccs.length > 0 ? (
-          // Renderiza a lista de TCCs
-          <List disablePadding>
-            {tccs.map((tcc, index) => {
-              // Trunca a descrição para no máximo 100 caracteres
-              const truncatedDescription =
-                tcc.description.length > 100
-                  ? `${tcc.description.slice(0, 100)}...`
-                  : tcc.description;
-
-              // Limita os membros a 1 nome e exibe "e mais X" se houver mais
-              const truncatedMembers =
-                tcc.members.length > 1
-                  ? `${tcc.members[0]} e mais ${tcc.members.length - 1}`
-                  : tcc.members.join(', ');
-
-              return (
-                <div key={tcc.id}>
-                  <ListItem sx={{ pr: 0, pl: 0 }}>
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: 'primary.main', fontSize: '0.90rem', mr: 2 }}>
-                        {tcc.name[0].toUpperCase()} {/* Primeira letra do nome */}
-                      </Avatar>
-                    </ListItemAvatar>
-
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} sm={6}>
-                        <ListItemText primary={tcc.name} secondary={truncatedDescription} />
-                      </Grid>
-                      <Grid item xs={12} sm={4}>
-                        <ListItemText
-                          primary={`Membros: ${truncatedMembers}`}
-                          sx={{ minWidth: '200px' }}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={2}>
-                        <ListItemButton
-                          sx={{
-                            fontSize: '0.90rem',
-                            bgcolor: 'primary.main',
-                            color: 'white',
-                            fontWeight: 'medium',
-                            borderRadius: 1,
-                            py: 1,
-                            px: 2,
-                            width: '160px',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            textAlign: 'center',
-                            transition: '0.3s',
-                            '&:hover': { bgcolor: 'primary.dark', boxShadow: 2 },
-                          }}
-                        >
-                          Ver equipe
-                        </ListItemButton>
-                      </Grid>
-                    </Grid>
-                  </ListItem>
-                  {index < tccs.length - 1 && <Divider />}
-                </div>
-              );
-            })}
-          </List>
+          <Typography color="error">Erro ao carregar TCCs.</Typography>
+        ) : tccs.length === 0 ? (
+          <Typography>Nenhum TCC encontrado.</Typography>
         ) : (
-          <Typography variant="body1" textAlign="center">
-            Nenhum TCC encontrado.
-          </Typography>
+          <>
+            {/* Cabeçalho fixo */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                px: 1,
+                py: 1,
+                fontWeight: 'bold',
+                color: 'text.secondary',
+              }}
+            >
+              {/* Avatar + Nome */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+                <Box sx={{ width: 55, height: 40 }} /> {/* Espaço reservado para o avatar */}
+                <span>Nome do TCC</span>
+              </Box>
+              {/* Quantidade de membros */}
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
+                <span>Quantidade de membros</span>
+              </Box>
+              {/* Ação */}
+              <Box sx={{ width: 140, textAlign: 'right', pr: 2 }}>
+                <span>Ação</span>
+              </Box>
+            </Box>
+            <Divider sx={{ mb: 1 }} />
+
+            {/* Lista de TCCs */}
+            <List disablePadding>
+              {tccs.map((tcc, index) => {
+                const memberCount = tcc.members?.length || 0;
+
+                return (
+                  <Box key={tcc.id}>
+                    <ListItem
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        px: 1,
+                      }}
+                    >
+                      {/* Avatar + título */}
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 600 }}>
+                            {tcc?.name?.trim() ? tcc.name.trim().charAt(0).toUpperCase() : '?'}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText primary={tcc.name || 'Sem título'} />
+                      </Box>
+
+                      {/* Quantidade de membros */}
+                      <Box sx={{ flex: 1, textAlign: 'center' }}>
+                        <Typography variant="body2" color="text.secondary">
+                          {memberCount} membro{memberCount === 1 ? '' : 's'}
+                        </Typography>
+                      </Box>
+
+                      {/* Botão Ver mais */}
+                      <Box sx={{ width: 140, display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => navigate(`/tcc/${tcc.id}`)}
+                        >
+                          Ver mais
+                        </Button>
+                      </Box>
+                    </ListItem>
+
+                    {index < tccs.length - 1 && <Divider sx={{ my: 1, opacity: 0.2 }} />}
+                  </Box>
+                );
+              })}
+            </List>
+          </>
         )}
       </Card>
     </Container>

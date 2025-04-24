@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Iconify from 'src/components/iconify';
+import { useSnackbar } from 'notistack';
 import Scrollbar from 'src/components/scrollbar';
 import { useRouter } from 'src/routes/hooks';
 import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
@@ -20,8 +21,16 @@ import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 export const TEAM_OPTIONS = ['Aberta', 'Completa'];
 export const TEACHER_TCC_OPTIONS = ['Com orientador(a)', 'Sem orientador(a)'];
 
-export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, setFilteredTeam }) {
+export default function TeamFilters({
+  openFilter,
+  onOpenFilter,
+  onCloseFilter,
+  setFilteredTeam,
+  userStatus,
+  loadingUserStatus,
+}) {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Obter o usuário logado a partir do localStorage:
   const storedData = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
@@ -65,12 +74,39 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
   const handleCreateTeamClick = () => {
     // Se for professor, não permite criar equipe
     if (isProfessor) return;
+
+    if (loadingUserStatus) {
+      enqueueSnackbar('Carregando informações do usuário. Tente novamente em instantes.', {
+        variant: 'warning',
+        anchorOrigin: { vertical: 'top', horizontal: 'center' },
+      });
+      return;
+    }
+
+    if (userStatus === 'owner') {
+      enqueueSnackbar('Você já é dono de uma equipe.', {
+        variant: 'info',
+        anchorOrigin: { vertical: 'top', horizontal: 'center' },
+      });
+      return;
+    }
+
+    if (userStatus === 'member') {
+      enqueueSnackbar('Você já faz parte de uma equipe.', {
+        variant: 'warning',
+        anchorOrigin: { vertical: 'top', horizontal: 'center' },
+      });
+      return;
+    }
+
     router.push('/equipes/nova');
   };
 
   const renderTeam = (
     <Stack spacing={1}>
-      <Typography variant="subtitle3"><b>Situação da Equipe</b></Typography>
+      <Typography variant="subtitle3">
+        <b>Situação da Equipe</b>
+      </Typography>
       <RadioGroup
         value={filterState.teamStatus}
         onChange={(e) => handleRadioChange('teamStatus', e.target.value)}
@@ -85,7 +121,9 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
   const renderThemes = (
     <Stack spacing={1}>
       <Divider />
-      <Typography variant="subtitle3"><b>Temas de Interesse</b></Typography>
+      <Typography variant="subtitle3">
+        <b>Temas de Interesse</b>
+      </Typography>
       <FormGroup>
         {TEMAS_TCC_OPTIONS.map((item) => (
           <FormControlLabel
@@ -106,7 +144,9 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
   const renderTeacherTcc = (
     <Stack spacing={1}>
       <Divider />
-      <Typography variant="subtitle3"><b>Orientação</b></Typography>
+      <Typography variant="subtitle3">
+        <b>Orientação</b>
+      </Typography>
       <FormGroup>
         {TEACHER_TCC_OPTIONS.map((item) => (
           <FormControlLabel
@@ -142,7 +182,7 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           color="inherit"
           endIcon={<Iconify icon="ic:round-add-circle" />}
           onClick={handleCreateTeamClick}
-          disabled={isProfessor}  // Desabilita para professor
+          disabled={isProfessor} // Desabilita para professor
           sx={{ fontSize: '16px' }}
         >
           Criar equipe
@@ -157,7 +197,12 @@ export default function TeamFilters({ openFilter, onOpenFilter, onCloseFilter, s
           sx: { width: 450, border: 'none', overflow: 'hidden' },
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ px: 1, py: 2 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ px: 1, py: 2 }}
+        >
           <Box display="flex" flexDirection="column">
             <Typography variant="h6" sx={{ ml: 1 }}>
               Filtros
@@ -204,8 +249,6 @@ TeamFilters.propTypes = {
   onOpenFilter: PropTypes.func,
   onCloseFilter: PropTypes.func,
   setFilteredTeam: PropTypes.func,
+  userStatus: PropTypes.string,
+  loadingUserStatus: PropTypes.bool,
 };
-
-
-
-
