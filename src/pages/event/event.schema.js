@@ -6,6 +6,7 @@ const schema = yup.object().shape({
   startDate: yup.date().required('Início é um campo obrigatório'),
   endDate: yup.date().required('Fim é um campo obrigatório'),
   isActive: yup.boolean().default(false),
+  team: yup.string()
 });
 
 export { schema };

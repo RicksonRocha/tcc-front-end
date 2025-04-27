@@ -9,7 +9,7 @@ export const eventApi = createApi({
   baseQuery: baseQueryApi,
   endpoints: (build) => ({
     getEvents: build.query({
-      query: () => ENDPOINT,
+      query: (teamId) => `${ENDPOINT}/${teamId}`,
       providesTags: ['Events'],
     }),
 

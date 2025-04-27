@@ -42,7 +42,7 @@ export function useNavConfig() {
       title: 'Cronograma',
       path: '/events',
       icon: <Iconify icon="ic:round-calendar-today" />,
-      roles: ['ALUNO', 'ADMIN'],
+      roles: ['ALUNO', 'ADMIN', 'PROFESSOR'],
     },
     {
       title: 'Materiais de Apoio',

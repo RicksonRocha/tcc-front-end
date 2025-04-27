@@ -7,16 +7,24 @@ import {
 } from 'src/api/event';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useGetTeamsQuery } from 'src/api/team';
+import { useSelector } from 'react-redux';
 import { schema } from './event.schema';
 
 export const useEventModel = () => {
+   const user = useSelector((state) => state.auth.auth.user);
   const [open, setOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents] = useState([]);
   const [createEvent, { isLoading: creating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
   const [deleteEvent, { isLoading: deleting }] = useDeleteEventMutation();
-  const { data, isFetching, refetch } = useGetEventsQuery();
+  const { data: teams = [], isLoading, isError } = useGetTeamsQuery();
+  
+    // Filtra para encontrar a equipe que contenha o nome do usuário
+  const myTeam = teams.find((team) => team.members?.some((member) => member?.userId === user?.id));
+  
+  const { data, isFetching, refetch } = useGetEventsQuery(myTeam?.id, { skip: myTeam === undefined});
 
   const handleToggle = () => {
     setOpen(!open);
@@ -29,8 +37,9 @@ export const useEventModel = () => {
       startDate: selectedEvent?.start ?? null,
       endDate: selectedEvent?.end ?? null,
       isActive: selectedEvent?.extendedProps.isActive ?? false,
+      team: selectedEvent?.extendedProps.team ?? myTeam?.id
     }),
-    [selectedEvent]
+    [selectedEvent, myTeam]
   );
 
   const methods = useForm({
@@ -87,6 +96,7 @@ export const useEventModel = () => {
         end: e.endDate,
         extendedProps: {
           isActive: e.isActive,
+          team: e.team
         },
       }))
     );
