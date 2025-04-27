@@ -52,7 +52,9 @@ export default function LoginView() {
       }
 
       reset();
-      push('/my-profile');
+
+      const isTeacher = response.payload.user.role === 'PROFESSOR';
+      push(isTeacher ? '/init-page-teacher' : '/my-profile');
     } catch (e) {
       console.log('error', e);
     }

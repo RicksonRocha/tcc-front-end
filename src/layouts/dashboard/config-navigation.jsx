@@ -5,14 +5,12 @@ import { useSelector } from 'react-redux';
 export function useNavConfig() {
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const perfilPath =
-    currentUser && currentUser.role === 'PROFESSOR'
-      ? '/meu-perfil-professor'
-      : '/my-profile';
+    currentUser && currentUser.role === 'PROFESSOR' ? '/meu-perfil-professor' : '/my-profile';
 
   const navConfig = [
     {
       title: 'Visão Geral',
-      path: '/',
+      path: currentUser?.role === 'PROFESSOR' ? 'init-page-teacher' : '/',
       icon: <Iconify icon="ic:round-dashboard" />,
       roles: ['ALUNO', 'PROFESSOR', 'ADMIN'],
     },
@@ -62,4 +60,3 @@ export function useNavConfig() {
 
   return navConfig;
 }
-
