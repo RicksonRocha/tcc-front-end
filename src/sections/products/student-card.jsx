@@ -30,12 +30,10 @@ export default function StudentCard({ student }) {
 
   const displayedName = student.userName || `Aluno: ${student.user_id}`;
 
-  const isInTeam = student.userName
-  ? teams?.some(team =>
-      team.createdById === student.user_id ||
-      team.members?.includes(student.userName)
-    )
-  : false;
+  const isInTeam = teams?.some(team =>
+    team.createdById === student.user_id ||
+    team.members?.some(member => member.userId === student.user_id)
+  );
 
   let teamStatus = 'Sem equipe';
   if (isTeamsLoading) {

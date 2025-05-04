@@ -79,12 +79,10 @@ export default function StudentView() {
 
     // Filtro por situação do aluno (equipe)
     if (teamStatus) {
-      const isInTeam = pref.userName
-        ? teams.some(team =>
-          team.createdById === pref.user_id ||
-          (team.members && team.members.includes(pref.userName))
-        )
-        : false;
+      const isInTeam = teams.some(team =>
+        team.createdById === pref.user_id ||
+        team.members?.some(member => member.userId === pref.user_id)
+      );
       if (teamStatus === 'Com equipe' && !isInTeam) return false;
       if (teamStatus === 'Sem equipe' && isInTeam) return false;
     }

@@ -46,9 +46,7 @@ export default function TeacherView() {
   });
 
   let content;
-  if (isLoading) {
-    content = <Typography>Carregando...</Typography>;
-  } else if (error) {
+  if (error) {
     content = <Typography>Erro ao carregar orientadores.</Typography>;
   } else {
     content = filteredTeachers.map((teacher) => (
