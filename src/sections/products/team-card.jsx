@@ -53,7 +53,7 @@ export default function TeamCard({ team, userStatus, loadingStatus }) {
       nomeRemetente: currentUser.name,
       receiverId: team.createdById,
       nomeDestinatario: team.createdByEmail || 'Responsável pela equipe',
-      message: `${currentUser.name} solicitou a entrada na sua equipe`,
+      message: `${currentUser.name} gostaria de fazer parte da sua equipe! Confira na página de Visão Geral.`,
     };
 
     const requestEntryData = {

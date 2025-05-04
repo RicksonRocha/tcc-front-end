@@ -8,7 +8,7 @@ import { preferenceApi } from './preference';
 import { eventApi } from './event';
 import { professorPreferenceApi } from './preference-prof';
 import { notificationApi } from './notifications';
-import { requestEntryTccApi } from './requestEntrytcc';
+import { requestEntryTccApi } from './requestEntryTcc';
 
 export const store = configureStore({
   reducer: {
