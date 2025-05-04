@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useSelector } from "react-redux";
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Typography,
@@ -21,11 +21,11 @@ import {
   Snackbar,
   Alert,
   Card,
-} from "@mui/material";
-import api from "src/api/api";
-import { useGetTeamsQuery } from "src/api/team";
+} from '@mui/material';
+import api from 'src/api/api';
+import { useGetTeamsQuery } from 'src/api/team';
 
-const API_URL = "/university/support-material";
+const API_URL = '/university/support-material';
 
 export default function SupportMaterialTable() {
   // Estados locais
@@ -35,13 +35,13 @@ export default function SupportMaterialTable() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
-    message: "",
-    severity: "success",
+    message: '',
+    severity: 'success',
   });
   const [formData, setFormData] = useState({
-    name: "",
-    autor: "",
-    link: "",
+    name: '',
+    autor: '',
+    link: '',
     teamId: null,
   });
 
@@ -51,24 +51,23 @@ export default function SupportMaterialTable() {
   // Consulta as equipes (TCCs) cadastradas
   const { data: teams = [], isLoading: teamsLoading, isError: teamsError } = useGetTeamsQuery();
 
-  // Filtra para encontrar a equipe na qual o usuário está 
-  // (supondo que team.members contenha o nome do usuário)
-  const myTeam = teams.find((team) => team.members?.includes(user?.name));
+  // Filtra para encontrar a equipe na qual o usuário está
+  const myTeam = teams.find((team) => team.members?.some((member) => member.userId === user?.id));
 
   // Token para as chamadas à API
-  const token = useMemo(() => localStorage.getItem("token") || sessionStorage.getItem("token"), []);
+  const token = useMemo(() => localStorage.getItem('token') || sessionStorage.getItem('token'), []);
 
   // Função para buscar os materiais de apoio filtrados pela equipe do usuário
   const fetchMaterials = useCallback(() => {
     if (!token || !user || !myTeam) {
-      console.error("Token, usuário ou equipe não encontrados.");
+      console.error('Token, usuário ou equipe não encontrados.');
       return;
     }
 
     const authHeaders = {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     };
 
@@ -84,8 +83,8 @@ export default function SupportMaterialTable() {
       .catch(() =>
         setSnackbar({
           open: true,
-          message: "Erro ao carregar materiais",
-          severity: "error",
+          message: 'Erro ao carregar materiais',
+          severity: 'error',
         })
       );
   }, [token, user, myTeam]);
@@ -97,7 +96,7 @@ export default function SupportMaterialTable() {
   // Handler para adicionar novo material
   const handleAdd = () => {
     // Preenche automaticamente com o usuário logado e a equipe identificada
-    setFormData({ name: "", autor: user?.name, link: "", teamId: myTeam?.id });
+    setFormData({ name: '', autor: user?.name, link: '', teamId: myTeam?.id });
     setSelectedMaterialId(null);
     setShowForm(true);
   };
@@ -119,14 +118,14 @@ export default function SupportMaterialTable() {
       setConfirmDialogOpen(false);
       setSnackbar({
         open: true,
-        message: "Material excluído",
-        severity: "success",
+        message: 'Material excluído',
+        severity: 'success',
       });
     } catch (error) {
       setSnackbar({
         open: true,
-        message: "Erro ao excluir material",
-        severity: "error",
+        message: 'Erro ao excluir material',
+        severity: 'error',
       });
     }
   };
@@ -138,11 +137,7 @@ export default function SupportMaterialTable() {
         response = await api.put(`${API_URL}/${selectedMaterialId}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setMaterials(
-          materials.map((mat) =>
-            mat.id === selectedMaterialId ? response.data : mat
-          )
-        );
+        setMaterials(materials.map((mat) => (mat.id === selectedMaterialId ? response.data : mat)));
       } else {
         response = await api.post(API_URL, formData, {
           headers: { Authorization: `Bearer ${token}` },
@@ -152,14 +147,14 @@ export default function SupportMaterialTable() {
       setShowForm(false);
       setSnackbar({
         open: true,
-        message: "Material salvo com sucesso",
-        severity: "success",
+        message: 'Material salvo com sucesso',
+        severity: 'success',
       });
     } catch (error) {
       setSnackbar({
         open: true,
-        message: "Erro ao salvar material",
-        severity: "error",
+        message: 'Erro ao salvar material',
+        severity: 'error',
       });
     }
   };
@@ -169,16 +164,21 @@ export default function SupportMaterialTable() {
     <Card sx={{ p: 3, borderRadius: 2, boxShadow: 3, mt: 3 }}>
       <Stack
         sx={{
-          height: "50vh",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
+          height: '50vh',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
         }}
       >
-      <Typography variant="18" sx={{ mb: 2 }}>
-        Você precisa estar em uma equipe para ter acesso à esse recurso🔎<br />
-        Na aba <strong><em>Equipes</em></strong> é possível visualizar todos os grupos disponíveis!
-      </Typography>
+        <Typography variant="18" sx={{ mb: 2 }}>
+          Você precisa estar em uma equipe para ter acesso à esse recurso🔎
+          <br />
+          Na aba{' '}
+          <strong>
+            <em>Equipes</em>
+          </strong>{' '}
+          é possível visualizar todos os grupos disponíveis!
+        </Typography>
       </Stack>
     </Card>
   );
@@ -188,30 +188,47 @@ export default function SupportMaterialTable() {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={3000}
-        onClose={() =>
-          setSnackbar({ open: false, message: "", severity: "success" })
-        }
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={() => setSnackbar({ open: false, message: '', severity: 'success' })}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
       </Snackbar>
 
       {/* Renderização condicional baseada no estado das equipes */}
       {teamsLoading && <Typography variant="body1">Carregando equipe...</Typography>}
-      {teamsError && <Typography variant="body1" color="error">Erro ao carregar equipe.</Typography>}
+      {teamsError && (
+        <Typography variant="body1" color="error">
+          Erro ao carregar equipe.
+        </Typography>
+      )}
       {!teamsLoading && !teamsError && !myTeam && (
         <>
-          <Typography variant="h4" sx={{ mb: 3 }}>Materiais de Apoio</Typography>
+          <Typography variant="h4" sx={{ mb: 3 }}>
+            Materiais de Apoio
+          </Typography>
           {renderNoTeamCard()}
         </>
       )}
       {!teamsLoading && !teamsError && myTeam && (
         <>
-          <Typography variant="h4" sx={{ mb: 3 }}>Materiais de Apoio</Typography>
+          <Typography variant="h4" sx={{ mb: 3 }}>
+            Materiais de Apoio
+          </Typography>
           <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-            <Button variant="contained" onClick={handleAdd}>Adicionar Novo</Button>
-            <Button variant="contained" disabled={!selectedMaterialId} onClick={handleEdit}>Editar</Button>
-            <Button variant="contained" color="error" disabled={!selectedMaterialId} onClick={() => setConfirmDialogOpen(true)}>Excluir</Button>
+            <Button variant="contained" onClick={handleAdd}>
+              Adicionar Novo
+            </Button>
+            <Button variant="contained" disabled={!selectedMaterialId} onClick={handleEdit}>
+              Editar
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              disabled={!selectedMaterialId}
+              onClick={() => setConfirmDialogOpen(true)}
+            >
+              Excluir
+            </Button>
           </Stack>
 
           <TableContainer component={Paper}>
@@ -230,8 +247,9 @@ export default function SupportMaterialTable() {
                     onClick={() => setSelectedMaterialId(material.id)}
                     selected={selectedMaterialId === material.id}
                     sx={{
-                      cursor: "pointer",
-                      backgroundColor: selectedMaterialId === material.id ? "rgba(0, 0, 255, 0.1)" : "inherit",
+                      cursor: 'pointer',
+                      backgroundColor:
+                        selectedMaterialId === material.id ? 'rgba(0, 0, 255, 0.1)' : 'inherit',
                     }}
                   >
                     <TableCell sx={{ minWidth: 200 }}>{material.name}</TableCell>
@@ -255,13 +273,17 @@ export default function SupportMaterialTable() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setConfirmDialogOpen(false)}>Cancelar</Button>
-              <Button onClick={handleDelete} color="error">Confirmar</Button>
+              <Button onClick={handleDelete} color="error">
+                Confirmar
+              </Button>
             </DialogActions>
           </Dialog>
 
           {/* Formulário para adicionar/editar material */}
           <Dialog open={showForm} onClose={() => setShowForm(false)} fullWidth maxWidth="sm">
-            <DialogTitle>{selectedMaterialId ? "Editar Material" : "Adicionar Novo Material"}</DialogTitle>
+            <DialogTitle>
+              {selectedMaterialId ? 'Editar Material' : 'Adicionar Novo Material'}
+            </DialogTitle>
             <DialogContent>
               <TextField
                 label="Material"
@@ -287,7 +309,9 @@ export default function SupportMaterialTable() {
             </DialogContent>
             <DialogActions>
               <Button onClick={() => setShowForm(false)}>Cancelar</Button>
-              <Button onClick={handleSubmit} variant="contained">Salvar</Button>
+              <Button onClick={handleSubmit} variant="contained">
+                Salvar
+              </Button>
             </DialogActions>
           </Dialog>
         </>

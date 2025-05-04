@@ -19,9 +19,23 @@ import { useNavigate } from 'react-router-dom';
 
 export default function TeacherInitView() {
   const user = useSelector((state) => state.auth.auth.user);
-  const { data: tccs = [], isLoading, error } = useGetTeamByidTeacherQuery(user?.id);
+  const userId = user?.id;
+
+  const { data, isLoading, error } = useGetTeamByidTeacherQuery(userId, {
+    skip: !userId,
+  });
   const { push } = useRouter();
   const navigate = useNavigate();
+  // Garante que tccs sempre seja array
+  const tccs = Array.isArray(data) ? data : [];
+
+  if (!userId) {
+    return (
+      <Container sx={{ height: 'auto', py: 4 }}>
+        <Typography color="error">Usuário não autenticado.</Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container sx={{ height: 'auto', py: 4 }}>

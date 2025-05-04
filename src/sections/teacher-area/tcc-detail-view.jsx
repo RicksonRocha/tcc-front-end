@@ -1,10 +1,28 @@
 import { useParams } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Stack,
+  Divider,
+  Card,
+  Box,
+  Breadcrumbs,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import { useGetTeamByIdQuery } from 'src/api/team';
-import { Container, Typography, Stack, Divider, Card, Box, Breadcrumbs, Link } from '@mui/material';
+import { useGetEventsQuery } from 'src/api/event'; // IMPORTANTE
 
 export default function TccDetailView() {
   const { teamId } = useParams();
   const { data: team, isLoading, isError } = useGetTeamByIdQuery(teamId);
+  const {
+    data: events = [],
+    isLoading: loadingEvents,
+    isError: errorEvents,
+  } = useGetEventsQuery(teamId); // NOVO
 
   if (isLoading) return <Typography>Carregando...</Typography>;
   if (isError || !team) return <Typography>Erro ao carregar TCC</Typography>;
@@ -16,7 +34,6 @@ export default function TccDetailView() {
           Detalhes do TCC
         </Typography>
 
-        {/* Breadcrumbs */}
         <Breadcrumbs aria-label="breadcrumb">
           <Link underline="hover" color="text.primary" href="/init-page-teacher">
             Início
@@ -65,6 +82,76 @@ export default function TccDetailView() {
           <Typography variant="h6" gutterBottom>
             Próximos eventos
           </Typography>
+
+          {/* Cabeçalho fixo */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              px: 1,
+              py: 1,
+              fontWeight: 'bold',
+              color: 'text.secondary',
+            }}
+          >
+            <Box sx={{ gap: 2, flex: 1 }}>
+              <span>Nome do evento</span>
+            </Box>
+            <Box sx={{ flex: 1, textAlign: 'left' }}>
+              <span>Descrição do evento</span>
+            </Box>
+            <Box sx={{ width: 120, textAlign: 'left', pr: 2 }}>
+              <span>Início</span>
+            </Box>
+            <Box sx={{ width: 120, textAlign: 'left', pr: 2 }}>
+              <span>Fim</span>
+            </Box>
+          </Box>
+          <Divider sx={{ mb: 1 }} />
+
+          {/* Lista de eventos */}
+          {loadingEvents ? (
+            <Typography>Carregando eventos...</Typography>
+          ) : errorEvents ? (
+            <Typography color="error">Erro ao carregar eventos.</Typography>
+          ) : events.length === 0 ? (
+            <Typography>Nenhum evento encontrado.</Typography>
+          ) : (
+            <List disablePadding>
+              {events.map((event, index) => (
+                <Box key={event.id}>
+                  <ListItem
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      px: 1,
+                    }}
+                  >
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2">{event.name}</Typography>
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {event.description}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ width: 120 }}>
+                      <Typography variant="body2">
+                        {new Date(event.startDate).toLocaleDateString('pt-BR')}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ width: 120 }}>
+                      <Typography variant="body2">
+                        {new Date(event.endDate).toLocaleDateString('pt-BR')}
+                      </Typography>
+                    </Box>
+                  </ListItem>
+                  {index < events.length - 1 && <Divider sx={{ my: 1, opacity: 0.2 }} />}
+                </Box>
+              ))}
+            </List>
+          )}
         </Box>
       </Card>
 

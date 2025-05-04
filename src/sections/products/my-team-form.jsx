@@ -43,7 +43,8 @@ export default function MyTeamForm({ teamId }) {
   const [deleteTeam] = useDeleteTeamMutation();
   const { data: students = [], isLoading: isLoadingStudents } = useGetStudentsQuery();
   const { data: teachers = [], isLoading: isLoadingTeachers } = useGetTeachersQuery();
-  const { data: professorPreferences = [], isLoading: isLoadingPreferences } = useGetProfessorPreferencesQuery();
+  const { data: professorPreferences = [], isLoading: isLoadingPreferences } =
+    useGetProfessorPreferencesQuery();
   const { push } = useRouter();
   const user = useSelector((state) => state.auth.auth.user);
 
@@ -98,9 +99,10 @@ export default function MyTeamForm({ teamId }) {
       reset({
         tccTitle: teamData.name || '',
         tccDescription: teamData.description || '',
-        members: teamData.members?.map((m) =>
-          typeof m === 'string' ? { userId: null, userName: m } : m
-        ) || [],
+        members:
+          teamData.members?.map((m) =>
+            typeof m === 'string' ? { userId: null, userName: m } : m
+          ) || [],
         advisor: teamData.teacherTcc || '',
         temasDeInteresse: teamData.themes || [],
       });
@@ -110,14 +112,13 @@ export default function MyTeamForm({ teamId }) {
 
   const onSubmit = async (data) => {
     const currentTeamId = teamId;
-    const currentMemberNames = data.members.map((m) => m.userName ?? m);
+    const memberIds = data.members.map((m) => m.userId);
+    const memberNames = data.members.map((m) => m.userName);
 
-    const memberAlreadyInOtherTeam = currentMemberNames.some((name) =>
+    const memberAlreadyInOtherTeam = memberNames.some((name) =>
       teams.some(
         (team) =>
-          team.id !== currentTeamId &&
-          team.members &&
-          team.members.includes(name)
+          team.id !== currentTeamId && team.members?.some((m) => m.userName === name || m === name)
       )
     );
 
@@ -126,8 +127,9 @@ export default function MyTeamForm({ teamId }) {
       return;
     }
 
-    if (!currentMemberNames.includes(user.name)) {
-      currentMemberNames.push(user.name);
+    // Garante que o criador esteja incluído
+    if (!memberIds.includes(user.id)) {
+      data.members.push({ userId: user.id, userName: user.name });
     }
 
     const formData = {
@@ -135,7 +137,10 @@ export default function MyTeamForm({ teamId }) {
       description: data.tccDescription,
       isActive: isClosed,
       teacherTcc: data.advisor ? Number(data.advisor) : null,
-      members: currentMemberNames,
+      members: data.members.map((m) => ({
+        userId: m.userId,
+        userName: m.userName,
+      })),
       themes: data.temasDeInteresse,
       createdById: user.id,
       createdByEmail: user.email,
@@ -183,49 +188,80 @@ export default function MyTeamForm({ teamId }) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid xs={12}>
-              <TextField label="Título do TCC" fullWidth {...register('tccTitle')} error={!!errors.tccTitle} helperText={errors.tccTitle?.message} />
+              <TextField
+                label="Título do TCC"
+                fullWidth
+                {...register('tccTitle')}
+                error={!!errors.tccTitle}
+                helperText={errors.tccTitle?.message}
+              />
             </Grid>
             <Grid xs={12}>
-              <TextField label="Descrição da Proposta" fullWidth multiline rows={3} {...register('tccDescription')} error={!!errors.tccDescription} helperText={errors.tccDescription?.message} />
+              <TextField
+                label="Descrição da Proposta"
+                fullWidth
+                multiline
+                rows={3}
+                {...register('tccDescription')}
+                error={!!errors.tccDescription}
+                helperText={errors.tccDescription?.message}
+              />
             </Grid>
             <Grid xs={12}>
-              <Controller name="members" control={control} render={({ field }) => (
-                <Autocomplete
-                  multiple
-                  options={sortedStudents}
-                  getOptionLabel={(option) => option.userName}
-                  isOptionEqualToValue={(a, b) => a.userId === b.userId}
-                  value={field.value}
-                  onChange={(e, newValue) => field.onChange(newValue)}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip key={option.userName} label={option.userName} {...getTagProps({ index })} />
-                    ))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Nomes dos Integrantes"
-                      error={!!errors.members}
-                      helperText={errors.members?.message || ''}
-                    />
-                  )}
-                />
-              )} />
+              <Controller
+                name="members"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    multiple
+                    options={sortedStudents}
+                    getOptionLabel={(option) => option.userName}
+                    isOptionEqualToValue={(a, b) => a.userId === b.userId}
+                    value={field.value}
+                    onChange={(e, newValue) => field.onChange(newValue)}
+                    renderTags={(value, getTagProps) =>
+                      value.map((option, index) => (
+                        <Chip
+                          key={option.userName}
+                          label={option.userName}
+                          {...getTagProps({ index })}
+                        />
+                      ))
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Nomes dos Integrantes"
+                        error={!!errors.members}
+                        helperText={errors.members?.message || ''}
+                      />
+                    )}
+                  />
+                )}
+              />
             </Grid>
             <Grid xs={12}>
-              <Controller name="advisor" control={control} render={({ field }) => (
-                <Autocomplete
-                  options={sortedTeachers}
-                  getOptionLabel={(t) => t.userName}
-                  isOptionEqualToValue={(a, b) => a.userId === b.userId}
-                  value={sortedTeachers.find((t) => t.userId === field.value) || null}
-                  onChange={(e, newValue) => field.onChange(newValue ? newValue.userId : null)}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Orientador(a)" error={!!errors.advisor} helperText={errors.advisor?.message || ' '} />
-                  )}
-                />
-              )} />
+              <Controller
+                name="advisor"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    options={sortedTeachers}
+                    getOptionLabel={(t) => t.userName}
+                    isOptionEqualToValue={(a, b) => a.userId === b.userId}
+                    value={sortedTeachers.find((t) => t.userId === field.value) || null}
+                    onChange={(e, newValue) => field.onChange(newValue ? newValue.userId : null)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Orientador(a)"
+                        error={!!errors.advisor}
+                        helperText={errors.advisor?.message || ' '}
+                      />
+                    )}
+                  />
+                )}
+              />
             </Grid>
             <Grid xs={12}>
               <FormControl fullWidth error={!!errors.temasDeInteresse}>
@@ -252,16 +288,34 @@ export default function MyTeamForm({ teamId }) {
             </Grid>
             <Grid xs={12}>
               <Stack direction="row" alignItems="center" spacing={1}>
-                <Switch checked={isClosed} onChange={(e) => setIsClosed(e.target.checked)} disabled={members.length < 2} />
-                <Typography color="#6c7b88">Fechar Equipe {members.length < 2 && '(Requer ao menos 2 membros)'}</Typography>
+                <Switch
+                  checked={isClosed}
+                  onChange={(e) => setIsClosed(e.target.checked)}
+                  disabled={members.length < 2}
+                />
+                <Typography color="#6c7b88">
+                  Fechar Equipe {members.length < 2 && '(Requer ao menos 2 membros)'}
+                </Typography>
               </Stack>
             </Grid>
           </Grid>
 
           <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            <Button variant="contained" color="primary" onClick={() => push(teamId ? '/' : '/equipes')}>Voltar</Button>
-            <LoadingButton type="submit" variant="contained" color="primary">Salvar</LoadingButton>
-            {teamId && <Button variant="contained" color="error" onClick={handleDelete}>Excluir</Button>}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => push(teamId ? '/' : '/equipes')}
+            >
+              Voltar
+            </Button>
+            <LoadingButton type="submit" variant="contained" color="primary">
+              Salvar
+            </LoadingButton>
+            {teamId && (
+              <Button variant="contained" color="error" onClick={handleDelete}>
+                Excluir
+              </Button>
+            )}
           </Stack>
         </form>
       </Card>
