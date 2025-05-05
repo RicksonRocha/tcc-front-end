@@ -110,13 +110,19 @@ export default function TccDetailView() {
           <Divider sx={{ mb: 1 }} />
 
           {/* Lista de eventos */}
-          {loadingEvents ? (
+          {loadingEvents && (
             <Typography>Carregando eventos...</Typography>
-          ) : errorEvents ? (
+          )}
+
+          {!loadingEvents && errorEvents && (
             <Typography color="error">Erro ao carregar eventos.</Typography>
-          ) : events.length === 0 ? (
+          )}
+
+          {!loadingEvents && !errorEvents && events.length === 0 && (
             <Typography>Nenhum evento encontrado.</Typography>
-          ) : (
+          )}
+
+          {!loadingEvents && !errorEvents && events.length > 0 && (
             <List disablePadding>
               {events.map((event, index) => (
                 <Box key={event.id}>

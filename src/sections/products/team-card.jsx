@@ -135,30 +135,40 @@ export default function TeamCard({ team, userStatus, loadingStatus }) {
         </Typography>
 
         {/* Render condicional com base no status */}
-        {userStatus === 'owner' ? (
-          <Alert severity="info" sx={{ mt: 2 }}>
-            Você já faz parte de uma equipe.
-          </Alert>
-        ) : userStatus === 'member' ? (
-          <Alert severity="warning" sx={{ mt: 2 }}>
-            Você já está em uma equipe.
-          </Alert>
-        ) : (
-          <Button
-            variant="contained"
-            disabled={teamStatus === 'Completa' || isProfessor || loadingStatus}
-            onClick={handleClick}
-            sx={{
-              backgroundColor: '#EDEFF1',
-              color: '#212B36',
-              '&:hover': {
-                backgroundColor: '#DDE0E2',
-              },
-            }}
-          >
-            Solicitar entrada
-          </Button>
-        )}
+        {(() => {
+          if (userStatus === 'owner') {
+            return (
+              <Alert severity="info" sx={{ mt: 2 }}>
+                Você já faz parte de uma equipe.
+              </Alert>
+            );
+          }
+
+          if (userStatus === 'member') {
+            return (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                Você já está em uma equipe.
+              </Alert>
+            );
+          }
+
+          return (
+            <Button
+              variant="contained"
+              disabled={teamStatus === 'Completa' || isProfessor || loadingStatus}
+              onClick={handleClick}
+              sx={{
+                backgroundColor: '#EDEFF1',
+                color: '#212B36',
+                '&:hover': {
+                  backgroundColor: '#DDE0E2',
+                },
+              }}
+            >
+              Solicitar entrada
+            </Button>
+          );
+        })()}
 
         {successMessage && (
           <Alert severity="success" sx={{ mt: 2 }}>
