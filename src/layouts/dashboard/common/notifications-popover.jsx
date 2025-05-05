@@ -54,7 +54,7 @@ export default function NotificationsPopover() {
     if (currentUser) {
       refetchUnreadCount();
     }
-  }, [currentUser]);
+  }, [currentUser, refetchUnreadCount]);
 
   const handleOpen = async (event) => {
     setAnchorEl(event.currentTarget);

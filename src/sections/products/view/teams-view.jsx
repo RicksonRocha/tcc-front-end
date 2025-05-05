@@ -7,10 +7,9 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import { useSnackbar } from 'notistack';
-import { useGetTeamsQuery } from 'src/api/team';
+import { useGetTeamsQuery, useGetUserTeamStatusQuery } from 'src/api/team';
 import TeamCard from '../team-card';
 import TeamFilters from '../team-filters';
-import { useGetUserTeamStatusQuery } from 'src/api/team';
 
 export default function TeamsView() {
   const { enqueueSnackbar } = useSnackbar();

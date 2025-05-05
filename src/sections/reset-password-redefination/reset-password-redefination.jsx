@@ -139,7 +139,7 @@ export default function ResetPasswordRedefinationView() {
               alignItems="center"
               justifyContent="center"
               sx={{ my: 0, cursor: 'pointer' }}
-            ></Stack>
+            />
           </form>
         </Card>
       </Stack>
