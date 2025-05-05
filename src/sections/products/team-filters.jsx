@@ -84,7 +84,7 @@ export default function TeamFilters({
     }
 
     if (userStatus === 'owner') {
-      enqueueSnackbar('Você já é dono de uma equipe.', {
+      enqueueSnackbar('Você já faz parte de uma equipe.', {
         variant: 'info',
         anchorOrigin: { vertical: 'top', horizontal: 'center' },
       });

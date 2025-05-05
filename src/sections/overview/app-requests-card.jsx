@@ -82,8 +82,8 @@ export default function AppRequestsCard() {
   }
 
   return (
-    <Card>
-      <CardContent>
+    <Card sx={{ mt: 3 }}>
+      <CardContent >
         <Typography variant="h6" gutterBottom>
           Solicitações de entrada em Equipe
         </Typography>

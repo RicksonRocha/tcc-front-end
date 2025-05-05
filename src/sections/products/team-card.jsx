@@ -137,7 +137,7 @@ export default function TeamCard({ team, userStatus, loadingStatus }) {
         {/* Render condicional com base no status */}
         {userStatus === 'owner' ? (
           <Alert severity="info" sx={{ mt: 2 }}>
-            Você já é dono de uma equipe.
+            Você já faz parte de uma equipe.
           </Alert>
         ) : userStatus === 'member' ? (
           <Alert severity="warning" sx={{ mt: 2 }}>
