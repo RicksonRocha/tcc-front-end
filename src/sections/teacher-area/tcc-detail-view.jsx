@@ -8,21 +8,31 @@ import {
   Box,
   Breadcrumbs,
   Link,
-  List,
-  ListItem,
-  ListItemText,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from '@mui/material';
 import { useGetTeamByIdQuery } from 'src/api/team';
-import { useGetEventsQuery } from 'src/api/event'; // IMPORTANTE
+import { useGetEventsQuery } from 'src/api/event';
+import { useGetMaterialsByTeamIdQuery } from 'src/api/materials-support';
 
 export default function TccDetailView() {
   const { teamId } = useParams();
+
   const { data: team, isLoading, isError } = useGetTeamByIdQuery(teamId);
   const {
     data: events = [],
     isLoading: loadingEvents,
     isError: errorEvents,
-  } = useGetEventsQuery(teamId); // NOVO
+  } = useGetEventsQuery(teamId);
+  const {
+    data: materials = [],
+    isLoading: loadingMaterials,
+    isError: errorMaterials,
+  } = useGetMaterialsByTeamIdQuery(teamId);
 
   if (isLoading) return <Typography>Carregando...</Typography>;
   if (isError || !team) return <Typography>Erro ao carregar TCC</Typography>;
@@ -77,39 +87,13 @@ export default function TccDetailView() {
         </Box>
       </Card>
 
+      {/* Eventos em tabela */}
       <Card sx={{ width: '100%', px: 3, py: 3, my: 3 }}>
         <Box>
           <Typography variant="h6" gutterBottom>
             Próximos eventos
           </Typography>
 
-          {/* Cabeçalho fixo */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              px: 1,
-              py: 1,
-              fontWeight: 'bold',
-              color: 'text.secondary',
-            }}
-          >
-            <Box sx={{ gap: 2, flex: 1 }}>
-              <span>Nome do evento</span>
-            </Box>
-            <Box sx={{ flex: 1, textAlign: 'left' }}>
-              <span>Descrição do evento</span>
-            </Box>
-            <Box sx={{ width: 120, textAlign: 'left', pr: 2 }}>
-              <span>Início</span>
-            </Box>
-            <Box sx={{ width: 120, textAlign: 'left', pr: 2 }}>
-              <span>Fim</span>
-            </Box>
-          </Box>
-          <Divider sx={{ mb: 1 }} />
-
-          {/* Lista de eventos */}
           {loadingEvents ? (
             <Typography>Carregando eventos...</Typography>
           ) : errorEvents ? (
@@ -117,57 +101,94 @@ export default function TccDetailView() {
           ) : events.length === 0 ? (
             <Typography>Nenhum evento encontrado.</Typography>
           ) : (
-            <List disablePadding>
-              {events.map((event, index) => (
-                <Box key={event.id}>
-                  <ListItem
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      px: 1,
-                    }}
-                  >
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="body2">{event.name}</Typography>
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {event.description}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: 120 }}>
-                      <Typography variant="body2">
-                        {new Date(event.startDate).toLocaleDateString('pt-BR')}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ width: 120 }}>
-                      <Typography variant="body2">
-                        {new Date(event.endDate).toLocaleDateString('pt-BR')}
-                      </Typography>
-                    </Box>
-                  </ListItem>
-                  {index < events.length - 1 && <Divider sx={{ my: 1, opacity: 0.2 }} />}
-                </Box>
-              ))}
-            </List>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <strong>Nome</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Descrição</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Início</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Fim</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {events.map((event) => (
+                    <TableRow key={event.id}>
+                      <TableCell>{event.name}</TableCell>
+                      <TableCell>{event.description}</TableCell>
+                      <TableCell>{new Date(event.startDate).toLocaleDateString('pt-BR')}</TableCell>
+                      <TableCell>{new Date(event.endDate).toLocaleDateString('pt-BR')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </Box>
       </Card>
 
+      {/* Materiais de apoio em tabela */}
       <Card sx={{ width: '100%', px: 3, py: 3, my: 3 }}>
         <Box>
           <Typography variant="h6" gutterBottom>
             Materiais de apoio
           </Typography>
-        </Box>
-      </Card>
 
-      <Card sx={{ width: '100%', px: 3, py: 3, my: 3 }}>
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            Linha do tempo
-          </Typography>
+          {loadingMaterials ? (
+            <Typography>Carregando materiais...</Typography>
+          ) : errorMaterials ? (
+            <Typography color="error">Erro ao carregar materiais.</Typography>
+          ) : materials.length === 0 ? (
+            <Typography>Nenhum material encontrado.</Typography>
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <strong>Nome</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Autor</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Link</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Data</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {materials.map((material) => (
+                    <TableRow key={material.id}>
+                      <TableCell>{material.name}</TableCell>
+                      <TableCell>{material.autor}</TableCell>
+                      <TableCell>
+                        <a
+                          href={material.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: '#1976d2' }}
+                        >
+                          Acessar
+                        </a>
+                      </TableCell>
+                      <TableCell>{new Date(material.date).toLocaleDateString('pt-BR')}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </Box>
       </Card>
     </Container>
