@@ -9,6 +9,7 @@ import { eventApi } from './event';
 import { professorPreferenceApi } from './preference-prof';
 import { notificationApi } from './notifications';
 import { requestEntryTccApi } from './requestEntrytcc';
+import { supportMaterialApi } from './materials-support';
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     [professorPreferenceApi.reducerPath]: professorPreferenceApi.reducer, // Adicionado
     [notificationApi.reducerPath]: notificationApi.reducer,
     [requestEntryTccApi.reducerPath]: requestEntryTccApi.reducer,
+    [supportMaterialApi.reducerPath]: supportMaterialApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -31,7 +33,8 @@ export const store = configureStore({
       eventApi.middleware,
       professorPreferenceApi.middleware, // Adicionado
       notificationApi.middleware,
-      requestEntryTccApi.middleware
+      requestEntryTccApi.middleware,
+      supportMaterialApi.middleware
     ),
 });
 
