@@ -4,6 +4,8 @@ import Stack from '@mui/material/Stack';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import { useSelector } from 'react-redux';
+import { useGetTeamByMemberQuery } from 'src/api/team';
 import TeacherFilters from '../teacher-filters';
 import Clustering from './clustering';
 import TeacherCard from '../teacher-card';
@@ -18,6 +20,10 @@ export default function TeacherView() {
 
   const handleOpenFilter = () => setOpenFilter(true);
   const handleCloseFilter = () => setOpenFilter(false);
+
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+
+  const { data: teamMember } = useGetTeamByMemberQuery(currentUser?.id, { skip: !currentUser?.id });
 
   const { data: professorPreferences = [], isLoading, error } = useGetProfessorPreferencesQuery();
 
@@ -37,9 +43,11 @@ export default function TeacherView() {
       return false;
     }
     const temas = teacher.temasInteresse || teacher.interestTopics || [];
-    const temasList = typeof temas === 'string' ? temas.split(',').map(t => t.trim()) : temas;
-    if (filterState.temasTCC.length > 0 &&
-      !filterState.temasTCC.some((tema) => temasList.includes(tema))) {
+    const temasList = typeof temas === 'string' ? temas.split(',').map((t) => t.trim()) : temas;
+    if (
+      filterState.temasTCC.length > 0 &&
+      !filterState.temasTCC.some((tema) => temasList.includes(tema))
+    ) {
       return false;
     }
     return true;
@@ -51,7 +59,7 @@ export default function TeacherView() {
   } else {
     content = filteredTeachers.map((teacher) => (
       <Grid key={teacher.id} xs={12} sm={6} md={3}>
-        <TeacherCard teacher={teacher} />
+        <TeacherCard teacher={teacher} teamMember={teamMember} />
       </Grid>
     ));
   }
@@ -62,7 +70,13 @@ export default function TeacherView() {
         Orientadores
       </Typography>
 
-      <Stack direction="row" alignItems="center" flexWrap="wrap-reverse" justifyContent="flex-start" sx={{ mb: 5 }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        flexWrap="wrap-reverse"
+        justifyContent="flex-start"
+        sx={{ mb: 5 }}
+      >
         <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
           <TeacherFilters
             openFilter={openFilter}

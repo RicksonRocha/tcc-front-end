@@ -57,7 +57,7 @@ export default function MyProfileView(props) {
   } = props;
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   // Sempre que o diálogo for aberto e houver dados, repopula o formulário
   useEffect(() => {
@@ -69,7 +69,7 @@ export default function MyProfileView(props) {
   // Exibe o Snackbar quando preferenceData é atualizada (após salvar ou editar)
   useEffect(() => {
     if (preferenceData) {
-      setSnackbarMessage("Preferências carregadas com sucesso!");
+      setSnackbarMessage('Preferências carregadas com sucesso!');
       setSnackbarOpen(true);
     }
   }, [preferenceData]);
@@ -120,6 +120,13 @@ export default function MyProfileView(props) {
             if (selected.length <= 2) setValue('linguagemProgramacao', selected);
           }}
           renderValue={(selected) => selected.join(', ')}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 250,
+              },
+            },
+          }}
         >
           {linguagens_de_programacao.map((linguagem) => (
             <MenuItem key={linguagem} value={linguagem}>
@@ -148,6 +155,13 @@ export default function MyProfileView(props) {
             if (selected.length <= 2) setValue('bancoDeDados', selected);
           }}
           renderValue={(selected) => selected.join(', ')}
+          MenuProps={{
+            PaperProps: {
+              style: {
+                maxHeight: 250,
+              },
+            },
+          }}
         >
           {bancos_de_dados.map((banco) => (
             <MenuItem key={banco} value={banco}>
@@ -203,6 +217,13 @@ export default function MyProfileView(props) {
                 if (selected.length <= 3) field.onChange(selected);
               }}
               renderValue={(selected) => selected.join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                  },
+                },
+              }}
             >
               {habilidades_pessoais.map((habilidade) => (
                 <MenuItem key={habilidade} value={habilidade}>
@@ -237,6 +258,13 @@ export default function MyProfileView(props) {
                 if (selected.length <= 3) field.onChange(selected);
               }}
               renderValue={(selected) => selected.join(', ')}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 250,
+                  },
+                },
+              }}
             >
               {temas_de_interesse.map((tema) => (
                 <MenuItem key={tema} value={tema}>
@@ -399,17 +427,13 @@ export default function MyProfileView(props) {
                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
                       Nível de Experiência:
                     </Typography>
-                    <Typography variant="body1">
-                      {preferenceData.nivelDeExperiencia}
-                    </Typography>
+                    <Typography variant="body1">{preferenceData.nivelDeExperiencia}</Typography>
                   </Box>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
                       Modalidade de Trabalho:
                     </Typography>
-                    <Typography variant="body1">
-                      {preferenceData.modalidadeTrabalho}
-                    </Typography>
+                    <Typography variant="body1">{preferenceData.modalidadeTrabalho}</Typography>
                   </Box>
                   <Box sx={{ mb: 2 }}>
                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'black' }}>
@@ -439,7 +463,9 @@ export default function MyProfileView(props) {
   // Card inicial (quando não há preferência cadastrada)
   const renderInitialCard = () => (
     <Card sx={{ p: 3, borderRadius: 2, boxShadow: 3 }}>
-      <Stack sx={{ height: '50vh', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+      <Stack
+        sx={{ height: '50vh', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
+      >
         <Typography variant="h5" sx={{ mb: 2 }}>
           Olá! Precisamos preencher suas informações 🙂
         </Typography>

@@ -42,7 +42,14 @@ export default function MyProfileProfessorView(props) {
     handleOpen,
     onSubmit,
     isLoading,
-    formMethods: { handleSubmit, control, formState: { errors }, watch, setValue, reset },
+    formMethods: {
+      handleSubmit,
+      control,
+      formState: { errors },
+      watch,
+      setValue,
+      reset,
+    },
     preferenceData,
   } = props;
 
@@ -81,7 +88,11 @@ export default function MyProfileProfessorView(props) {
                 </MenuItem>
               ))}
             </Select>
-            {errors.shift && <Typography variant="caption" color="error">{errors.shift.message}</Typography>}
+            {errors.shift && (
+              <Typography variant="caption" color="error">
+                {errors.shift.message}
+              </Typography>
+            )}
           </FormControl>
         )}
       />
@@ -99,14 +110,26 @@ export default function MyProfileProfessorView(props) {
                 </MenuItem>
               ))}
             </Select>
-            {errors.availableForAdvising && <Typography variant="caption" color="error">{errors.availableForAdvising.message}</Typography>}
+            {errors.availableForAdvising && (
+              <Typography variant="caption" color="error">
+                {errors.availableForAdvising.message}
+              </Typography>
+            )}
           </FormControl>
         )}
       />
 
-      {[ 
-        { name: 'programmingLanguages', label: 'Linguagens de Programação', options: linguagens_programacao },
-        { name: 'taughtSubjects', label: 'Disciplinas Lecionadas', options: disciplinas_lecionadas },
+      {[
+        {
+          name: 'programmingLanguages',
+          label: 'Linguagens de Programação',
+          options: linguagens_programacao,
+        },
+        {
+          name: 'taughtSubjects',
+          label: 'Disciplinas Lecionadas',
+          options: disciplinas_lecionadas,
+        },
         { name: 'personalSkills', label: 'Habilidades Pessoais', options: habilidades_pessoais },
         { name: 'interestTopics', label: 'Temas de Interesse', options: temas_interesse },
       ].map(({ name, label, options }) => (
@@ -118,6 +141,13 @@ export default function MyProfileProfessorView(props) {
             value={watch(name) || []}
             onChange={(e) => setValue(name, e.target.value)}
             renderValue={(selected) => selected.join(', ')}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 250,
+                },
+              },
+            }}
           >
             {options.map((opt) => (
               <MenuItem key={opt} value={opt}>
@@ -126,7 +156,11 @@ export default function MyProfileProfessorView(props) {
               </MenuItem>
             ))}
           </Select>
-          {errors[name] && <Typography variant="caption" color="error">{errors[name].message}</Typography>}
+          {errors[name] && (
+            <Typography variant="caption" color="error">
+              {errors[name].message}
+            </Typography>
+          )}
         </FormControl>
       ))}
 
@@ -143,7 +177,11 @@ export default function MyProfileProfessorView(props) {
                 </MenuItem>
               ))}
             </Select>
-            {errors.availability && <Typography variant="caption" color="error">{errors.availability.message}</Typography>}
+            {errors.availability && (
+              <Typography variant="caption" color="error">
+                {errors.availability.message}
+              </Typography>
+            )}
           </FormControl>
         )}
       />
@@ -161,7 +199,11 @@ export default function MyProfileProfessorView(props) {
                 </MenuItem>
               ))}
             </Select>
-            {errors.workModality && <Typography variant="caption" color="error">{errors.workModality.message}</Typography>}
+            {errors.workModality && (
+              <Typography variant="caption" color="error">
+                {errors.workModality.message}
+              </Typography>
+            )}
           </FormControl>
         )}
       />
@@ -192,26 +234,38 @@ export default function MyProfileProfessorView(props) {
                   <Typography fontWeight="bold">Turno:</Typography>
                   <Typography>{preferenceData.shift}</Typography>
 
-                  <Typography fontWeight="bold" mt={2}>Disponível para Orientação:</Typography>
+                  <Typography fontWeight="bold" mt={2}>
+                    Disponível para Orientação:
+                  </Typography>
                   <Typography>{preferenceData.availableForAdvising}</Typography>
 
-                  <Typography fontWeight="bold" mt={2}>Linguagens de Programação:</Typography>
+                  <Typography fontWeight="bold" mt={2}>
+                    Linguagens de Programação:
+                  </Typography>
                   <Typography>{(preferenceData.programmingLanguages || []).join(', ')}</Typography>
 
-                  <Typography fontWeight="bold" mt={2}>Disciplinas Lecionadas:</Typography>
+                  <Typography fontWeight="bold" mt={2}>
+                    Disciplinas Lecionadas:
+                  </Typography>
                   <Typography>{(preferenceData.taughtSubjects || []).join(', ')}</Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography fontWeight="bold">Habilidades Pessoais:</Typography>
                   <Typography>{(preferenceData.personalSkills || []).join(', ')}</Typography>
 
-                  <Typography fontWeight="bold" mt={2}>Temas de Interesse:</Typography>
+                  <Typography fontWeight="bold" mt={2}>
+                    Temas de Interesse:
+                  </Typography>
                   <Typography>{(preferenceData.interestTopics || []).join(', ')}</Typography>
 
-                  <Typography fontWeight="bold" mt={2}>Disponibilidade:</Typography>
+                  <Typography fontWeight="bold" mt={2}>
+                    Disponibilidade:
+                  </Typography>
                   <Typography>{preferenceData.availability}</Typography>
 
-                  <Typography fontWeight="bold" mt={2}>Modalidade de Trabalho:</Typography>
+                  <Typography fontWeight="bold" mt={2}>
+                    Modalidade de Trabalho:
+                  </Typography>
                   <Typography>{preferenceData.workModality}</Typography>
                 </Grid>
               </Grid>
@@ -224,13 +278,13 @@ export default function MyProfileProfessorView(props) {
 
   const renderInitialCard = () => (
     <Card sx={{ p: 3, borderRadius: 2, boxShadow: 3 }}>
-      <Stack sx={{ height: '50vh', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+      <Stack
+        sx={{ height: '50vh', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
+      >
         <Typography variant="h5" sx={{ mb: 2 }}>
           Olá! Precisamos preencher suas informações 🙂
         </Typography>
-        <Typography sx={{ mb: 2 }}>
-          Preencha com atenção para configurar seu perfil!
-        </Typography>
+        <Typography sx={{ mb: 2 }}>Preencha com atenção para configurar seu perfil!</Typography>
         <Button variant="contained" onClick={handleOpen}>
           Iniciar questionário
         </Button>
@@ -247,9 +301,13 @@ export default function MyProfileProfessorView(props) {
       <Container sx={{ mt: 4 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Stack>
-            <Typography variant="h4" mb={1}>Meu Perfil</Typography>
+            <Typography variant="h4" mb={1}>
+              Meu Perfil
+            </Typography>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link underline="hover" color="text.primary" href="/">Início</Link>
+              <Link underline="hover" color="text.primary" href="/">
+                Início
+              </Link>
               <Typography color="inherit">Meu Perfil</Typography>
             </Breadcrumbs>
           </Stack>
@@ -283,7 +341,11 @@ export default function MyProfileProfessorView(props) {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%', textAlign: 'center' }}>
+        <Alert
+          onClose={handleSnackbarClose}
+          severity="success"
+          sx={{ width: '100%', textAlign: 'center' }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

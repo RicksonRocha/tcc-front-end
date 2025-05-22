@@ -10,11 +10,42 @@ import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
 import { primary } from 'src/theme/palette';
 import { useSelector } from 'react-redux';
+import { useCreateRequestEntryMutation } from 'src/api/requestEntryTcc';
+import { useGetTeamByMemberQuery } from 'src/api/team';
+import { useCreateNotificationMutation } from 'src/api/notifications';
 
-export default function TeacherCard({ teacher }) {
+export default function TeacherCard({ teacher, teamMember }) {
   const [successMessage, setSuccessMessage] = useState('');
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
+
+  const [createRequestEntry] = useCreateRequestEntryMutation();
+  const [createNotification] = useCreateNotificationMutation();
+
+  const handleClick = async () => {
+    const notificationData = {
+      senderId: currentUser.id,
+      nomeRemetente: currentUser.name,
+      receiverId: teacher.user_id,
+      nomeDestinatario: teacher.userName || 'Responsável pela equipe',
+      message: `${currentUser.name} gostaria que sua equipe fosse orientada por você! Confira página de Visão Geral.`,
+    };
+
+    const requestEntryData = {
+      tccid: teamMember.id,
+      requesterId: currentUser.id,
+      requesterName: currentUser.name,
+      ownerId: teacher.user_id,
+      ownerEmail: teacher.userEmail || '',
+    };
+
+    try {
+      await createNotification(notificationData).unwrap();
+      await createRequestEntry(requestEntryData).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   if (!teacher) {
     return (
@@ -38,10 +69,9 @@ export default function TeacherCard({ teacher }) {
   const disponibilidade = teacher.availability || teacher.disponibilidade || 'Não informado';
   const modalidade = teacher.workModality || teacher.modalidadeTrabalho || 'Não informado';
 
-  const temas =
-    Array.isArray(teacher.interestTopics || teacher.temasInteresse)
-      ? (teacher.interestTopics || teacher.temasInteresse).join(', ')
-      : 'Não informado';
+  const temas = Array.isArray(teacher.interestTopics || teacher.temasInteresse)
+    ? (teacher.interestTopics || teacher.temasInteresse).join(', ')
+    : 'Não informado';
 
   return (
     <Card>
@@ -80,16 +110,28 @@ export default function TeacherCard({ teacher }) {
 
       <Stack spacing={1} sx={{ p: 2, textAlign: 'center' }}>
         <Typography variant="body2">
-          Turno: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>{turno}</Box>
+          Turno:{' '}
+          <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+            {turno}
+          </Box>
         </Typography>
         <Typography variant="body2">
-          Disponibilidade: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>{disponibilidade}</Box>
+          Disponibilidade:{' '}
+          <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+            {disponibilidade}
+          </Box>
         </Typography>
         <Typography variant="body2">
-          Temas: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>{temas}</Box>
+          Temas:{' '}
+          <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+            {temas}
+          </Box>
         </Typography>
         <Typography variant="body2">
-          Modalidade: <Box component="span" sx={{ color: primary, fontSize: '14px' }}>{modalidade}</Box>
+          Modalidade:{' '}
+          <Box component="span" sx={{ color: primary, fontSize: '14px' }}>
+            {modalidade}
+          </Box>
         </Typography>
       </Stack>
 
@@ -97,11 +139,8 @@ export default function TeacherCard({ teacher }) {
       <Stack spacing={1} sx={{ p: 2, textAlign: 'center' }}>
         <Button
           variant="contained"
-          disabled={!isAvailable}
-          onClick={() => {
-            setSuccessMessage('Solicitação de orientação enviada!');
-            setTimeout(() => setSuccessMessage(''), 1000);
-          }}
+          disabled={!isAvailable || !teamMember}
+          onClick={handleClick}
           sx={{
             backgroundColor: '#EDEFF1',
             color: '#212B36',
@@ -110,7 +149,7 @@ export default function TeacherCard({ teacher }) {
             },
           }}
         >
-          Solicitar Orientação
+          Solicitar orientação
         </Button>
         {successMessage && (
           <Alert severity="success" sx={{ mt: 2 }}>

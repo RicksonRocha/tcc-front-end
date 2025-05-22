@@ -12,6 +12,11 @@ export const teamApi = createApi({
       providesTags: ['Teams'],
     }),
 
+    getTeamByMember: build.query({
+      query: (id) => `/university/tcc/by-member/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Teams', id }],
+    }),
+
     // Endpoint para obter uma equipe específica por ID
     getTeamById: build.query({
       query: (id) => `/university/tcc/${id}`,
@@ -75,5 +80,5 @@ export const {
   useUpdateTeamMutation,
   useDeleteTeamMutation,
   useAddMemberMutation,
-  useGetUserTeamStatusQuery,
+  useGetUserTeamStatusQuery, useGetTeamByMemberQuery
 } = teamApi;

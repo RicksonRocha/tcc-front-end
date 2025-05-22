@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { useGetTeamByidTeacherQuery } from 'src/api/team';
 import { useRouter } from 'src/routes/hooks';
 import { useNavigate } from 'react-router-dom';
+import AppRequestsCard from '../overview/app-requests-card';
 
 export default function TeacherInitView() {
   const user = useSelector((state) => state.auth.auth.user);
@@ -47,7 +48,6 @@ export default function TeacherInitView() {
           Equipes que você está gerenciando:
         </Typography>
       </Stack>
-
       <Card sx={{ width: '100%', px: 2, py: 2 }}>
         {(() => {
           if (isLoading) {
@@ -104,7 +104,9 @@ export default function TeacherInitView() {
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
                           <ListItemAvatar>
-                            <Avatar sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 600 }}>
+                            <Avatar
+                              sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 600 }}
+                            >
                               {tcc?.name?.trim() ? tcc.name.trim().charAt(0).toUpperCase() : '?'}
                             </Avatar>
                           </ListItemAvatar>
@@ -137,6 +139,7 @@ export default function TeacherInitView() {
           );
         })()}
       </Card>
+      <AppRequestsCard />
     </Container>
   );
 }

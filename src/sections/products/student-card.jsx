@@ -10,6 +10,8 @@ import Divider from '@mui/material/Divider';
 import { primary } from 'src/theme/palette';
 import { useGetTeamsQuery } from 'src/api/team';
 import { useSelector } from 'react-redux';
+import { useCreateNotificationMutation } from 'src/api/notifications';
+import { useState } from 'react';
 
 export default function StudentCard({ student }) {
   const { data: teams, isLoading: isTeamsLoading } = useGetTeamsQuery();
@@ -17,6 +19,33 @@ export default function StudentCard({ student }) {
   // Obtém os dados do usuário logado via Redux
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const [createNotification] = useCreateNotificationMutation();
+
+  const handleConect = async () => {
+    const notificationData = {
+      senderId: currentUser.id,
+      nomeRemetente: currentUser.name,
+      receiverId: student.user_id,
+      nomeDestinatario: student.userName || 'Responsável pela equipe',
+      message: `${currentUser.name} gostaria de se conectar a você!`,
+    };
+
+    try {
+      await createNotification(notificationData).unwrap();
+      setSuccessMessage('Mensagem de conexão foi enviada!');
+    } catch (error) {
+      setErrorMessage('Erro ao enviar mensagem de conexão.');
+      console.error(error);
+    }
+
+    setTimeout(() => {
+      setSuccessMessage('');
+      setErrorMessage('');
+    }, 3000);
+  };
 
   if (!student) {
     return (
@@ -30,9 +59,10 @@ export default function StudentCard({ student }) {
 
   const displayedName = student.userName || `Aluno: ${student.user_id}`;
 
-  const isInTeam = teams?.some(team =>
-    team.createdById === student.user_id ||
-    team.members?.some(member => member.userId === student.user_id)
+  const isInTeam = teams?.some(
+    (team) =>
+      team.createdById === student.user_id ||
+      team.members?.some((member) => member.userId === student.user_id)
   );
 
   let teamStatus = 'Sem equipe';
@@ -97,33 +127,31 @@ export default function StudentCard({ student }) {
     </Box>
   );
 
-  const renderLinguagens =
-    student.linguagemProgramacao && student.linguagemProgramacao.length > 0 && (
+  const renderLinguagens = student.linguagemProgramacao &&
+    student.linguagemProgramacao.length > 0 && (
       <Typography variant="body2" sx={{ textAlign: 'center' }}>
         Linguagens: {student.linguagemProgramacao.join(', ')}
       </Typography>
     );
 
-  const renderHabilidades =
-    student.habilidadesPessoais && student.habilidadesPessoais.length > 0 && (
+  const renderHabilidades = student.habilidadesPessoais &&
+    student.habilidadesPessoais.length > 0 && (
       <Typography variant="body2" sx={{ textAlign: 'center' }}>
         Habilidades: {student.habilidadesPessoais.join(', ')}
       </Typography>
     );
 
-  const renderTemas =
-    student.temasDeInteresse && student.temasDeInteresse.length > 0 && (
-      <Typography variant="body2" sx={{ textAlign: 'center' }}>
-        Temas: {student.temasDeInteresse.join(', ')}
-      </Typography>
-    );
+  const renderTemas = student.temasDeInteresse && student.temasDeInteresse.length > 0 && (
+    <Typography variant="body2" sx={{ textAlign: 'center' }}>
+      Temas: {student.temasDeInteresse.join(', ')}
+    </Typography>
+  );
 
-  const renderModalidade =
-    student.modalidadeTrabalho && (
-      <Typography variant="body2" sx={{ textAlign: 'center' }}>
-        Modalidade: {student.modalidadeTrabalho}
-      </Typography>
-    );
+  const renderModalidade = student.modalidadeTrabalho && (
+    <Typography variant="body2" sx={{ textAlign: 'center' }}>
+      Modalidade: {student.modalidadeTrabalho}
+    </Typography>
+  );
 
   return (
     <Card>
@@ -141,7 +169,7 @@ export default function StudentCard({ student }) {
         {renderModalidade}
         <Button
           variant="contained"
-          disabled={isProfessor}  // Desabilita se o usuário for professor
+          disabled={isProfessor} // Desabilita se o usuário for professor
           sx={{
             backgroundColor: '#EDEFF1',
             color: '#212B36',
@@ -149,9 +177,22 @@ export default function StudentCard({ student }) {
               backgroundColor: '#DDE0E2',
             },
           }}
+          onClick={handleConect}
         >
           Conectar
         </Button>
+
+        {successMessage && (
+          <Alert severity="success" sx={{ mt: 2 }}>
+            {successMessage}
+          </Alert>
+        )}
+
+        {errorMessage && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
       </Stack>
     </Card>
   );
@@ -169,13 +210,3 @@ StudentCard.propTypes = {
     user_id: PropTypes.number,
   }),
 };
-
-
-
-
-
-
-
-
-
-
