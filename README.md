@@ -1,5 +1,5 @@
 
-# TCC Front-End
+## TCC Front-End
 
 Este repositório contém a interface web do Sistema de Formação e Gestão de Grupos de TCC, desenvolvido como parte do Trabalho de Conclusão de Curso de Tecnologia em Análise e Desenvolvimento de Sistemas - UFPR 2025/01.
 
