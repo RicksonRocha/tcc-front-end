@@ -1,46 +1,57 @@
-## Minimal [(Free version)](https://minimal-kit-react.vercel.app/)
 
-![license](https://img.shields.io/badge/license-MIT-blue.svg)
+## TCC Front-End
 
-> Free React Admin Dashboard made with Material-UI components and React.
+Este repositório contém a interface web do Sistema de Formação e Gestão de Grupos de TCC, desenvolvido como parte do Trabalho de Conclusão de Curso de Tecnologia em Análise e Desenvolvimento de Sistemas - UFPR 2025/01.
 
-![preview](public/assets/preview.jpg)
+Este serviço permite que o usuário navegue por todas funcionalidades do sistema sendo Aluno, Professor ou Admin.
 
-## Demo
+## Tecnologias Utilizadas
 
-- [Dashboard Page](https://minimal-kit-react.vercel.app/)
-- [Users Page](https://minimal-kit-react.vercel.app/user)
-- [Products Page](https://minimal-kit-react.vercel.app/products)
-- [Blog Page](https://minimal-kit-react.vercel.app/blog)
-- [Login Page](https://minimal-kit-react.vercel.app/login)
-- [Not Found Page](https://minimal-kit-react.vercel.app/404)
+- React – Biblioteca principal para construção da interface
+- Vite – Empacotador de módulos e servidor de desenvolvimento
+- Material UI (MUI v5) – Biblioteca de componentes React baseada no Material Design
+- React Hook Form + Yup – Gerenciamento e validação de formulários
+- Axios – Requisições HTTP
+- React Router – Gerenciamento de rotas
+- Zustand – Gerenciamento de estado local
 
-## Quick start
+## Estrutura do Projeto
 
-- [Download from Github](https://github.com/minimal-ui-kit/material-kit-react/archive/refs/heads/main.zip) or clone the repo : `git clone https://github.com/minimal-ui-kit/material-kit-react.git`
-- Recommended `Node.js v18.x`.
-- **Install:** `yarn install`
-- **Start:** `yarn dev`
-- **Build:** `yarn build`
+- src/api/ – Módulos de integração com os microserviços via API Gateway
+- src/components/ – Componentes reutilizáveis
+- src/constants/ – Constantes do sistema
+- src/hooks/ – Hooks personalizados
+- src/layouts/ – Estrutura de layout da aplicação
+- src/pages/ – Páginas principais da aplicação
+- src/routes/ – Definição das rotas da aplicação
+- src/sections/ – Funcionalidades agrupadas por seção (login, cadastro, preferências, etc.)
+- src/theme/ – Definições de tema e estilos globais
+- src/utils/ – Utilitários e funções auxiliares
 
-## Upgrade to PRO Version
+## Requisitos
 
-| Minimal Free     | [Minimal Pro](https://material-ui.com/store/items/minimal-dashboard/) |
-| :--------------- | :-------------------------------------------------------------------- |
-| **6** Demo Pages | **70+** Demo Pages                                                    |
-| -                | Authentication with **Amplify**, **Auth0**, **JWT** and **Firebase**  |
-| -                | [+More components](https://minimals.cc/components)                    |
-| -                | Dark & light mode                                                     |
-| -                | Next.js version                                                       |
-| -                | TypeScript version (Standard Plus and Extended license)               |
-| -                | Design Figma File (Standard Plus and Extended license)                |
-| -                | Complete Users Flows                                                  |
-| -                | Learn more: [Package & License](https://docs.minimals.cc/package)     |
+Certifique-se de ter as seguintes ferramentas instaladas:
 
-## License
+- Node.js 18 ou superior
+- Yarn (ou npm, se preferir)
 
-Distributed under the MIT License. See [LICENSE](https://github.com/minimal-ui-kit/minimal.free/blob/main/LICENSE.md) for more information.
+## Instalação e Execução
 
-## Contact us
+1. Clonar o repositório:
 
-Email: support@minimals.cc
+```
+git clone https://github.com/seu-usuario/tcc-front-end.git
+cd tcc-front-end
+```
+
+2. Instalar as dependências:
+
+```
+yarn
+```
+
+3. Iniciar o servidor de desenvolvimento:
+
+```
+yarn dev
+```
