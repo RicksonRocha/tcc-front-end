@@ -117,7 +117,7 @@ export default function LoginView() {
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card sx={{ p: 5, width: 1, maxWidth: 420 }}>
           <Typography variant="h5" align="center">
-            Sistema de Formação e Gestão de Grupos de TCC
+            ConectaTCC - Sistema de Formação e Gestão de Grupos de TCC
           </Typography>
           <Typography variant="body2" align="center" sx={{ mt: 2, mb: 5 }}>
             Não possui uma conta?
