@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import Link from '@mui/material/Link';
 import { alpha, useTheme } from '@mui/material/styles';
 import { bgGradient } from 'src/theme/css';
 import { useRouter } from 'src/routes/hooks/use-router';
@@ -14,6 +13,7 @@ import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { updatePassword } from 'src/features/auth/auth-actions';
 import { useSearchParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack'; 
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ export default function ResetPasswordRedefinationView() {
   const token = searchParams.get('token'); // Obtém o valor do parâmetro "token" na URL
   const dispatch = useDispatch();
   const { push } = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
 
   // Esquema de validação com Yup
   const schema = Yup.object().shape({
@@ -50,9 +51,8 @@ export default function ResetPasswordRedefinationView() {
   });
 
   const onSubmit = async (data) => {
-    console.log('Formulário enviado:', data);
     if (!token) {
-      alert('Token não encontrado na URL.');
+      enqueueSnackbar('Token não encontrado na URL.', { variant: 'error' });
       return;
     }
     try {
@@ -66,14 +66,13 @@ export default function ResetPasswordRedefinationView() {
 
       if (updatePassword.fulfilled.match(result)) {
         reset();
-        alert('Senha redefinida com sucesso!');
-        push('/login');
+        enqueueSnackbar('Senha redefinida com sucesso!', { variant: 'success' });
+        setTimeout(() => push('/login'), 2500);
       } else {
-        alert(result.payload || 'Erro ao redefinir senha.');
+        enqueueSnackbar(result.payload || 'Erro ao redefinir senha.', { variant: 'error' });
       }
     } catch (e) {
-      console.log(e);
-      alert('Houve um erro ao redefinir a senha.');
+      enqueueSnackbar('Houve um erro ao redefinir a senha.', { variant: 'error' });
     }
   };
 
@@ -146,3 +145,4 @@ export default function ResetPasswordRedefinationView() {
     </Box>
   );
 }
+
