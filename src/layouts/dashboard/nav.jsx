@@ -52,7 +52,7 @@ export default function Nav({ openNav, onCloseNav }) {
       }}
     >
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">UFPR | TADS</Typography>
+        <Typography variant="subtitle2">ConectaTCC | UFPR | TADS</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Sistema de Formação e Gestão de Grupos de TCC

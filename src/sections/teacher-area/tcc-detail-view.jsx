@@ -37,6 +37,111 @@ export default function TccDetailView() {
   if (isLoading) return <Typography>Carregando...</Typography>;
   if (isError || !team) return <Typography>Erro ao carregar TCC</Typography>;
 
+  // Função auxiliar para renderizar a tabela de eventos
+  function renderEventsTable() {
+    if (loadingEvents) {
+      return <Typography>Carregando eventos...</Typography>;
+    }
+    if (errorEvents) {
+      return <Typography color="error">Erro ao carregar eventos.</Typography>;
+    }
+    if (events.length === 0) {
+      return <Typography>Nenhum evento encontrado.</Typography>;
+    }
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <strong>Nome</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Descrição</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Início</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Fim</strong>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {events.map((event) => (
+              <TableRow key={event.id}>
+                <TableCell>{event.name}</TableCell>
+                <TableCell>{event.description}</TableCell>
+                <TableCell>
+                  {new Date(event.startDate).toLocaleDateString('pt-BR')}
+                </TableCell>
+                <TableCell>
+                  {new Date(event.endDate).toLocaleDateString('pt-BR')}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
+
+  // Função auxiliar para renderizar a tabela de materiais
+  function renderMaterialsTable() {
+    if (loadingMaterials) {
+      return <Typography>Carregando materiais...</Typography>;
+    }
+    if (errorMaterials) {
+      return <Typography color="error">Erro ao carregar materiais.</Typography>;
+    }
+    if (materials.length === 0) {
+      return <Typography>Nenhum material encontrado.</Typography>;
+    }
+    return (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <strong>Nome</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Autor</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Link</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Data</strong>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {materials.map((material) => (
+              <TableRow key={material.id}>
+                <TableCell>{material.name}</TableCell>
+                <TableCell>{material.autor}</TableCell>
+                <TableCell>
+                  <a
+                    href={material.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#1976d2' }}
+                  >
+                    Acessar
+                  </a>
+                </TableCell>
+                <TableCell>
+                  {new Date(material.date).toLocaleDateString('pt-BR')}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
+
   return (
     <Container sx={{ height: 'auto', py: 4 }}>
       <Stack direction="column" alignItems="start" mb={3}>
@@ -83,7 +188,9 @@ export default function TccDetailView() {
           <Typography variant="h6" gutterBottom>
             Status
           </Typography>
-          <Typography variant="body1">{team.isActive ? 'Completa' : 'Aberta'}</Typography>
+          <Typography variant="body1">
+            {team.isActive ? 'Completa' : 'Aberta'}
+          </Typography>
         </Box>
       </Card>
 
@@ -93,45 +200,7 @@ export default function TccDetailView() {
           <Typography variant="h6" gutterBottom>
             Próximos eventos
           </Typography>
-
-          {loadingEvents ? (
-            <Typography>Carregando eventos...</Typography>
-          ) : errorEvents ? (
-            <Typography color="error">Erro ao carregar eventos.</Typography>
-          ) : events.length === 0 ? (
-            <Typography>Nenhum evento encontrado.</Typography>
-          ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <strong>Nome</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Descrição</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Início</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Fim</strong>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {events.map((event) => (
-                    <TableRow key={event.id}>
-                      <TableCell>{event.name}</TableCell>
-                      <TableCell>{event.description}</TableCell>
-                      <TableCell>{new Date(event.startDate).toLocaleDateString('pt-BR')}</TableCell>
-                      <TableCell>{new Date(event.endDate).toLocaleDateString('pt-BR')}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+          {renderEventsTable()}
         </Box>
       </Card>
 
@@ -141,54 +210,7 @@ export default function TccDetailView() {
           <Typography variant="h6" gutterBottom>
             Materiais de apoio
           </Typography>
-
-          {loadingMaterials ? (
-            <Typography>Carregando materiais...</Typography>
-          ) : errorMaterials ? (
-            <Typography color="error">Erro ao carregar materiais.</Typography>
-          ) : materials.length === 0 ? (
-            <Typography>Nenhum material encontrado.</Typography>
-          ) : (
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <strong>Nome</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Autor</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Link</strong>
-                    </TableCell>
-                    <TableCell>
-                      <strong>Data</strong>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {materials.map((material) => (
-                    <TableRow key={material.id}>
-                      <TableCell>{material.name}</TableCell>
-                      <TableCell>{material.autor}</TableCell>
-                      <TableCell>
-                        <a
-                          href={material.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#1976d2' }}
-                        >
-                          Acessar
-                        </a>
-                      </TableCell>
-                      <TableCell>{new Date(material.date).toLocaleDateString('pt-BR')}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+          {renderMaterialsTable()}
         </Box>
       </Card>
     </Container>

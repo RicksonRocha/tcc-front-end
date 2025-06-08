@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -10,10 +9,9 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { bgGradient } from 'src/theme/css';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import schemaResetPassword from 'src/hooks/form/reset-password';
 import { useDispatch } from 'react-redux';
 import { resetPassword } from 'src/features/auth/auth-actions';
+import { useSnackbar } from 'notistack'; 
 
 // ----------------------------------------------------------------------
 
@@ -21,6 +19,7 @@ export default function ResetPasswordView() {
   const theme = useTheme();
   const { push } = useRouter();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar(); 
 
   const defaultValues = {
     email: '',
@@ -36,7 +35,6 @@ export default function ResetPasswordView() {
   });
 
   const onSubmit = async (data) => {
-    console.log('Formulário enviado:', data);
     try {
       // Dispatch do thunk, enviando o email
       const result = await dispatch(
@@ -46,16 +44,14 @@ export default function ResetPasswordView() {
       );
 
       if (resetPassword.fulfilled.match(result)) {
-        // Se for sucesso, exibe a mensagem e reseta o formulário
+        enqueueSnackbar('Redefinição de senha enviada com sucesso. Acesse seu e-mail!', { variant: 'success' });
         reset();
-        alert('Solicitação de redefinição de senha enviada com sucesso!');
+        setTimeout(() => push('/login'), 3000);
       } else {
-        // Se houver erro, exibe a mensagem de erro
-        alert(result.payload || 'Erro ao solicitar redefinição de senha.');
+        enqueueSnackbar(result.payload || 'Erro ao solicitar redefinição de senha.', { variant: 'error' });
       }
     } catch (e) {
-      console.log(e);
-      alert('Houve um erro ao solicitar redefinição de senha.');
+      enqueueSnackbar('Houve um erro ao solicitar redefinição de senha.', { variant: 'error' });
     }
   };
 
@@ -122,3 +118,4 @@ export default function ResetPasswordView() {
     </Box>
   );
 }
+
