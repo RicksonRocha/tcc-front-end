@@ -11,6 +11,10 @@ export const teamApi = createApi({
       query: () => '/university/tcc',
       providesTags: ['Teams'],
     }),
+    getTeamsCount: build.query({
+      query: () => '/university/tcc/count',
+      providesTags: ['Teams'],
+    }),
 
     getTeamByMember: build.query({
       query: (id) => `/university/tcc/by-member/${id}`,
@@ -73,6 +77,7 @@ export const teamApi = createApi({
 });
 
 export const {
+  useGetTeamsCountQuery,
   useGetTeamsQuery,
   useGetTeamByIdQuery,
   useGetTeamByidTeacherQuery,

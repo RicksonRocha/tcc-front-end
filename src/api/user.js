@@ -16,6 +16,10 @@ export const userApi = createApi({
       query: () => '/auth/users',
     }),
 
+    getUsersCountByRole: build.query({
+      query: () => '/auth/users/count-by-role',
+    }),
+
     // Endpoint para listar estudantes
     getStudents: build.query({
       query: () => '/auth/users/students',
@@ -50,6 +54,7 @@ export const userApi = createApi({
 });
 
 export const {
+  useGetUsersCountByRoleQuery,
   useGetUserQuery,
   useGetUsersQuery,
   useGetStudentsQuery,

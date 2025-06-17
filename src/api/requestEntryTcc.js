@@ -31,6 +31,14 @@ export const requestEntryTccApi = createApi({
       invalidatesTags: ['RequestEntries'],
     }),
 
+    acceptRequestEntryTeacher: build.mutation({
+      query: (id) => ({
+        url: `/university/request-entry/${id}/accept/teacher`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['RequestEntries'],
+    }),
+
     // Rejeitar solicitação
     rejectRequestEntry: build.mutation({
       query: (id) => ({
@@ -56,5 +64,5 @@ export const {
   useGetRequestsByOwnerQuery,
   useAcceptRequestEntryMutation,
   useRejectRequestEntryMutation,
-  useDeleteRequestEntryMutation,
+  useDeleteRequestEntryMutation, useLazyGetRequestsByOwnerQuery, useAcceptRequestEntryTeacherMutation,
 } = requestEntryTccApi;

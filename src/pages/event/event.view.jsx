@@ -26,6 +26,7 @@ import Iconify from 'src/components/iconify';
 
 import { DateTimePicker } from '@mui/x-date-pickers';
 import EventsCalendar from 'src/sections/events/events-calendar';
+import Label from 'src/components/label';
 
 export default function EventsView(props) {
   const {
@@ -167,19 +168,23 @@ export default function EventsView(props) {
                 />
               </Grid>
 
-              <Grid item xs={12} md={6}>
-                <Select
-                  fullWidth
-                  label="Ativo"
-                  name="isActive"
-                  {...register('isActive')}
-                  value={watch('isActive')}
-                  error={!!errors?.isActive}
-                  helperText={errors.isActive?.message}
-                >
-                  <MenuItem value>Sim</MenuItem>
-                  <MenuItem value={false}>Não</MenuItem>
-                </Select>
+              <Grid item xs={12} md={6} container alignItems="center">
+                <Grid item xs={6} md={2}>
+                  Ativo?
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Select
+                    fullWidth
+                    name="isActive"
+                    {...register('isActive')}
+                    value={watch('isActive')}
+                    error={!!errors?.isActive}
+                    helperText={errors.isActive?.message}
+                  >
+                    <MenuItem value>Sim</MenuItem>
+                    <MenuItem value={false}>Não</MenuItem>
+                  </Select>
+                </Grid>
               </Grid>
             </Grid>
           </DialogContent>

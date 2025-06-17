@@ -136,12 +136,6 @@ export default function NotificationsPopover() {
         </Scrollbar>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple>
-            Ver mais
-          </Button>
-        </Box>
       </Popover>
     </>
   );

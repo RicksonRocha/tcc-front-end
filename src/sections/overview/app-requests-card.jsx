@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import { useCreateNotificationMutation } from 'src/api/notifications';
@@ -17,6 +17,8 @@ import {
   useGetRequestsByOwnerQuery,
   useAcceptRequestEntryMutation,
   useDeleteRequestEntryMutation,
+  useLazyGetRequestsByOwnerQuery,
+  useAcceptRequestEntryTeacherMutation,
 } from 'src/api/requestEntryTcc';
 
 import { useGetTeamsQuery } from 'src/api/team';
@@ -24,50 +26,59 @@ import { useGetTeamsQuery } from 'src/api/team';
 export default function AppRequestsCard() {
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const { enqueueSnackbar } = useSnackbar();
+  const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
 
   const { data: allTeams = [] } = useGetTeamsQuery();
 
-  const {
-    data: requests = [],
-    isLoading,
-    isError,
-  } = useGetRequestsByOwnerQuery(currentUser?.id, {
-    skip: !currentUser,
-  });
+  const [useLazyGetRequestByOnwer, { data: requests = [], isLoading, isError }] =
+    useLazyGetRequestsByOwnerQuery();
 
   const [acceptRequestEntry] = useAcceptRequestEntryMutation();
+  const [acceptRequestEntryTeacher] = useAcceptRequestEntryTeacherMutation();
   const [deleteRequestEntry] = useDeleteRequestEntryMutation();
   const [createNotification] = useCreateNotificationMutation();
 
   const handleAccept = async (request) => {
     try {
-      await acceptRequestEntry(request.id).unwrap(); // isso já remove o request
+      if (isProfessor) {
+        await acceptRequestEntryTeacher(request.id).unwrap();
+      } else {
+        await acceptRequestEntry(request.id).unwrap(); // isso já remove o request
+      }
       enqueueSnackbar('Solicitação aceita com sucesso.', { variant: 'success' });
     } catch (error) {
       enqueueSnackbar('Erro ao aceitar solicitação.', { variant: 'error' });
     }
-  }
-  
+  };
+
   const handleReject = async (request) => {
     try {
       const tcc = allTeams.find((team) => team.id === request.tccid);
       const tccName = tcc?.name || 'desconhecida';
-  
+
       await createNotification({
         senderId: currentUser.id,
         nomeRemetente: currentUser.name,
         receiverId: request.requesterId,
         nomeDestinatario: request.requesterName,
-        message: `Sua solicitação de entrada na equipe "${tccName}" foi recusada.`,
+        message: `Sua solicitação na equipe "${tccName}" foi recusada por ${currentUser.name}`,
       }).unwrap();
-  
+
       await deleteRequestEntry(request.id).unwrap();
-  
+
       enqueueSnackbar('Solicitação recusada com sucesso.', { variant: 'success' });
     } catch (error) {
       enqueueSnackbar('Erro ao recusar solicitação.', { variant: 'error' });
     }
   };
+
+  const getLazy = useLazyGetRequestByOnwer;
+
+  useEffect(() => {
+    if (currentUser) {
+      getLazy(currentUser.id);
+    }
+  }, [currentUser, getLazy]);
 
   if (isLoading) {
     return <CircularProgress />;
@@ -83,7 +94,7 @@ export default function AppRequestsCard() {
 
   return (
     <Card sx={{ mt: 3 }}>
-      <CardContent >
+      <CardContent>
         <Typography variant="h6" gutterBottom>
           Solicitações de entrada em Equipe
         </Typography>
@@ -101,7 +112,7 @@ export default function AppRequestsCard() {
                     <Box component="span" fontWeight="bold">
                       {req.requesterName}
                     </Box>{' '}
-                    deseja entrar na sua equipe!
+                    deseja fazer parte da sua equipe ou quer que você se junte à ela!
                   </Typography>
 
                   <Stack direction="row" spacing={1}>
@@ -121,4 +132,3 @@ export default function AppRequestsCard() {
     </Card>
   );
 }
-

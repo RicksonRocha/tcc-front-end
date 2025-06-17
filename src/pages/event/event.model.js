@@ -7,7 +7,7 @@ import {
 } from 'src/api/event';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useGetTeamsQuery } from 'src/api/team';
+import { useGetTeamByMemberQuery, useGetTeamsQuery } from 'src/api/team';
 import { useSelector } from 'react-redux';
 import { schema } from './event.schema';
 
@@ -19,10 +19,8 @@ export const useEventModel = () => {
   const [createEvent, { isLoading: creating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
   const [deleteEvent, { isLoading: deleting }] = useDeleteEventMutation();
-  const { data: teams = [], isLoading, isError } = useGetTeamsQuery();
   
-    // Filtra para encontrar a equipe que contenha o nome do usuário
-  const myTeam = teams.find((team) => team.members?.some((member) => member?.userId === user?.id));
+ const { data: myTeam } = useGetTeamByMemberQuery(user?.id, { skip: !user?.id });
   
   const { data, isFetching, refetch } = useGetEventsQuery(myTeam?.id, { skip: myTeam === undefined});
 

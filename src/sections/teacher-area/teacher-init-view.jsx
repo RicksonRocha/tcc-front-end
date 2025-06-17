@@ -17,6 +17,7 @@ import { useGetTeamByidTeacherQuery } from 'src/api/team';
 import { useRouter } from 'src/routes/hooks';
 import { useNavigate } from 'react-router-dom';
 import AppRequestsCard from '../overview/app-requests-card';
+import NotificationRequestsCard from '../overview/notification-requests-card';
 
 export default function TeacherInitView() {
   const user = useSelector((state) => state.auth.auth.user);

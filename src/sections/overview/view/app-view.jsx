@@ -10,6 +10,7 @@ import AppOrderTimeline from '../app-order-timeline';
 import AppCalendar from '../app-calendar';
 import AppTeam from '../app-team';
 import AppRequestsCard from '../app-requests-card';
+import NotificationRequestsCard from '../notification-requests-card';
 
 export default function AppView() {
   // Obtém os dados do usuário logado
@@ -83,10 +84,6 @@ export default function AppView() {
 
         <Grid item xs={12}>
           <AppRequestsCard />
-        </Grid>
-
-        <Grid item xs={12}>
-          <AppCalendar />
         </Grid>
       </Grid>
     </Container>

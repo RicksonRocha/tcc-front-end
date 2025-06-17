@@ -12,15 +12,15 @@ import { useGetTeamsQuery } from 'src/api/team';
 import { useSelector } from 'react-redux';
 import { useCreateNotificationMutation } from 'src/api/notifications';
 import { useState } from 'react';
+import { useCreateRequestEntryMutation } from 'src/api/requestEntryTcc';
+import { useSnackbar } from 'notistack';
 
 export default function StudentCard({ student }) {
   const { data: teams, isLoading: isTeamsLoading } = useGetTeamsQuery();
+  const { enqueueSnackbar } = useSnackbar();
 
-  // Obtém os dados do usuário logado via Redux
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
 
   const [createNotification] = useCreateNotificationMutation();
 
@@ -35,16 +35,11 @@ export default function StudentCard({ student }) {
 
     try {
       await createNotification(notificationData).unwrap();
-      setSuccessMessage('Mensagem de conexão foi enviada!');
+      enqueueSnackbar('Mensagem de conexão foi enviada!', { variant: 'success' });
     } catch (error) {
-      setErrorMessage('Erro ao enviar mensagem de conexão.');
+      enqueueSnackbar('Erro ao enviar mensagem de conexão.', { variant: 'error' });
       console.error(error);
     }
-
-    setTimeout(() => {
-      setSuccessMessage('');
-      setErrorMessage('');
-    }, 3000);
   };
 
   if (!student) {
@@ -181,18 +176,6 @@ export default function StudentCard({ student }) {
         >
           Conectar
         </Button>
-
-        {successMessage && (
-          <Alert severity="success" sx={{ mt: 2 }}>
-            {successMessage}
-          </Alert>
-        )}
-
-        {errorMessage && (
-          <Alert severity="error" sx={{ mt: 2 }}>
-            {errorMessage}
-          </Alert>
-        )}
       </Stack>
     </Card>
   );

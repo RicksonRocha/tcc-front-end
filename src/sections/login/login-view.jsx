@@ -35,7 +35,7 @@ export default function LoginView() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm({
     resolver: yupResolver(schemaLogin),
@@ -98,7 +98,14 @@ export default function LoginView() {
         </Link>
       </Stack>
 
-      <LoadingButton fullWidth size="large" type="submit" variant="contained" color="primary">
+      <LoadingButton
+        loading={isSubmitting}
+        fullWidth
+        size="large"
+        type="submit"
+        variant="contained"
+        color="primary"
+      >
         Login
       </LoadingButton>
     </form>

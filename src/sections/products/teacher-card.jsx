@@ -13,11 +13,12 @@ import { useSelector } from 'react-redux';
 import { useCreateRequestEntryMutation } from 'src/api/requestEntryTcc';
 import { useGetTeamByMemberQuery } from 'src/api/team';
 import { useCreateNotificationMutation } from 'src/api/notifications';
+import { useSnackbar } from 'notistack';
 
 export default function TeacherCard({ teacher, teamMember }) {
   const [successMessage, setSuccessMessage] = useState('');
   const currentUser = useSelector((state) => state.auth?.auth?.user);
-  const isProfessor = currentUser && currentUser.role === 'PROFESSOR';
+  const { enqueueSnackbar } = useSnackbar();
 
   const [createRequestEntry] = useCreateRequestEntryMutation();
   const [createNotification] = useCreateNotificationMutation();
@@ -28,7 +29,7 @@ export default function TeacherCard({ teacher, teamMember }) {
       nomeRemetente: currentUser.name,
       receiverId: teacher.user_id,
       nomeDestinatario: teacher.userName || 'Responsável pela equipe',
-      message: `${currentUser.name} gostaria que sua equipe fosse orientada por você! Confira página de Visão Geral.`,
+      message: `${currentUser.name} gostaria da sua orientação na equipe!`,
     };
 
     const requestEntryData = {
@@ -42,6 +43,7 @@ export default function TeacherCard({ teacher, teamMember }) {
     try {
       await createNotification(notificationData).unwrap();
       await createRequestEntry(requestEntryData).unwrap();
+      enqueueSnackbar('Sua solicitação foi enviada com sucesso!', { variant: 'success' });
     } catch (error) {
       console.error(error);
     }

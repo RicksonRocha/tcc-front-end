@@ -2,6 +2,7 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { useCreatePreferenceMutation, useUpdatePreferenceMutation, useGetPreferencesQuery } from 'src/api/preference';
 import { useGetUsersQuery } from 'src/api/user';
 import schemaPreferenciasAluno from 'src/hooks/form/preferencias-aluno';
@@ -24,38 +25,21 @@ function getUserEmailFromToken() {
 export default function useMyProfileModel() {
   const [open, setOpen] = useState(false);
   const [preferenceData, setPreferenceData] = useState(null); // Guarda as preferências salvas
-  const [userId, setUserId] = useState(null); // Armazena o id do usuário
 
-  // Extrai o e-mail do token
-  const email = getUserEmailFromToken();
-
-  // Busca a lista de usuários
-  const { data: users = [] } = useGetUsersQuery();
-
-  // Assim que os usuários e o email estiverem disponíveis, filtra para encontrar o usuário logado
-  useEffect(() => {
-    if (users && email) {
-      const user = users.find((u) => u.email === email);
-      if (user) {
-        setUserId(user.id);
-      } else {
-        console.error("Usuário não encontrado pelo email:", email);
-      }
-    }
-  }, [users, email]);
-
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+  
   // Busca todas as preferências e filtra pelo userId
   const { data: allPreferences } = useGetPreferencesQuery();
   useEffect(() => {
-    if (allPreferences && userId) {
-      const pref = allPreferences.find((p) => p.user_id === userId);
+    if (allPreferences && currentUser.id) {
+      const pref = allPreferences.find((p) => p.user_id === currentUser.id);
       if (pref) {
         setPreferenceData(pref);
       } else {
         setPreferenceData(null); // Se não encontrar, mantém como null para exibir o card inicial
       }
     }
-  }, [allPreferences, userId]);
+  }, [allPreferences, currentUser.id]);
 
   const [createPreference, { isLoading: isCreating }] = useCreatePreferenceMutation();
   const [updatePreference, { isLoading: isUpdating }] = useUpdatePreferenceMutation();
@@ -85,7 +69,7 @@ export default function useMyProfileModel() {
 
   const onSubmit = async (data) => {
     try {
-      if (!userId) {
+      if (!currentUser.id) {
         console.error("Usuário não autenticado");
         return;
       }
@@ -95,7 +79,7 @@ export default function useMyProfileModel() {
         result = await updatePreference({ id: preferenceData.id, ...data }).unwrap();
       } else {
         // Cria um novo registro de preferências
-        result = await createPreference({ ...data, user_id: userId }).unwrap();
+        result = await createPreference({ ...data, user_id: currentUser.id }).unwrap();
       }
       setPreferenceData(result);
       reset(result); // Atualiza o formulário com os dados salvos

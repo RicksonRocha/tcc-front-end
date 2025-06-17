@@ -48,5 +48,5 @@ export const {
   useDeleteNotificationMutation,
   useGetUserNotificationsQuery,
   useMarkAllNotificationsAsReadMutation,
-  useGetUnreadNotificationCountQuery,
+  useGetUnreadNotificationCountQuery, useLazyGetUserNotificationsQuery
 } = notificationApi;
