@@ -72,12 +72,8 @@ export default function TccDetailView() {
               <TableRow key={event.id}>
                 <TableCell>{event.name}</TableCell>
                 <TableCell>{event.description}</TableCell>
-                <TableCell>
-                  {new Date(event.startDate).toLocaleDateString('pt-BR')}
-                </TableCell>
-                <TableCell>
-                  {new Date(event.endDate).toLocaleDateString('pt-BR')}
-                </TableCell>
+                <TableCell>{new Date(event.startDate).toLocaleDateString('pt-BR')}</TableCell>
+                <TableCell>{new Date(event.endDate).toLocaleDateString('pt-BR')}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -94,7 +90,7 @@ export default function TccDetailView() {
     if (errorMaterials) {
       return <Typography color="error">Erro ao carregar materiais.</Typography>;
     }
-    if (materials.length === 0) {
+    if (materials?.length === 0) {
       return <Typography>Nenhum material encontrado.</Typography>;
     }
     return (
@@ -111,13 +107,10 @@ export default function TccDetailView() {
               <TableCell>
                 <strong>Link</strong>
               </TableCell>
-              <TableCell>
-                <strong>Data</strong>
-              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {materials.map((material) => (
+            {materials?.map((material) => (
               <TableRow key={material.id}>
                 <TableCell>{material.name}</TableCell>
                 <TableCell>{material.autor}</TableCell>
@@ -130,9 +123,6 @@ export default function TccDetailView() {
                   >
                     Acessar
                   </a>
-                </TableCell>
-                <TableCell>
-                  {new Date(material.date).toLocaleDateString('pt-BR')}
                 </TableCell>
               </TableRow>
             ))}
@@ -188,9 +178,7 @@ export default function TccDetailView() {
           <Typography variant="h6" gutterBottom>
             Status
           </Typography>
-          <Typography variant="body1">
-            {team.isActive ? 'Completa' : 'Aberta'}
-          </Typography>
+          <Typography variant="body1">{team.isActive ? 'Completa' : 'Aberta'}</Typography>
         </Box>
       </Card>
 

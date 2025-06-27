@@ -33,7 +33,7 @@ export default function StudentView() {
   });
 
   if (error) {
-    enqueueSnackbar("Erro ao carregar as preferências dos alunos.", {
+    enqueueSnackbar('Erro ao carregar as preferências dos alunos.', {
       variant: 'error',
       anchorOrigin: { vertical: 'top', horizontal: 'center' },
     });
@@ -53,35 +53,32 @@ export default function StudentView() {
     if (turno && pref.turno !== turno) return false;
     if (
       linguagemProgramacao.length > 0 &&
-      !linguagemProgramacao.some(lang => pref.linguagemProgramacao?.includes(lang))
+      !linguagemProgramacao.some((lang) => pref.linguagemProgramacao?.includes(lang))
     )
       return false;
-    if (
-      bancoDeDados.length > 0 &&
-      !bancoDeDados.some(bd => pref.bancoDeDados?.includes(bd))
-    )
+    if (bancoDeDados.length > 0 && !bancoDeDados.some((bd) => pref.bancoDeDados?.includes(bd)))
       return false;
     if (
       habilidadesPessoais.length > 0 &&
-      !habilidadesPessoais.some(hab => pref.habilidadesPessoais?.includes(hab))
+      !habilidadesPessoais.some((hab) => pref.habilidadesPessoais?.includes(hab))
     )
       return false;
     if (
       temasDeInteresse.length > 0 &&
-      !temasDeInteresse.some(tema => pref.temasDeInteresse?.includes(tema))
+      !temasDeInteresse.some((tema) => pref.temasDeInteresse?.includes(tema))
     )
       return false;
 
-    if (modalidadeTrabalho.length > 0 &&
-      !modalidadeTrabalho.includes(pref.modalidadeTrabalho)) {
+    if (modalidadeTrabalho.length > 0 && !modalidadeTrabalho.includes(pref.modalidadeTrabalho)) {
       return false;
     }
 
     // Filtro por situação do aluno (equipe)
     if (teamStatus) {
-      const isInTeam = teams.some(team =>
-        team.createdById === pref.user_id ||
-        team.members?.some(member => member.userId === pref.user_id)
+      const isInTeam = teams.some(
+        (team) =>
+          team.createdById === pref.user_id ||
+          team.members?.some((member) => member.userId === pref.user_id)
       );
       if (teamStatus === 'Com equipe' && !isInTeam) return false;
       if (teamStatus === 'Sem equipe' && isInTeam) return false;
@@ -91,8 +88,8 @@ export default function StudentView() {
   });
 
   // Remove as preferências do usuário logado
-  const filteredPreferencesWithoutLoggedUser = filteredPreferences.filter(
-    (pref) => (user ? pref.user_id !== user.id : true)
+  const filteredPreferencesWithoutLoggedUser = filteredPreferences.filter((pref) =>
+    user ? pref.user_id !== user.id : true
   );
 
   const renderContent = () => {
@@ -144,7 +141,7 @@ export default function StudentView() {
             filterState={filterState}
             setFilterState={setFilterState}
           />
-          <Clustering />
+          <Clustering targetRole="aluno" />
         </Stack>
       </Stack>
 

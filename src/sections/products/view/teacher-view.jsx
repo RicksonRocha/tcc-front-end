@@ -85,7 +85,7 @@ export default function TeacherView() {
             filterState={filterState}
             setFilterState={setFilterState}
           />
-          <Clustering targetRole="professor" />
+          <Clustering targetRole="professor" teamMember={teamMember} />
         </Stack>
       </Stack>
 

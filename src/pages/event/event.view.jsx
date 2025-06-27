@@ -20,6 +20,7 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Card,
 } from '@mui/material';
 
 import Iconify from 'src/components/iconify';
@@ -44,6 +45,8 @@ export default function EventsView(props) {
     creating,
     updating,
     refetch,
+    isTeacher,
+    myTeam,
   } = props;
 
   const {
@@ -53,6 +56,36 @@ export default function EventsView(props) {
     setValue,
     formState: { errors, isDirty },
   } = methods;
+
+  const renderCalendar = myTeam ? (
+    <EventsCalendar
+      handleToggle={handleToggle}
+      events={events}
+      setSelectedEvent={setSelectedEvent}
+      refetch={refetch}
+    />
+  ) : (
+    <Card sx={{ p: 3, borderRadius: 2, boxShadow: 3, mt: 3 }}>
+      <Stack
+        sx={{
+          height: '50vh',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="18" sx={{ mb: 2 }}>
+          Você precisa estar em uma equipe para ter acesso à esse recurso🔎
+          <br />
+          Na aba{' '}
+          <strong>
+            <em>Equipes</em>
+          </strong>{' '}
+          é possível visualizar todos os grupos disponíveis!
+        </Typography>
+      </Stack>
+    </Card>
+  );
 
   return (
     <Container>
@@ -76,6 +109,7 @@ export default function EventsView(props) {
           color="inherit"
           startIcon={<Iconify icon="eva:plus-fill" />}
           onClick={handleToggle}
+          disabled={isTeacher || !myTeam}
         >
           Novo
         </Button>
@@ -98,12 +132,7 @@ export default function EventsView(props) {
               </Grid>
             </Box>
           ) : (
-            <EventsCalendar
-              handleToggle={handleToggle}
-              events={events}
-              setSelectedEvent={setSelectedEvent}
-              refetch={refetch}
-            />
+            renderCalendar
           )}
         </Grid>
       </Grid>

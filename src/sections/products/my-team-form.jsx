@@ -32,21 +32,23 @@ import { TEMAS_TCC_OPTIONS } from 'src/constants/constants';
 import { useRouter } from 'src/routes/hooks/use-router';
 import { useGetStudentsQuery, useGetTeachersQuery } from 'src/api/user';
 import { useGetProfessorPreferencesQuery } from 'src/api/preference-prof';
+import { useSnackbar } from 'notistack';
 
 export default function MyTeamForm({ teamId }) {
   const [isClosed, setIsClosed] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
   const { data: teamData } = useGetTeamByIdQuery(teamId, { skip: !teamId });
   const { data: teams = [] } = useGetTeamsQuery();
-  const [createTeam] = useCreateTeamMutation();
-  const [updateTeam] = useUpdateTeamMutation();
-  const [deleteTeam] = useDeleteTeamMutation();
+  const [createTeam, { isLoading: isCreating }] = useCreateTeamMutation();
+  const [updateTeam, { isLoading: isUpdating }] = useUpdateTeamMutation();
+  const [deleteTeam, { isLoading: isDeleting }] = useDeleteTeamMutation();
   const { data: students = [], isLoading: isLoadingStudents } = useGetStudentsQuery();
   const { data: teachers = [], isLoading: isLoadingTeachers } = useGetTeachersQuery();
   const { data: professorPreferences = [], isLoading: isLoadingPreferences } =
     useGetProfessorPreferencesQuery();
   const { push } = useRouter();
   const user = useSelector((state) => state.auth.auth.user);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const sortedStudents = students
     .filter((s) => s.name)
@@ -123,7 +125,9 @@ export default function MyTeamForm({ teamId }) {
     );
 
     if (memberAlreadyInOtherTeam) {
-      setSuccessMessage('1 ou mais membros já fazem parte de outra equipe de TCC!');
+      enqueueSnackbar('1 ou mais membros já fazem parte de outra equipe de TCC!', {
+        variant: 'warning',
+      });
       return;
     }
 
@@ -149,14 +153,14 @@ export default function MyTeamForm({ teamId }) {
     try {
       if (teamId) {
         await updateTeam({ id: teamId, ...formData }).unwrap();
-        setSuccessMessage('Equipe atualizada com sucesso!');
+        enqueueSnackbar('Equipe atualizada com sucesso!', { variant: 'success' });
       } else {
         await createTeam(formData).unwrap();
-        setSuccessMessage('Equipe criada com sucesso!');
+        enqueueSnackbar('Equipe criada com sucesso!', { variant: 'success' });
       }
       setTimeout(() => push(teamId ? '/' : '/equipes'), 3000);
     } catch (err) {
-      setSuccessMessage(`Erro ao salvar equipe: ${err.message}`);
+      enqueueSnackbar(`Erro ao salvar equipe: ${err.message}`, { variant: 'error' });
     }
   };
 
@@ -164,11 +168,11 @@ export default function MyTeamForm({ teamId }) {
     try {
       if (teamId) {
         await deleteTeam(teamId).unwrap();
-        setSuccessMessage('Equipe excluída com sucesso!');
+        enqueueSnackbar('Equipe excluída com sucesso!', { variant: 'success' });
         setTimeout(() => push('/'), 3000);
       }
     } catch (err) {
-      setSuccessMessage(`Erro ao excluir equipe: ${err.message}`);
+      enqueueSnackbar(`Erro ao excluir equipe: ${err.message}`, { variant: 'error' });
     }
   };
 
@@ -176,14 +180,8 @@ export default function MyTeamForm({ teamId }) {
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', px: 2 }}>
       <Card sx={{ p: 3, width: '50vw', maxWidth: '50vw', overflowX: 'hidden' }}>
         <Typography variant="h5" align="center" sx={{ mb: 3 }}>
-          Formulário
+          {teamId ? 'Edição de equipe' : 'Criação de equipe'}
         </Typography>
-
-        {successMessage && (
-          <Alert severity={successMessage.includes('sucesso') ? 'success' : 'error'} sx={{ mb: 3 }}>
-            {successMessage}
-          </Alert>
-        )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
@@ -308,13 +306,23 @@ export default function MyTeamForm({ teamId }) {
             >
               Voltar
             </Button>
-            <LoadingButton type="submit" variant="contained" color="primary">
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              color="primary"
+              loading={isCreating || isUpdating}
+            >
               Salvar
             </LoadingButton>
             {teamId && (
-              <Button variant="contained" color="error" onClick={handleDelete}>
+              <LoadingButton
+                variant="contained"
+                color="error"
+                onClick={handleDelete}
+                loading={isDeleting}
+              >
                 Excluir
-              </Button>
+              </LoadingButton>
             )}
           </Stack>
         </form>

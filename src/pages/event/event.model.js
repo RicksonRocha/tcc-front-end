@@ -12,17 +12,21 @@ import { useSelector } from 'react-redux';
 import { schema } from './event.schema';
 
 export const useEventModel = () => {
-   const user = useSelector((state) => state.auth.auth.user);
+  const user = useSelector((state) => state.auth.auth.user);
   const [open, setOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents] = useState([]);
   const [createEvent, { isLoading: creating }] = useCreateEventMutation();
   const [updateEvent, { isLoading: updating }] = useUpdateEventMutation();
   const [deleteEvent, { isLoading: deleting }] = useDeleteEventMutation();
-  
- const { data: myTeam } = useGetTeamByMemberQuery(user?.id, { skip: !user?.id });
-  
-  const { data, isFetching, refetch } = useGetEventsQuery(myTeam?.id, { skip: myTeam === undefined});
+  const currentUser = useSelector((state) => state.auth?.auth?.user);
+  const isTeacher = currentUser && currentUser.role === 'PROFESSOR';
+
+  const { data: myTeam } = useGetTeamByMemberQuery(user?.id, { skip: !user?.id });
+
+  const { data, isFetching, refetch } = useGetEventsQuery(myTeam?.id, {
+    skip: myTeam === undefined,
+  });
 
   const handleToggle = () => {
     setOpen(!open);
@@ -35,7 +39,7 @@ export const useEventModel = () => {
       startDate: selectedEvent?.start ?? null,
       endDate: selectedEvent?.end ?? null,
       isActive: selectedEvent?.extendedProps.isActive ?? false,
-      team: selectedEvent?.extendedProps.team ?? myTeam?.id
+      team: selectedEvent?.extendedProps.team ?? myTeam?.id,
     }),
     [selectedEvent, myTeam]
   );
@@ -94,7 +98,7 @@ export const useEventModel = () => {
         end: e.endDate,
         extendedProps: {
           isActive: e.isActive,
-          team: e.team
+          team: e.team,
         },
       }))
     );
@@ -115,5 +119,7 @@ export const useEventModel = () => {
     creating,
     updating,
     deleting,
+    isTeacher,
+    myTeam,
   };
 };

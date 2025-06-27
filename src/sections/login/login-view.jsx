@@ -53,8 +53,13 @@ export default function LoginView() {
 
       reset();
 
-      const isTeacher = response.payload.user.role === 'PROFESSOR';
-      push(isTeacher ? '/init-page-teacher' : '/my-profile');
+      const path = {
+        PROFESSOR: '/init-page-teacher',
+        ALUNO: '/my-profile',
+        ADMIN: '/dashboard',
+      };
+
+      push(path[response.payload.user.role]);
     } catch (e) {
       console.log('error', e);
     }

@@ -30,7 +30,7 @@ export default function StudentCard({ student }) {
       nomeRemetente: currentUser.name,
       receiverId: student.user_id,
       nomeDestinatario: student.userName || 'Responsável pela equipe',
-      message: `${currentUser.name} gostaria de se conectar a você!`,
+      message: `${currentUser?.name} gostaria de se conectar a você! Contate-o(a) via email: ${currentUser?.email}`,
     };
 
     try {

@@ -11,9 +11,12 @@ import {
   Divider,
   CircularProgress,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
+import { useCreateNotificationMutation } from 'src/api/notifications';
+import { useCreateRequestEntryMutation } from 'src/api/requestEntryTcc';
 
 // Card de exibição do perfil compatível
-const CompatibleCard = ({ profile }) => (
+const CompatibleCard = ({ profile, handleConect }) => (
   <Card sx={{ width: 280, m: 1, boxShadow: 6, position: 'relative' }}>
     <Box sx={{ p: 1 }}>
       <Typography variant="subtitle2" sx={{ fontSize: '1.1rem' }}>
@@ -35,19 +38,58 @@ const CompatibleCard = ({ profile }) => (
       </Typography>
     </Box>
     <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
-      <Button variant="contained" color="primary" size="small">
+      <Button
+        variant="contained"
+        color="primary"
+        size="small"
+        onClick={() => handleConect(profile)}
+      >
         Conectar
       </Button>
     </Stack>
   </Card>
 );
 
-const Clustering = ({ targetRole = 'aluno' }) => {
+const Clustering = ({ targetRole = 'aluno', teamMember }) => {
   const currentUser = useSelector((state) => state.auth?.auth?.user);
   const token = useSelector((state) => state.auth?.auth?.token);
   const [suggestions, setSuggestions] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [createNotification] = useCreateNotificationMutation();
+  const [createRequestEntry] = useCreateRequestEntryMutation();
+
+  const handleConect = async (profile) => {
+    const notificationData = {
+      senderId: currentUser.id,
+      nomeRemetente: currentUser.name,
+      receiverId: profile.id,
+      nomeDestinatario: profile.userName || 'Responsável pela equipe',
+      message: teamMember
+        ? `${currentUser.name} gostaria da sua orientação na equipe! Contate-o(a) via email: ${currentUser?.email}`
+        : `${currentUser?.name} gostaria de se conectar a você! Contate-o(a) via email: ${currentUser?.email}`,
+    };
+
+    const requestEntryData = {
+      tccid: teamMember?.id,
+      requesterId: currentUser.id,
+      requesterName: currentUser.name,
+      ownerId: profile.id,
+      ownerEmail: profile.userEmail || '',
+    };
+
+    try {
+      await createNotification(notificationData).unwrap();
+      if (teamMember) await createRequestEntry(requestEntryData).unwrap();
+      enqueueSnackbar('Mensagem de conexão foi enviada!', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar('Erro ao enviar mensagem de conexão.', { variant: 'error' });
+      console.error(error);
+    }
+  };
 
   const fetchSuggestions = async () => {
     setOpen(true);
@@ -100,7 +142,7 @@ const Clustering = ({ targetRole = 'aluno' }) => {
     modalContent = (
       <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
         {suggestions.map((profile) => (
-          <CompatibleCard key={profile.id} profile={profile} />
+          <CompatibleCard key={profile.id} profile={profile} handleConect={handleConect} />
         ))}
       </Box>
     );

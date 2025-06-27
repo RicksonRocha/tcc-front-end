@@ -1,4 +1,5 @@
 import { format, getTime, formatDistanceToNow } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 
 // ----------------------------------------------------------------------
 
@@ -21,7 +22,7 @@ export function fTimestamp(date) {
 export function fToNow(date) {
   return date
     ? formatDistanceToNow(new Date(date), {
-        addSuffix: true,
+        addSuffix: true, locale: ptBR
       })
     : '';
 }
