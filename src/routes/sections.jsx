@@ -16,7 +16,6 @@ import TccDetailPage from 'src/pages/tcc-detail-page';
 import ProtectedRoute from './protected-route';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
-export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
 export const LoginPage = lazy(() => import('src/pages/login'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
@@ -43,7 +42,6 @@ export default function Router() {
         { path: 'equipes', element: <TeamsPage /> },
         { path: 'my-profile', element: <MyProfilePage /> },
         { path: 'meu-perfil-professor', element: <MyProfileProfessorPage /> },
-        { path: 'blog', element: <BlogPage /> },
         { path: 'alunos', element: <StudentPage /> },
         { path: 'minha-equipe', element: <MyTeamPage /> },
         { path: 'minha-equipe/:teamId', element: <MyTeamPage /> },

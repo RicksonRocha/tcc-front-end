@@ -52,7 +52,7 @@ export function useNavConfig() {
     },
     {
       title: 'Admin',
-      path: '/dashboard',
+      path: '/crud-users-adm',
       icon: <Iconify icon="ic:round-library-books" />,
       roles: ['ADMIN'],
     },
